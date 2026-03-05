@@ -865,29 +865,6 @@
             </button>
         </div>
     </div>
-
-    <!-- 政府登錄結算防呆 Modal -->
-    <div id="gov-confirm-modal" class="modal-overlay fixed inset-0 hidden z-[110] flex items-center justify-center p-4 bg-gray-900/60">
-        <div class="modal-content bg-white w-full max-w-sm p-6 rounded-2xl shadow-2xl text-center border-t-4 border-red-500 relative">
-            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4 animate-pulse"></i>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">確認登錄並結算？</h3>
-            <div class="text-left text-sm text-gray-600 mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200 shadow-inner">
-                <p class="mb-2">即將把數據歸戶至：<br><span id="gov-confirm-target" class="font-bold text-blue-600 text-base"></span></p>
-                <div class="flex justify-between border-t border-gray-200 pt-2">
-                    <span class="font-bold text-mori-forest">減碳量: <span id="gov-confirm-carbon"></span>g</span>
-                    <span class="font-bold text-mori-wood">綠色消費: $<span id="gov-confirm-green"></span></span>
-                </div>
-                <p class="text-xs text-red-600 font-bold mt-3 leading-relaxed">
-                    ⚠️ 警告：按下確認後，這些數據將計入總表，並且<strong class="underline">您的個人數據將會歸零</strong>！<br>
-                    若尚未保存憑證，請先取消並點擊「將最近紀錄匯出為圖片」。
-                </p>
-            </div>
-            <div class="flex gap-3">
-                <button id="gov-confirm-cancel" class="flex-1 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-300 transition">先去匯出</button>
-                <button id="gov-confirm-ok" class="flex-1 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition shadow-md">確認歸零登錄</button>
-            </div>
-        </div>
-    </div>
     
     <!-- 企業專區設立宗旨 Modal -->
     <div id="enterprise-info-modal" class="modal-overlay fixed inset-0 hidden z-[110] flex items-center justify-center p-4 bg-gray-900/60">
@@ -915,27 +892,27 @@
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times text-xl"></i></button>
             
             <div class="p-6 border-b border-gray-100 shrink-0 text-center">
-                <h3 class="text-2xl font-bold text-blue-900 mb-1">永續計畫成效評鑑</h3>
+                <h3 class="text-2xl font-bold text-blue-900 mb-1">企業 ESG 成效評鑑</h3>
                 <p class="text-xs text-blue-600 font-bold">請針對本次參與的計畫給予回饋，完成後將歸戶您的數據</p>
+                
+                <!-- 新增：將歸戶提示整併至問卷上方 -->
+                <div class="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-200 text-left shadow-inner">
+                    <p class="text-sm text-gray-700 mb-2">即將把數據歸戶至：<br><span id="ent-eval-target-name" class="font-bold text-mori-forest text-base"></span></p>
+                    <div class="flex justify-between border-t border-gray-200 pt-2 mb-1">
+                        <span class="font-bold text-mori-forest text-sm">減碳量: <span id="ent-eval-target-carbon"></span>g</span>
+                        <span class="font-bold text-mori-wood text-sm">綠色消費: $<span id="ent-eval-target-green"></span></span>
+                    </div>
+                    <p class="text-[11px] text-red-500 font-bold mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>提交後個人數據將歸零計入總表。若需保存憑證，請先取消並匯出圖片。</p>
+                </div>
+
                 <div class="flex justify-center mt-3">
-                     <button id="quick-fill-gov-stars-btn" class="text-[11px] bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1 rounded-full hover:bg-blue-100 transition shadow-sm font-bold flex items-center">
+                     <button id="quick-fill-ent-stars-btn" class="text-[11px] bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1 rounded-full hover:bg-blue-100 transition shadow-sm font-bold flex items-center">
                          <i class="fas fa-bolt mr-1"></i> 快速填滿 5 分
                      </button>
                 </div>
             </div>
 
-            <div class="p-6 overflow-y-auto flex-grow space-y-6 bg-gray-50/50" id="gov-eval-questions-container">
-                <!-- 預設公版題目區塊 (待替換) -->
-                <div class="eval-section">
-                    <h4 class="font-bold text-gray-700 mb-3 flex items-center text-sm border-b pb-1"><i class="fas fa-clipboard-check text-blue-500 mr-2"></i>計畫滿意度與成效回饋</h4>
-                    <p class="text-[11px] font-bold text-red-400 mb-4">* 此為預設範例題目，待您稍後提供正式題目後即刻替換</p>
-                    
-                    <div class="space-y-4">
-                        <div class="eval-q" data-qid="q1">
-                            <p class="text-xs text-gray-600 mb-2 font-medium">1. 活動滿意度：您對本次永續旅遊/計畫活動整體的安排感到滿意？</p>
-                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
-                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="1">1</button>
-                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="2">2</button>
+            <div class="p-6 overflow-y-auto flex-grow space-y-6 bg-gray-50/50" id="ent-eval-questions-container">
                                 <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="3">3</button>
                                 <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="4">4</button>
                                 <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="5">5</button>
@@ -1091,33 +1068,33 @@
         </div>
     </div>
 
-    <!-- Script: Combined Logic -->
-    <script type="module">
-        // ------------------------------------------------------------------
-        // 1. Firebase Logic & Data
-        // ------------------------------------------------------------------
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    <!-- 政府計畫評鑑問卷 Modal -->
+    <div id="gov-eval-modal" class="modal-overlay fixed inset-0 hidden z-[100] flex items-center justify-center p-4 bg-gray-900/60">
+        <div class="modal-content bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh] flex flex-col border-t-4 border-blue-500">
+            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times text-xl"></i></button>
+            
+            <div class="p-6 border-b border-gray-100 shrink-0 text-center">
+                <h3 class="text-2xl font-bold text-blue-900 mb-1">永續計畫成效評鑑</h3>
+                <p class="text-xs text-blue-600 font-bold">請針對本次參與的計畫給予回饋，完成後將歸戶您的數據</p>
+                
+                <!-- 新增：將歸戶提示整併至問卷上方 -->
+                <div class="mt-4 bg-blue-50 p-3 rounded-xl border border-blue-200 text-left shadow-inner">
+                    <p class="text-sm text-gray-700 mb-2">即將把數據歸戶至：<br><span id="gov-eval-target-name" class="font-bold text-blue-700 text-base"></span></p>
+                    <div class="flex justify-between border-t border-blue-200/50 pt-2 mb-1">
+                        <span class="font-bold text-mori-forest text-sm">減碳量: <span id="gov-eval-target-carbon"></span>g</span>
+                        <span class="font-bold text-mori-wood text-sm">綠色消費: $<span id="gov-eval-target-green"></span></span>
+                    </div>
+                    <p class="text-[11px] text-red-500 font-bold mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>提交後個人數據將歸零計入總表。若需保存憑證，請先取消並匯出圖片。</p>
+                </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCEH65YbNirj_IRmtsIJZS-HNEbsRBBsSQ", 
-            authDomain: "sustainable-tourism-65025.firebaseapp.com",
-            projectId: "sustainable-tourism-65025",
-            storageBucket: "sustainable-tourism-65025.firebasestorage.app",
-            messagingSenderId: "781325465882",
-            appId: "1:781325465882:web:9435b02bd618f0c16814a3",
-            measurementId: "G-SZJ1RX5QS4"
-        };
+                <div class="flex justify-center mt-3">
+                     <button id="quick-fill-gov-stars-btn" class="text-[11px] bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1 rounded-full hover:bg-blue-100 transition shadow-sm font-bold flex items-center">
+                         <i class="fas fa-bolt mr-1"></i> 快速填滿 5 分
+                     </button>
+                </div>
+            </div>
 
-        let db = null;
-        let auth = null;
-        let currentUser = null;
-        let isOfflineMode = false;
-        let globalStatsRef, greenStatsDocRef, pageViewsDocRef, govGeneralDocRef, govProjectsColRef, networkCarbonDocRef, entProjectsColRef;
-
-        try {
-            const app = initializeApp(firebaseConfig);
+            <div class="p-6 overflow-y-auto flex-grow space-y-6 bg-gray-50/50" id="gov-eval-questions-container">
             db = getFirestore(app);
             auth = getAuth(app);
             
@@ -1513,32 +1490,6 @@
             const percent = Math.min(100, (value / max) * 100);
             circle.setAttribute('stroke-dasharray', `${percent}, 100`);
             text.textContent = circleId.includes('mileage') ? value.toFixed(1) : Math.floor(value);
-        }
-
-        // ------------------------------------------------------------------
-        // 共用：政府結算確認對話框 (Promise)
-        // ------------------------------------------------------------------
-        function confirmGovCheckout(targetName, carbon, green) {
-            return new Promise((resolve) => {
-                document.getElementById('gov-confirm-target').innerHTML = targetName;
-                document.getElementById('gov-confirm-carbon').textContent = carbon.toFixed(1);
-                document.getElementById('gov-confirm-green').textContent = green;
-
-                const modal = document.getElementById('gov-confirm-modal');
-                modal.classList.remove('hidden');
-
-                const btnOk = document.getElementById('gov-confirm-ok');
-                const btnCancel = document.getElementById('gov-confirm-cancel');
-
-                const cleanup = () => {
-                    modal.classList.add('hidden');
-                    btnOk.replaceWith(btnOk.cloneNode(true));
-                    btnCancel.replaceWith(btnCancel.cloneNode(true));
-                };
-
-                document.getElementById('gov-confirm-ok').onclick = () => { cleanup(); resolve(true); };
-                document.getElementById('gov-confirm-cancel').onclick = () => { cleanup(); resolve(false); };
-            });
         }
 
         // ------------------------------------------------------------------
@@ -2207,6 +2158,12 @@
                 }
                 
                 pendingEntEvalSubmission = { projId: projId, selectedProj: selectedProj, carbon: currentCarbon, green: currentTotalGreen };
+                
+                // 動態更新問卷上方的歸戶提示資訊
+                if(document.getElementById('ent-eval-target-name')) document.getElementById('ent-eval-target-name').textContent = `${selectedProj.orgName} - ${selectedProj.event}`;
+                if(document.getElementById('ent-eval-target-carbon')) document.getElementById('ent-eval-target-carbon').textContent = currentCarbon.toFixed(1);
+                if(document.getElementById('ent-eval-target-green')) document.getElementById('ent-eval-target-green').textContent = currentTotalGreen.toLocaleString();
+                
                 resetQuestionnaire(); 
                 document.getElementById('ent-eval-modal').classList.remove('hidden');
             });
@@ -2218,12 +2175,12 @@
                 if (!isComplete) {
                     if(!confirm('您尚有未評分的項目，確定要以 0 分提交剩餘項目嗎？\n(建議可使用上方「快速填滿 5 分」)')) return;
                 }
+                
+                // 移除額外的防呆視窗，直接進行結算
                 closeModal('ent-eval-modal');
 
                 const { projId, selectedProj, carbon: currentCarbon, green: currentTotalGreen } = pendingEntEvalSubmission;
                 const targetDisplay = `[企業活動] ${selectedProj.orgName} - ${selectedProj.event}`;
-                const isConfirmed = await confirmGovCheckout(targetDisplay, currentCarbon, currentTotalGreen);
-                if (!isConfirmed) { pendingEntEvalSubmission = null; return; }
 
                 const Eng_score = qData.q1 + qData.q2;
                 const E_score = qData.q3 + qData.q4 + qData.q5;
@@ -2309,33 +2266,8 @@
 
                 if (db && !isOfflineMode) {
                     try {
-                        await setDoc(doc(govProjectsColRef, docId), newProj);
-                        alert('✅ 成功建立新計畫儀表板！參與者現在可於右側選單找到此計畫。');
-                        document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
-                        if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
-                        if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
-                        if(document.getElementById('host-proj-co-organizer')) document.getElementById('host-proj-co-organizer').value = '';
-                        document.getElementById('host-proj-remark').value = ''; document.getElementById('host-proj-budget').value = '';
-                        if(document.getElementById('host-proj-sroi')) document.getElementById('host-proj-sroi').value = '';
-                    } catch(e) {
-                        alert('建立失敗，請檢查網路連線或資料庫權限');
-                    }
-                } else {
-                    newProj.updatedAt = new Date();
-                    globalGovData.projects.unshift(newProj);
-                    renderGovDashboard();
-                    updateProjectDropdown();
-                    alert('【單機模式】已建立計畫儀表板！');
-                    document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
-                    if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
-                    if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
-                    if(document.getElementById('host-proj-co-organizer')) document.getElementById('host-proj-co-organizer').value = '';
-                    document.getElementById('host-proj-remark').value = ''; document.getElementById('host-proj-budget').value = '';
-                    if(document.getElementById('host-proj-sroi')) document.getElementById('host-proj-sroi').value = '';
-                }
-            });
-
-            document.getElementById('log-user-proj-btn')?.addEventListener('click', async () => {
+            // 政府問卷 - 開啟 Modal
+            document.getElementById('log-user-proj-btn')?.addEventListener('click', () => {
                 const selectEl = document.getElementById('user-proj-select');
                 const projId = selectEl?.value;
                 if (!projId) { alert('請先從下拉選單選擇您要登錄的計畫！'); return; }
@@ -2347,12 +2279,37 @@
                 const currentCarbon = state.totalCarbon;
 
                 if (currentCarbon <= 0 && currentTotalGreen <= 0) {
-                    alert('您目前的行程數據為零，請先完成永續任務或綠色消費後再進行登錄。'); return;
+                    const testProceed = confirm('⚠️ 系統提醒：您目前的行程數據為零（尚無減碳或消費紀錄）。\n\n是否要略過檢查，直接進入「永續問卷評鑑」進行測試？');
+                    if (!testProceed) return;
                 }
 
+                pendingGovEvalSubmission = { projId: projId, selectedProj: selectedProj, carbon: currentCarbon, green: currentTotalGreen };
+                
+                // 動態更新問卷上方的歸戶提示資訊
+                if(document.getElementById('gov-eval-target-name')) document.getElementById('gov-eval-target-name').textContent = `計畫：${selectedProj.name} (${selectedProj.event})`;
+                if(document.getElementById('gov-eval-target-carbon')) document.getElementById('gov-eval-target-carbon').textContent = currentCarbon.toFixed(1);
+                if(document.getElementById('gov-eval-target-green')) document.getElementById('gov-eval-target-green').textContent = currentTotalGreen.toLocaleString();
+                
+                resetGovQuestionnaire();
+                document.getElementById('gov-eval-modal').classList.remove('hidden');
+            });
+
+            // 政府問卷 - 提交送出
+            document.getElementById('submit-gov-eval-btn')?.addEventListener('click', async () => {
+                if (!pendingGovEvalSubmission) return;
+
+                const { data: qData, isComplete } = getGovQuestionnaireData();
+                if (!isComplete) {
+                    if(!confirm('您尚有未評分的項目，確定要以 0 分提交剩餘項目嗎？\n(建議可使用上方「快速填滿 5 分」)')) return;
+                }
+                
+                // 移除額外的防呆視窗，直接進行結算
+                closeModal('gov-eval-modal');
+
+                const { projId, selectedProj, carbon: currentCarbon, green: currentTotalGreen } = pendingGovEvalSubmission;
                 const targetDisplay = `計畫：${selectedProj.name} (${selectedProj.event})`;
-                const isConfirmed = await confirmGovCheckout(targetDisplay, currentCarbon, currentTotalGreen);
-                if (!isConfirmed) return; 
+
+                const total_score = qData.q1 + qData.q2 + qData.q3 + qData.q4 + qData.q5;
 
                 const updateLocalProjDataAndReset = () => {
                      globalGovData.totalCarbon += currentCarbon;
