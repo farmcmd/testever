@@ -1435,6 +1435,34 @@
         let selectedEnd = null;
         let currentModalPoi = null;
         let pendingEntEvalSubmission = null;
+        let pendingGovEvalSubmission = null;
+
+        // --- 新增：浮動提示功能 (避免沙盒阻擋 alert) ---
+        window.showToast = function(msg) {
+            let toast = document.getElementById('custom-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'custom-toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.className = 'fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl z-[9999] transition-all duration-300 font-bold text-sm pointer-events-none text-center opacity-100';
+            setTimeout(() => { toast.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+        };
+
+        // --- 新增：載入預設卡片資料 (解決下拉選單為空的問題) ---
+        function loadMockData() {
+            if (globalEntData.projects.length === 0) {
+                globalEntData.projects = [{ id: 'mock_ent_1', orgName: '台聚關係企業', year: '2026', event: '永續員工旅遊', carbon: 57600, green: 168000, eval_count: 5, total_score: 25, updatedAt: new Date() }];
+                renderEntProjectsDashboard();
+                updateEntProjectDropdown();
+            }
+            if (globalGovData.projects.length === 0) {
+                globalGovData.projects = [{ id: 'mock_gov_1', name: '里山創生示範計畫', event: '地方青農推廣', carbon: 3200, green: 15000, eval_count: 10, total_score: 50, date: '2026-03-05', updatedAt: new Date() }];
+                renderGovDashboard();
+                updateProjectDropdown();
+            }
+        }
 
         const LOCAL_STORAGE_KEY = 'shuilMoriData_v3.0';
 
@@ -2028,6 +2056,7 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
+            loadMockData(); // 載入測試用的預設卡片
             loadData();
             initHeaderCanvas();
             renderTransportButtons();
@@ -2154,7 +2183,7 @@
                 };
 
                 const afterCreateSuccess = () => {
-                    alert('✅ 成功建立專屬企業儀表板！員工現在可於下方選單找到此活動並進行歸戶。');
+                    window.showToast('✅ 成功建立專屬企業儀表板！員工現在可於下方選單找到此活動並進行歸戶。');
                     document.getElementById('ent-create-org').value = '';
                     document.getElementById('ent-create-year').value = '';
                     document.getElementById('ent-create-event').value = '';
@@ -2179,7 +2208,7 @@
                         await setDoc(doc(entProjectsColRef, docId), newProj);
                         afterCreateSuccess();
                     } catch(e) {
-                        alert('建立失敗，請檢查網路連線或資料庫權限');
+                        window.showToast('建立失敗，請檢查網路連線或資料庫權限');
                     }
                 } else {
                     newProj.updatedAt = new Date();
@@ -2193,7 +2222,7 @@
             document.getElementById('log-ent-proj-btn')?.addEventListener('click', () => {
                 const selectEl = document.getElementById('ent-proj-select');
                 const projId = selectEl?.value;
-                if (!projId) { alert('請先從下拉選單選擇您要登錄的企業活動！'); return; }
+                if (!projId) { window.showToast('請先從下拉選單選擇您要登錄的企業活動！'); return; }
 
                 const selectedProj = globalEntData.projects.find(p => p.id === projId);
                 if (!selectedProj) return;
@@ -2202,8 +2231,7 @@
                 const currentCarbon = state.totalCarbon;
 
                 if (currentCarbon <= 0 && currentTotalGreen <= 0) {
-                    const testProceed = confirm('⚠️ 系統提醒：您目前的行程數據為零（尚無減碳或消費紀錄）。\n\n是否要略過檢查，直接進入「永續問卷評鑑」進行測試？');
-                    if (!testProceed) return;
+                    window.showToast('⚠️ 目前行程數據為零，將以 0 計算供測試。');
                 }
                 
                 pendingEntEvalSubmission = { projId: projId, selectedProj: selectedProj, carbon: currentCarbon, green: currentTotalGreen };
@@ -2216,7 +2244,8 @@
 
                 const { data: qData, isComplete } = getQuestionnaireData();
                 if (!isComplete) {
-                    if(!confirm('您尚有未評分的項目，確定要以 0 分提交剩餘項目嗎？\n(建議可使用上方「快速填滿 5 分」)')) return;
+                    window.showToast('⚠️ 尚有未評分項目，請完成評分！(可使用測試鍵)');
+                    return;
                 }
                 closeModal('ent-eval-modal');
 
@@ -2268,16 +2297,16 @@
                         }, { merge: true });
 
                         updateLocalDataAndReset();
-                        alert(`✅ 登錄成功！您的個人數據與 ESG 評鑑已結算。`);
+                        window.showToast(`✅ 登錄成功！您的個人數據與 ESG 評鑑已結算。`);
                         document.getElementById('ent-proj-select').value = '';
                     } catch(e) {
                         updateLocalDataAndReset();
-                        alert(`[展示模式] 登錄成功！個人數據與 ESG 評鑑已結算。`);
+                        window.showToast(`[展示模式] 登錄成功！個人數據與 ESG 評鑑已結算。`);
                         document.getElementById('ent-proj-select').value = '';
                     }
                 } else {
                      updateLocalDataAndReset();
-                     alert(`【單機模式】登錄成功！個人數據與 ESG 評鑑已結算。`);
+                     window.showToast(`【單機模式】登錄成功！個人數據與 ESG 評鑑已結算。`);
                      document.getElementById('ent-proj-select').value = '';
                 }
             });
@@ -2294,9 +2323,9 @@
                 const todayStr = new Date().toLocaleString('zh-TW', { hour12: false }); 
                 const dateOnly = todayStr.split(' ')[0];
 
-                if (!projName || !eventName) { alert('請完整填寫「計畫名稱」與「活動名稱」！'); return; }
-                if (Number(budget) < 0) { alert('活動投入預算不可為負數！'); return; }
-                if (Number(sroi) < 0) { alert('SROI加權不可為負數！'); return; }
+                if (!projName || !eventName) { window.showToast('請完整填寫「計畫名稱」與「活動名稱」！'); return; }
+                if (Number(budget) < 0) { window.showToast('活動投入預算不可為負數！'); return; }
+                if (Number(sroi) < 0) { window.showToast('SROI加權不可為負數！'); return; }
 
                 const docId = `proj_${Date.now()}`;
                 const newProj = {
@@ -2307,25 +2336,29 @@
                     carbon: 0, green: 0, updatedAt: serverTimestamp()
                 };
 
+                const afterCreateSuccess = () => {
+                    window.showToast('✅ 成功建立新計畫儀表板！參與者現在可於右側選單找到此計畫。');
+                    document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
+                    if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
+                    if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
+                    if(document.getElementById('host-proj-co-organizer')) document.getElementById('host-proj-co-organizer').value = '';
+                    document.getElementById('host-proj-remark').value = ''; document.getElementById('host-proj-budget').value = '';
+                    if(document.getElementById('host-proj-sroi')) document.getElementById('host-proj-sroi').value = '';
+                };
+
                 if (db && !isOfflineMode) {
                     try {
                         await setDoc(doc(govProjectsColRef, docId), newProj);
-                        alert('✅ 成功建立新計畫儀表板！參與者現在可於右側選單找到此計畫。');
-                        document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
-                        if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
-                        if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
-                        if(document.getElementById('host-proj-co-organizer')) document.getElementById('host-proj-co-organizer').value = '';
-                        document.getElementById('host-proj-remark').value = ''; document.getElementById('host-proj-budget').value = '';
-                        if(document.getElementById('host-proj-sroi')) document.getElementById('host-proj-sroi').value = '';
+                        afterCreateSuccess();
                     } catch(e) {
-                        alert('建立失敗，請檢查網路連線或資料庫權限');
+                        window.showToast('建立失敗，請檢查網路連線或資料庫權限');
                     }
                 } else {
                     newProj.updatedAt = new Date();
                     globalGovData.projects.unshift(newProj);
                     renderGovDashboard();
                     updateProjectDropdown();
-                    alert('【單機模式】已建立計畫儀表板！');
+                    window.showToast('【單機模式】已建立計畫儀表板！');
                     document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
                     if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
                     if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
@@ -2339,7 +2372,7 @@
             document.getElementById('log-user-proj-btn')?.addEventListener('click', () => {
                 const selectEl = document.getElementById('user-proj-select');
                 const projId = selectEl?.value;
-                if (!projId) { alert('請先從下拉選單選擇您要登錄的計畫！'); return; }
+                if (!projId) { window.showToast('請先從下拉選單選擇您要登錄的計畫！'); return; }
 
                 const selectedProj = globalGovData.projects.find(p => p.id === projId);
                 if (!selectedProj) return;
@@ -2348,8 +2381,7 @@
                 const currentCarbon = state.totalCarbon;
 
                 if (currentCarbon <= 0 && currentTotalGreen <= 0) {
-                    const testProceed = confirm('⚠️ 系統提醒：您目前的行程數據為零。\n\n是否要略過檢查，直接進入「永續問卷評鑑」進行測試？');
-                    if (!testProceed) return;
+                    window.showToast('⚠️ 目前行程數據為零，將以 0 計算供測試。');
                 }
 
                 pendingGovEvalSubmission = { projId: projId, selectedProj: selectedProj, carbon: currentCarbon, green: currentTotalGreen };
@@ -2384,7 +2416,8 @@
                 });
 
                 if (!isComplete) {
-                    if(!confirm('您尚有未評分的項目，確定要以 0 分提交剩餘項目嗎？\n(建議可使用上方「快速填滿 5 分」)')) return;
+                    window.showToast('⚠️ 尚有未評分項目，請完成評分！(可使用測試鍵)');
+                    return;
                 }
 
                 closeModal('gov-eval-modal');
@@ -2426,15 +2459,15 @@
                         await setDoc(govGeneralDocRef, { totalCarbon: increment(currentCarbon), totalGreen: increment(currentTotalGreen) }, { merge: true });
                         
                         updateLocalProjDataAndReset();
-                        alert(`✅ 計畫登錄成功！您的個人數據與評鑑已結算。`);
+                        window.showToast(`✅ 計畫登錄成功！您的個人數據與評鑑已結算。`);
                         document.getElementById('user-proj-select').value = '';
                     } catch (e) {
                         updateLocalProjDataAndReset();
-                        alert(`[展示模式] 計畫登錄成功！個人數據與評鑑已結算。`);
+                        window.showToast(`[展示模式] 計畫登錄成功！個人數據與評鑑已結算。`);
                     }
                 } else {
                      updateLocalProjDataAndReset();
-                     alert(`【單機模式】計畫登錄成功！個人數據與評鑑已結算。`);
+                     window.showToast(`【單機模式】計畫登錄成功！個人數據與評鑑已結算。`);
                 }
             });
 
