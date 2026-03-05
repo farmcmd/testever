@@ -913,6 +913,17 @@
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6 bg-gray-50/50" id="ent-eval-questions-container">
+                <!-- 預設公版題目區塊 -->
+                <div class="eval-section">
+                    <h4 class="font-bold text-gray-700 mb-3 flex items-center text-sm border-b pb-1"><i class="fas fa-clipboard-check text-blue-500 mr-2"></i>計畫滿意度與成效回饋</h4>
+                    <p class="text-[11px] font-bold text-red-400 mb-4">* 此為預設範例題目，待您稍後提供正式題目後即刻替換</p>
+                    
+                    <div class="space-y-4">
+                        <div class="eval-q" data-qid="q1">
+                            <p class="text-xs text-gray-600 mb-2 font-medium">1. 活動滿意度：您對本次永續旅遊/計畫活動整體的安排感到滿意？</p>
+                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="1">1</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="2">2</button>
                                 <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="3">3</button>
                                 <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="4">4</button>
                                 <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-mori-forest hover:text-mori-forest transition" data-val="5">5</button>
@@ -1077,7 +1088,7 @@
                 <h3 class="text-2xl font-bold text-blue-900 mb-1">永續計畫成效評鑑</h3>
                 <p class="text-xs text-blue-600 font-bold">請針對本次參與的計畫給予回饋，完成後將歸戶您的數據</p>
                 
-                <!-- 新增：將歸戶提示整併至問卷上方 -->
+                <!-- 歸戶提示整併至問卷上方 -->
                 <div class="mt-4 bg-blue-50 p-3 rounded-xl border border-blue-200 text-left shadow-inner">
                     <p class="text-sm text-gray-700 mb-2">即將把數據歸戶至：<br><span id="gov-eval-target-name" class="font-bold text-blue-700 text-base"></span></p>
                     <div class="flex justify-between border-t border-blue-200/50 pt-2 mb-1">
@@ -1095,6 +1106,99 @@
             </div>
 
             <div class="p-6 overflow-y-auto flex-grow space-y-6 bg-gray-50/50" id="gov-eval-questions-container">
+                <div class="eval-section">
+                    <p class="text-[11px] font-bold text-red-400 mb-4">* 此為預設範例題目，待您稍後提供正式題目後即刻替換</p>
+                    
+                    <div class="space-y-4">
+                        <div class="gov-eval-q" data-qid="gov-q1">
+                            <p class="text-xs text-gray-600 mb-2 font-medium">1. 滿意度：對本次計畫活動整體安排感到滿意？</p>
+                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="1">1</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="2">2</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="3">3</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="4">4</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="5">5</button>
+                            </div>
+                        </div>
+                        <div class="gov-eval-q" data-qid="gov-q2">
+                            <p class="text-xs text-gray-600 mb-2 font-medium">2. 減碳認知：活動加深了您對低碳生活的認識？</p>
+                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="1">1</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="2">2</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="3">3</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="4">4</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="5">5</button>
+                            </div>
+                        </div>
+                        <div class="gov-eval-q" data-qid="gov-q3">
+                            <p class="text-xs text-gray-600 mb-2 font-medium">3. 地方創生：感受到本次活動對地方經濟與青農的支持？</p>
+                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="1">1</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="2">2</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="3">3</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="4">4</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="5">5</button>
+                            </div>
+                        </div>
+                        <div class="gov-eval-q" data-qid="gov-q4">
+                            <p class="text-xs text-gray-600 mb-2 font-medium">4. 實踐意願：未來願意在日常生活中持續落實永續行動？</p>
+                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="1">1</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="2">2</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="3">3</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="4">4</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="5">5</button>
+                            </div>
+                        </div>
+                        <div class="gov-eval-q" data-qid="gov-q5">
+                            <p class="text-xs text-gray-600 mb-2 font-medium">5. 系統體驗：使用本平台登錄數據的過程順暢？</p>
+                            <div class="number-rating flex justify-center gap-2 bg-white py-2 rounded-lg border border-gray-100 shadow-sm">
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="1">1</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="2">2</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="3">3</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="4">4</button>
+                                <button type="button" class="rating-btn w-8 h-8 rounded-full border border-gray-200 text-gray-400 font-bold text-sm flex items-center justify-center hover:border-blue-600 hover:text-blue-600 transition" data-val="5">5</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-gray-100 shrink-0 bg-white">
+                <button id="submit-gov-eval-btn" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition text-sm">
+                    提交評鑑並結算歸戶
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script: Combined Logic -->
+    <script type="module">
+        // ------------------------------------------------------------------
+        // 1. Firebase Logic & Data
+        // ------------------------------------------------------------------
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEH65YbNirj_IRmtsIJZS-HNEbsRBBsSQ", 
+            authDomain: "sustainable-tourism-65025.firebaseapp.com",
+            projectId: "sustainable-tourism-65025",
+            storageBucket: "sustainable-tourism-65025.firebasestorage.app",
+            messagingSenderId: "781325465882",
+            appId: "1:781325465882:web:9435b02bd618f0c16814a3",
+            measurementId: "G-SZJ1RX5QS4"
+        };
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let isOfflineMode = false;
+        let globalStatsRef, greenStatsDocRef, pageViewsDocRef, govGeneralDocRef, govProjectsColRef, networkCarbonDocRef, entProjectsColRef;
+
+        try {
+            const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
             
@@ -1104,24 +1208,21 @@
             
             govGeneralDocRef = doc(db, 'global_stats', 'gov_general');
             govProjectsColRef = collection(db, 'gov_projects');
-            networkCarbonDocRef = doc(db, 'global_stats', 'network_carbon'); // 新增：獨立全網減碳計數器
-            entProjectsColRef = collection(db, 'ent_projects'); // 新增：企業計畫集合
+            networkCarbonDocRef = doc(db, 'global_stats', 'network_carbon'); 
+            entProjectsColRef = collection(db, 'ent_projects'); 
             
-            // 處理匿名驗證
             onAuthStateChanged(auth, (user) => {
                 if(user) {
                     currentUser = user;
                     initGlobalCounters();
-                    recordPageView(); // 新增：連線成功後觸發瀏覽人次紀錄
+                    recordPageView(); 
                 } else {
                     currentUser = null;
                 }
             });
             
-            // 靜默處理登入錯誤，並精準提示需授權的網域
             signInAnonymously(auth).catch(e => {
                 console.warn(`[Firebase Auth 錯誤] 網域未授權: ${e.message}`);
-                // 僅在 Console 顯示提醒，不強制彈出視窗打斷體驗
                 isOfflineMode = true;
                 db = null;
                 currentUser = { uid: 'local_mode' };
@@ -2266,6 +2367,32 @@
 
                 if (db && !isOfflineMode) {
                     try {
+                        await setDoc(doc(govProjectsColRef, docId), newProj);
+                        alert('✅ 成功建立新計畫儀表板！參與者現在可於右側選單找到此計畫。');
+                        document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
+                        if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
+                        if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
+                        if(document.getElementById('host-proj-co-organizer')) document.getElementById('host-proj-co-organizer').value = '';
+                        document.getElementById('host-proj-remark').value = ''; document.getElementById('host-proj-budget').value = '';
+                        if(document.getElementById('host-proj-sroi')) document.getElementById('host-proj-sroi').value = '';
+                    } catch(e) {
+                        alert('建立失敗，請檢查網路連線或資料庫權限');
+                    }
+                } else {
+                    newProj.updatedAt = new Date();
+                    globalGovData.projects.unshift(newProj);
+                    renderGovDashboard();
+                    updateProjectDropdown();
+                    alert('【單機模式】已建立計畫儀表板！');
+                    document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
+                    if(document.getElementById('host-proj-supervisor')) document.getElementById('host-proj-supervisor').value = '';
+                    if(document.getElementById('host-proj-organizer')) document.getElementById('host-proj-organizer').value = '';
+                    if(document.getElementById('host-proj-co-organizer')) document.getElementById('host-proj-co-organizer').value = '';
+                    document.getElementById('host-proj-remark').value = ''; document.getElementById('host-proj-budget').value = '';
+                    if(document.getElementById('host-proj-sroi')) document.getElementById('host-proj-sroi').value = '';
+                }
+            });
+
             // 政府問卷 - 開啟 Modal
             document.getElementById('log-user-proj-btn')?.addEventListener('click', () => {
                 const selectEl = document.getElementById('user-proj-select');
