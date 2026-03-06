@@ -118,10 +118,13 @@
                         <p class="mt-2 text-sm font-medium text-gray-600">永續積分</p>
                     </div>
                 </div>
-                <div class="mt-6 text-center flex justify-center gap-4">
-                    <button id="download-cert-btn" class="px-6 py-2 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-full shadow hover:shadow-lg transition text-sm font-bold flex items-center justify-center">
-                        <i class="fas fa-award mr-2"></i> 下載永續旅遊證書
-                    </button>
+                <div class="mt-6 text-center flex flex-col items-center justify-center gap-2">
+                    <div class="flex justify-center gap-4">
+                        <button id="download-cert-btn" class="px-6 py-2 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-full shadow hover:shadow-lg transition text-sm font-bold flex items-center justify-center">
+                            <i class="fas fa-award mr-2"></i> 下載永續旅遊證書
+                        </button>
+                    </div>
+                    <p class="text-xs text-red-500 font-bold tracking-wide">(請於行程結束，永續數據歸戶前下載)</p>
                 </div>
             </div>
 
@@ -182,18 +185,35 @@
                  <button id="download-data-button" class="mb-6 px-6 py-3 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-lg hover:shadow-lg transition text-sm font-bold shadow">
                      <i class="fas fa-image mr-2"></i> 將最近紀錄匯出為圖片 (.png)
                  </button>
-                 <div class="text-sm text-gray-600 space-y-6 text-left md:text-center max-w-2xl mx-auto">
-                     <div>
-                         <h4 class="font-bold text-mori-forest mb-2 text-base">共同開發單位：</h4>
-                         <ul class="space-y-1">
-                             <li>社團法人南投縣水里鄉商圈創生共好協會</li>
-                             <li>社團法人南投縣青年農民永續發展協會</li>
-                             <li>水里里山基地</li>
-                         </ul>
+                 <div class="text-sm text-gray-600 space-y-6 text-left md:text-center max-w-4xl mx-auto">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+                         <div class="md:text-right border-b md:border-b-0 md:border-r border-gray-200 pb-4 md:pb-0 md:pr-12">
+                             <h4 class="font-bold text-mori-forest mb-3 text-base">共同開發單位：</h4>
+                             <ul class="space-y-1.5 text-sm">
+                                 <li>社團法人南投縣水里鄉商圈創生共好協會</li>
+                                 <li>社團法人南投縣青年農民永續發展協會</li>
+                                 <li>水里里山基地</li>
+                             </ul>
+                             <p class="text-xs text-mori-sage font-bold mt-3">#里山餐桌團隊 #水里青農</p>
+                         </div>
+                         <div class="md:text-left">
+                             <h4 class="font-bold text-blue-600 mb-3 text-base">教學與計畫支持網絡：</h4>
+                             <ul class="space-y-1.5 text-xs text-gray-500">
+                                 <li>國立臺灣大學USR <span class="font-bold text-blue-500">#水里營林區</span></li>
+                                 <li>農業部食農教育推廣計畫</li>
+                                 <li>農業部台中區農改場</li>
+                                 <li>農業部生物多樣性研究所</li>
+                                 <li>南投縣政府農業處</li>
+                                 <li>南投縣農會</li>
+                                 <li>水里鄉農會</li>
+                             </ul>
+                         </div>
                      </div>
-                     <div class="pt-4 border-t border-gray-200 text-xs text-gray-500 space-y-2 text-center">
+                     <div class="pt-6 border-t border-gray-200 text-xs text-gray-500 space-y-2 text-center">
                          <p>© 2026 水里永續共好聯盟。版權所有。</p>
-                         <p>開發者信箱: <a href="mailto:farmcmd@gmail.com" class="hover:text-mori-forest font-bold">farmcmd@gmail.com</a></p>
+                         <p>開發者信箱: <a href="mailto:farmcmd@gmail.com" class="hover:text-mori-forest font-bold transition text-gray-600">farmcmd@gmail.com</a> (企業客製專案洽談)</p>
+                         <p>V2.2，歡迎至 FACEBOOK 粉專 <a href="https://www.facebook.com/Satoyamadining" target="_blank" class="text-blue-500 hover:text-blue-700 font-bold transition">「里山餐桌」</a> 提出建議。</p>
+                         <p class="text-gray-400 mt-4 tracking-widest text-[10px]"><i class="fas fa-eye mr-1"></i>瀏覽人次: <span id="visitor-count" class="font-mono">1,024</span></p>
                      </div>
                  </div>
              </div>
@@ -381,6 +401,8 @@
                             <input type="text" id="host-proj-name" class="w-full p-2 border rounded-lg text-sm" placeholder="輸入計畫名稱 (必填)">
                             <input type="text" id="host-proj-event" class="w-full p-2 border rounded-lg text-sm" placeholder="輸入活動名稱 (必填)">
                             <input type="text" id="host-proj-supervisor" class="w-full p-2 border rounded-lg text-sm" placeholder="指導單位 (選填)">
+                            <input type="text" id="host-proj-organizer" class="w-full p-2 border rounded-lg text-sm" placeholder="主辦單位 (選填)">
+                            <input type="text" id="host-proj-coorganizer" class="w-full p-2 border rounded-lg text-sm" placeholder="協辦單位 (選填)">
                             <input type="number" id="host-proj-budget" class="w-full p-2 border rounded-lg text-sm" placeholder="活動投入預算 ($)">
                             <input type="number" step="0.01" id="host-proj-sroi" class="w-full p-2 border rounded-lg text-sm" placeholder="SROI值計算 (e.g. 1.95)">
                         </div>
@@ -424,7 +446,7 @@
             <div id="ent-eval-questions-container" class="space-y-6">
                 <!-- 企業 12 題 -->
                 <div class="eval-q" data-qid="q1"><p class="text-sm font-bold mb-2">1. 參與動機：永續ESG是否成為吸引您參加本次旅遊的主要原因？</p><div class="number-rating flex gap-2 justify-center"><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="1">1</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="2">2</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="3">3</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="4">4</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="5">5</button></div></div>
-                <div class="eval-q" data-qid="q2"><p class="text-sm font-bold mb-2">2. 前測認知：活動前，您對公司推動的 ESG 政策了解程度為何？</p><div class="number-rating flex gap-2 justify-center"><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="1">1</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="2">2</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="3">3</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="4">4</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="5">5</button></div></div>
+                <div class="eval-q" data-qid="q2"><p class="text-sm font-bold mb-2">2. 前測認知：活動前，您對公司推動的 ESG政策了解程度為何？</p><div class="number-rating flex gap-2 justify-center"><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="1">1</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="2">2</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="3">3</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="4">4</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="5">5</button></div></div>
                 <div class="eval-q" data-qid="q3"><p class="text-sm font-bold mb-2">3. 減碳行為轉化：增加了您在日常生活中實踐「減碳行動」的意願？</p><div class="number-rating flex gap-2 justify-center"><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="1">1</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="2">2</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="3">3</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="4">4</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="5">5</button></div></div>
                 <div class="eval-q" data-qid="q4"><p class="text-sm font-bold mb-2">4. 綠色消費認同：看到減碳/虛擬樹即時反饋，讓您更有成就感？</p><div class="number-rating flex gap-2 justify-center"><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="1">1</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="2">2</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="3">3</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="4">4</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="5">5</button></div></div>
                 <div class="eval-q" data-qid="q5"><p class="text-sm font-bold mb-2">5. 環境教育價值：您認為行程中的生態導覽具備足夠的教育深度？</p><div class="number-rating flex gap-2 justify-center"><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="1">1</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="2">2</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="3">3</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="4">4</button><button type="button" class="rating-btn w-10 h-10 border rounded-full font-bold" data-val="5">5</button></div></div>
@@ -1066,10 +1088,36 @@
             });
 
             document.getElementById('create-proj-btn')?.addEventListener('click', () => {
-                const name = document.getElementById('host-proj-name').value;
+                const name = document.getElementById('host-proj-name').value.trim();
+                const event = document.getElementById('host-proj-event').value.trim();
+                const supervisor = document.getElementById('host-proj-supervisor').value.trim();
+                const organizer = document.getElementById('host-proj-organizer').value.trim();
+                const coOrganizer = document.getElementById('host-proj-coorganizer').value.trim();
+                const budget = Number(document.getElementById('host-proj-budget').value) || 0;
+                const sroi = Number(document.getElementById('host-proj-sroi').value) || 0;
+
                 if(!name) return showToast('請輸入計畫名稱');
-                globalGovData.projects.unshift({ id: `gov_${Date.now()}`, name: name, eval_count: 0, total_score: 0, carbon: 0, green: 0 });
+                globalGovData.projects.unshift({ 
+                    id: `gov_${Date.now()}`, 
+                    name: name, 
+                    event: event,
+                    supervisor: supervisor,
+                    organizer: organizer,
+                    coOrganizer: coOrganizer,
+                    budget: budget,
+                    sroi: sroi,
+                    date: new Date().toLocaleDateString('zh-TW'),
+                    eval_count: 0, total_score: 0, carbon: 0, green: 0, updatedAt: new Date()
+                });
                 renderGovDashboard(); updateProjectDropdown(); showToast('建立成功！');
+
+                document.getElementById('host-proj-name').value = '';
+                document.getElementById('host-proj-event').value = '';
+                document.getElementById('host-proj-supervisor').value = '';
+                document.getElementById('host-proj-organizer').value = '';
+                document.getElementById('host-proj-coorganizer').value = '';
+                document.getElementById('host-proj-budget').value = '';
+                document.getElementById('host-proj-sroi').value = '';
             });
         }
 
@@ -1689,7 +1737,7 @@
                     li.className = `p-1 bg-white hover:bg-gray-100 rounded cursor-pointer text-xs flex justify-between items-center border ${activeStyle} transition`;
                     li.innerHTML = `<span class="font-bold text-gray-700 truncate mr-2">${poi.icon} ${displayName}</span> ${tagHtml}`;
                     
-                    li.onclick = () => window.openPoi(poi);
+                    li.onclick = () => openPoi(poi);
                     ul.appendChild(li);
                 });
                 d.appendChild(ul); c.appendChild(d);
@@ -1718,6 +1766,21 @@
             }
         };
 
+        function updateGlobalSummary() {
+            const allProjects = [...(globalGovData.projects || []), ...(globalEntData.projects || [])];
+            const totalCarbon = allProjects.reduce((sum, p) => sum + (Number(p.carbon) || 0), 0);
+            const totalGreen = allProjects.reduce((sum, p) => sum + (Number(p.green) || 0), 0);
+            const trees = Math.floor(totalCarbon / 1000); // 1000g = 1 棵樹
+
+            const carbonEl = document.getElementById('network-total-carbon-reduction');
+            const greenEl = document.getElementById('display-grand-total-green');
+            const treeEl = document.getElementById('trees-planted-count');
+
+            if(carbonEl) carbonEl.textContent = `${totalCarbon.toLocaleString(undefined, {minimumFractionDigits: 1})} g`;
+            if(greenEl) greenEl.textContent = `$${totalGreen.toLocaleString()}`;
+            if(treeEl) treeEl.textContent = trees.toLocaleString();
+        }
+
         function loadMockData() {
             if (globalEntData.projects.length === 0) {
                 globalEntData.projects = [{ 
@@ -1738,6 +1801,7 @@
                 }];
                 renderGovDashboard(); updateProjectDropdown();
             }
+            updateGlobalSummary();
         }
 
         function initGlobalCounters() {
@@ -1750,6 +1814,7 @@
                     if (projs.length > 0) {
                         globalGovData.projects = projs;
                         renderGovDashboard(); updateProjectDropdown();
+                        updateGlobalSummary();
                     }
                 });
                 onSnapshot(collection(db, 'ent_projects'), (snapshot) => {
@@ -1759,6 +1824,7 @@
                     if (projs.length > 0) {
                         globalEntData.projects = projs;
                         renderEntProjectsDashboard(); updateEntProjectDropdown();
+                        updateGlobalSummary();
                     }
                 });
             } catch(e) { console.log('初始化資料庫監聽失敗', e); }
