@@ -220,7 +220,7 @@
         </section>
 
         <!-- ======================================================== -->
-        <!-- 任務頁面 (地圖與計算區塊完整修復版) -->
+        <!-- 任務頁面 -->
         <!-- ======================================================== -->
         <section id="mission-page" class="page-section hidden">
              <div class="flex justify-between items-center mb-6">
@@ -235,7 +235,7 @@
              </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-                <!-- 地圖與計算核心區塊 (100%恢復) -->
+                <!-- 地圖與計算核心區塊 -->
                 <div class="lg:col-span-2 flex flex-col gap-4">
                     <div class="relative bg-white p-2 rounded-xl shadow-md border border-gray-200">
                          <!-- 地圖本體 -->
@@ -421,7 +421,7 @@
                         <h4 class="font-bold text-gray-800 mb-3 border-b pb-2">4. 登錄機關行程數據</h4>
                         <select id="gov-type-select" class="w-full p-2 border rounded-lg text-sm mb-3 bg-gray-50 focus:outline-none"><option value="中央政府機關">1. 中央政府機關</option><option value="地方政府">2. 地方政府</option></select>
                         <input type="text" id="gov-agency-name" class="w-full p-2 border rounded-lg text-sm mb-3 focus:outline-none" placeholder="輸入機關/單位名稱">
-                        <button id="log-gov-general-btn" class="w-full py-2 bg-gray-600 text-white rounded-lg font-bold text-sm hover:bg-gray-700 shadow">確認機關登錄 (無問卷)</button>
+                        <button id="log-gov-general-btn" class="w-full py-2 bg-gray-600 text-white rounded-lg font-bold text-sm hover:bg-gray-700 shadow transition">確認機關登錄 (累計至總指標並歸零)</button>
                     </div>
 
                     <div>
@@ -443,12 +443,20 @@
                     </div>
                 </div>
                 <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-gradient-to-br from-blue-50 to-white p-5 rounded-xl shadow border border-blue-100 text-center">
-                        <h4 class="font-bold text-blue-900 mb-4">永續政府總指標</h4>
-                        <p class="text-xs text-gray-500 font-bold mb-1">永續政府累計減碳量</p>
-                        <p id="gov-total-carbon-display" class="text-2xl font-bold text-green-600 mb-4">0 g</p>
-                        <p class="text-xs text-gray-500 font-bold mb-1">永續綠色消費評鑑數據</p>
-                        <p id="gov-total-green-display" class="text-2xl font-bold text-blue-600">$0</p>
+                    <div class="bg-gradient-to-br from-blue-50 to-white p-5 rounded-xl shadow border border-blue-100 text-center relative overflow-hidden">
+                        <div class="absolute -right-6 -top-6 text-6xl text-blue-100 opacity-50"><i class="fas fa-globe"></i></div>
+                        <h4 class="font-bold text-blue-900 mb-4 relative z-10">永續政府總指標</h4>
+                        
+                        <div class="mb-5 relative z-10">
+                            <p class="text-xs text-gray-500 font-bold mb-1">全計畫 + 一般機關 累計減碳量</p>
+                            <p id="gov-total-carbon-display" class="text-3xl font-bold text-green-600 font-mono tracking-tight">0 g</p>
+                        </div>
+                        
+                        <div class="relative z-10">
+                            <p class="text-xs text-gray-500 font-bold mb-1">全計畫 + 一般機關 綠色消費</p>
+                            <p id="gov-total-green-display" class="text-3xl font-bold text-blue-600 font-mono tracking-tight">$0</p>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-4 leading-tight relative z-10">包含選項1所有計畫卡片資料<br>以及選項4的一般機關登錄數據</p>
                     </div>
                 </div>
             </div>
@@ -724,7 +732,7 @@
             { categoryId: 4, id: 'poi1', name: '水里溪畔驛站', coords: { lat: 23.809799, lng: 120.849286 }, icon: '🌲', description: '營業時間上午8:00~17:00。<br>位於水里圖書館內的小憩咖啡座，適合做為永續行程的起點與中繼休閒去處。亦是社團法人水里鄉商圈創生共好協會總部。', esgEligible: true, fbUrl: "https://www.facebook.com/profile.php?id=100076220760859" },
             { categoryId: 4, id: 'poi25', name: '國立臺灣大學實驗林-水里營林區', coords: { lat: 23.814313377006552, lng: 120.85343561499427 }, icon: '🏛️', description: '業務活動: 除造林與資源保育、研究與教育外，推動里山倡議及大學社會責任等活動。', fbUrl: "https://www.facebook.com/xitou.nature.education?locale=zh_TW" },
 
-            // Category 1: 里山餐桌團隊 (已依照指定排序)
+            // Category 1: 里山餐桌團隊
             { categoryId: 1, id: 'poi12', name: '湧健酪梨園/梅園 SROI (✓)', coords: { lat: 23.725349, lng: 120.846123 }, icon: '🥑', description: '生產: 酪梨、青梅、梅精<br>特定活動: 酪酪找生態 / 6小時 / 收費1299/人 / 含午餐、生態導覽、土壤觀察/DIY活動/沉浸式數位導覽應用<br>協作單位: 里山餐桌團隊<br>預約活動: 食農教育、生態導覽', esgEligible: true, fbUrl: "https://www.facebook.com/profile.php?id=100085673588742&locale=zh_TW" },
             { categoryId: 1, id: 'poi11', name: '阿爾喜莊園 SROI (✓)', coords: { lat: 23.803119, lng: 120.926340 }, icon: '🍋', description: '生產: 檸檬、國蘭<br>特定活動: 瓜呱報生態 / 6小時 / 收費1299/人 / 含午餐、生態導覽、設施導覽/DIY活動/沉浸式數位導覽應用<br>協作單位: 里山餐桌團隊<br>預約活動: 食農教育、生態導覽、循環經濟教學', esgEligible: true, fbUrl: "https://www.facebook.com/AHEIemon?locale=zh_TW" },
             { categoryId: 1, id: 'poi10', name: '雨社山下 SROI (✓)', coords: { lat: 23.790644, lng: 120.896569 }, icon: '🥒', description: '生產: 絲瓜、石虎蓮霧<br>特定活動: 瓜呱報生態 / 6小時 / 收費1299/人 / 含午餐、生態導覽、河堤生態導覽/DIY活動/沉浸式數位導覽應用<br>協作單位: 里山餐桌團隊<br>預約活動: 食農教育、生態導覽', esgEligible: true, fbUrl: "https://www.facebook.com/YusheLand?locale=zh_TW" },
@@ -781,7 +789,7 @@
         // 2. 狀態變數 (State)
         // ==========================================
         let state = { totalMileage: 0, totalCarbon: 0, totalScore: 0, playerName: '', playerCode: '', greenProcure: 0, sroiProcure: 0, projectProcure: 0, activityLogs: [], checkoutHistory: [], currentTransport: null };
-        let globalGovData = { totalCarbon: 0, totalGreen: 0, projects: [] };
+        let globalGovData = { projects: [], generalStats: { carbon: 0, green: 0 } };
         let globalEntData = { projects: [] };
         let selectedStart = null, selectedEnd = null, currentModalPoi = null, pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false };
         let mapInitialized = false;
@@ -924,13 +932,11 @@
                 const green = state.greenProcure || 0;
                 const sroi = Math.floor(state.sroiProcure || 0);
                 
-                // 取最新 5 筆行動紀錄避免破版
                 const logs = (state.activityLogs || []).slice(0, 5);
                 const logsHtml = logs.length > 0 
                     ? logs.map(l => `<div class="text-[11px] mb-1.5"><span class="text-mori-forest font-bold">${l.time}</span> ${l.text}</div>`).join('')
                     : '<div class="text-[11px] text-gray-400 mt-1">尚無紀錄</div>';
 
-                // 取最新 4 筆結算紀錄
                 const checkouts = (state.checkoutHistory || []).slice(0, 4);
                 const checkoutsHtml = checkouts.length > 0
                     ? checkouts.map(c => `<div class="text-[11px] mb-1.5 leading-tight"><span class="font-bold text-gray-700">${c.target}</span><br><span class="text-gray-500">減碳 ${c.carbon}g | 綠消 $${c.green}</span></div>`).join('')
@@ -1068,7 +1074,6 @@
         // 核心事件綁定區塊
         // ========================================================
         function bindEnterpriseFlow() {
-            // 保存數據引導鈕
             document.querySelectorAll('.save-data-redirect-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
@@ -1130,10 +1135,26 @@
             document.getElementById('create-ent-proj-btn')?.addEventListener('click', async () => {
                 const orgName = document.getElementById('ent-create-org').value.trim();
                 const eventName = document.getElementById('ent-create-event').value.trim();
+                const websiteUrl = document.getElementById('ent-create-website').value.trim();
+                const year = document.getElementById('ent-create-year').value.trim();
+                const remark = document.getElementById('ent-create-remark').value.trim();
+                const projType = document.getElementById('ent-create-proj-type').value;
+                const projAmount = Number(document.getElementById('ent-create-proj-amount').value) || 0;
+                const projSroi = Number(document.getElementById('ent-create-proj-sroi').value) || 1;
+
                 if(!orgName) return showToast('請輸入企業名稱');
                 
                 const newId = `ent_${Date.now()}`;
-                const newProj = { id: newId, orgName, event: eventName, eval_count: 0, total_score: 0, carbon: 0, green: 0, updatedAt: new Date() };
+                const newProj = { 
+                    id: newId, 
+                    orgName, 
+                    event: eventName, 
+                    websiteUrl, 
+                    year, 
+                    remark,
+                    linkedProject: projAmount > 0 ? { type: projType, amount: projAmount, sroiWeight: projSroi } : null,
+                    eval_count: 0, total_score: 0, carbon: 0, green: 0, updatedAt: new Date() 
+                };
 
                 if (!isOfflineMode && db) {
                     try { await setDoc(doc(db, 'ent_projects', newId), newProj); } catch(e) { console.error(e); }
@@ -1185,16 +1206,63 @@
                 addLog(`✅ 計畫歸戶：數據歸戶至 ${selectedProj.name}`);
                 resetStats(); document.getElementById('gov-eval-modal').classList.add('hidden');
                 renderGovDashboard(); renderCheckoutHistory();
+                updateGovModalSummary();
+            });
+
+            document.getElementById('log-gov-general-btn')?.addEventListener('click', async () => {
+                const agencyName = document.getElementById('gov-agency-name').value.trim() || '未具名機關';
+                const govType = document.getElementById('gov-type-select').value;
+                const carbon = state.totalCarbon || 0;
+                const green = (state.greenProcure || 0) + (state.sroiProcure || 0) + (state.projectProcure || 0);
+
+                if (carbon === 0 && green === 0) return window.showToast('目前無可歸戶的永續數據！');
+
+                if (!state.checkoutHistory) state.checkoutHistory = [];
+                state.checkoutHistory.unshift({ time: new Date().toLocaleTimeString('zh-TW'), target: `[機關] ${govType}-${agencyName}`, carbon: carbon.toFixed(1), green: green });
+
+                if (!isOfflineMode && db) {
+                    try { 
+                        await setDoc(doc(db, 'gov_stats', 'general'), { 
+                            carbon: increment(carbon), 
+                            green: increment(green), 
+                            updatedAt: serverTimestamp() 
+                        }, { merge: true }); 
+                    } catch(e) { console.error("一般機關登錄失敗", e); window.showToast("資料庫連線失敗"); return;}
+                } else {
+                    globalGovData.generalStats.carbon = (globalGovData.generalStats.carbon || 0) + carbon;
+                    globalGovData.generalStats.green = (globalGovData.generalStats.green || 0) + green;
+                }
+
+                addLog(`✅ 機關歸戶：數據累計至 ${govType}-${agencyName}`);
+                resetStats(); 
+                window.showToast('機關行程數據已成功登錄至總指標！');
+                document.getElementById('gov-agency-name').value = '';
+                renderCheckoutHistory();
+                updateGovModalSummary();
+                updateGlobalSummary();
             });
 
             document.getElementById('create-proj-btn')?.addEventListener('click', async () => {
                 const name = document.getElementById('host-proj-name').value.trim();
+                const event = document.getElementById('host-proj-event').value.trim();
+                const supervisor = document.getElementById('host-proj-supervisor').value.trim();
+                const organizer = document.getElementById('host-proj-organizer').value.trim();
+                const coOrganizer = document.getElementById('host-proj-coorganizer').value.trim();
+                const budget = Number(document.getElementById('host-proj-budget').value) || 0;
+                const sroi = Number(document.getElementById('host-proj-sroi').value) || 0;
+
                 if(!name) return showToast('請輸入計畫名稱');
                 
                 const newId = `gov_${Date.now()}`;
                 const newProj = { 
                     id: newId, 
                     name, 
+                    event,
+                    supervisor,
+                    organizer,
+                    coOrganizer,
+                    budget,
+                    sroi,
                     date: new Date().toLocaleDateString('zh-TW'),
                     eval_count: 0, total_score: 0, carbon: 0, green: 0, updatedAt: new Date()
                 };
@@ -1238,7 +1306,7 @@
                 document.getElementById('sustainable-action-log').value = ''; updateDisplays(); window.showToast('心得紀錄成功！');
             });
 
-            // --- 綠色消費計算機 動態互動與加總 ---
+            // 綠色消費計算機 動態互動與加總
             const qtyInput = document.getElementById('green-qty');
             const priceInput = document.getElementById('green-price');
             const totalDisplay = document.getElementById('green-total-display');
@@ -1320,7 +1388,6 @@
             document.getElementById('set-as-start-button')?.addEventListener('click', () => { selectedStart = currentModalPoi; updateTripDisplay(); renderPoiList(); document.getElementById('poi-modal').classList.add('hidden'); });
             document.getElementById('set-as-end-button')?.addEventListener('click', () => { selectedEnd = currentModalPoi; updateTripDisplay(); renderPoiList(); document.getElementById('poi-modal').classList.add('hidden'); });
 
-            // 修復：完美綁定「預覽路線」計算邏輯
             document.getElementById('preview-trip-button')?.addEventListener('click', () => {
                 const status = document.getElementById('trip-calculation-status');
                 const confirmBtn = document.getElementById('confirm-trip-button');
@@ -1389,7 +1456,6 @@
         function renderMap() {
             if (!window.google || mapInitialized) return;
             const mapEl = document.getElementById('map');
-            // 若寬度為 0 代表 DOM 尚未展開，延遲 100ms 後自動重試
             if(!mapEl || mapEl.offsetWidth === 0) {
                 setTimeout(renderMap, 100);
                 return; 
@@ -1596,15 +1662,8 @@
                     if (pwd !== 'mori2025') { if (pwd !== null) window.showToast('密碼錯誤'); return; }
                     if (!confirm(`確定要永久刪除「${proj.name}」嗎？`)) return;
                     
-                    // 修正：增加對 mock 假資料的判定，若為假資料直接走本地刪除
                     if (db && !isOfflineMode && !proj.id.startsWith('mock_')) {
-                        try { 
-                            await deleteDoc(doc(db, 'gov_projects', proj.id)); 
-                            window.showToast('已刪除！'); 
-                        } catch(err) { 
-                            console.error(err);
-                            window.showToast('刪除失敗，請檢查權限設定'); 
-                        }
+                        try { await deleteDoc(doc(db, 'gov_projects', proj.id)); window.showToast('已刪除！'); } catch(err) { window.showToast('刪除失敗'); }
                     } else {
                         globalGovData.projects = globalGovData.projects.filter(p => p.id !== proj.id);
                         renderGovDashboard(); updateProjectDropdown(); window.showToast('已刪除！');
@@ -1788,15 +1847,11 @@
                     if (pwd !== 'mori2025') { if (pwd !== null) window.showToast('密碼錯誤'); return; }
                     if (!confirm(`確定要永久刪除「${proj.orgName}」嗎？`)) return;
                     
-                    // 修正：增加對 mock 假資料的判定，若為假資料直接走本地刪除
                     if (db && !isOfflineMode && !proj.id.startsWith('mock_')) {
                         try {
                             await deleteDoc(doc(db, 'ent_projects', proj.id));
                             window.showToast('已刪除！');
-                        } catch(err) { 
-                            console.error(err);
-                            window.showToast('刪除失敗，請檢查權限設定'); 
-                        }
+                        } catch(err) { window.showToast('刪除失敗'); }
                     } else {
                         globalEntData.projects = globalEntData.projects.filter(p => p.id !== proj.id);
                         renderEntProjectsDashboard(); updateEntProjectDropdown(); window.showToast('已刪除！');
@@ -1899,7 +1954,7 @@
                     li.className = `p-1 bg-white hover:bg-gray-100 rounded cursor-pointer text-xs flex justify-between items-center border ${activeStyle} transition`;
                     li.innerHTML = `<span class="font-bold text-gray-700 truncate mr-2">${poi.icon} ${displayName}</span> ${tagHtml}`;
                     
-                    li.onclick = () => openPoi(poi);
+                    li.onclick = () => window.openPoi(poi);
                     ul.appendChild(li);
                 });
                 d.appendChild(ul); c.appendChild(d);
@@ -1931,10 +1986,32 @@
             }
         };
 
+        // 新增：更新「永續政府專區」內的總指標看板
+        function updateGovModalSummary() {
+            const projectsCarbon = globalGovData.projects.reduce((sum, p) => sum + (Number(p.carbon) || 0), 0);
+            const projectsGreen = globalGovData.projects.reduce((sum, p) => sum + (Number(p.green) || 0), 0);
+            const generalCarbon = Number(globalGovData.generalStats?.carbon || 0);
+            const generalGreen = Number(globalGovData.generalStats?.green || 0);
+
+            const totalCarbon = projectsCarbon + generalCarbon;
+            const totalGreen = projectsGreen + generalGreen;
+
+            const cDisp = document.getElementById('gov-total-carbon-display');
+            const gDisp = document.getElementById('gov-total-green-display');
+            if (cDisp) cDisp.textContent = `${totalCarbon.toLocaleString(undefined, {minimumFractionDigits: 1})} g`;
+            if (gDisp) gDisp.textContent = `$${totalGreen.toLocaleString()}`;
+        }
+
+        // 修改：首頁全網總指標，將一般機關數據一併加總
         function updateGlobalSummary() {
             const allProjects = [...(globalGovData.projects || []), ...(globalEntData.projects || [])];
-            const totalCarbon = allProjects.reduce((sum, p) => sum + (Number(p.carbon) || 0), 0);
-            const totalGreen = allProjects.reduce((sum, p) => sum + (Number(p.green) || 0), 0);
+            let totalCarbon = allProjects.reduce((sum, p) => sum + (Number(p.carbon) || 0), 0);
+            let totalGreen = allProjects.reduce((sum, p) => sum + (Number(p.green) || 0), 0);
+            
+            // 加上政府模組的一般機關登錄數據
+            totalCarbon += Number(globalGovData.generalStats?.carbon || 0);
+            totalGreen += Number(globalGovData.generalStats?.green || 0);
+
             const trees = Math.floor(totalCarbon / 1000); // 1000g = 1 棵樹
 
             const carbonEl = document.getElementById('network-total-carbon-reduction');
@@ -1964,32 +2041,49 @@
                     supervisor: '農業部', organizer: '南投縣政府',
                     carbon: 3200, green: 15000, eval_count: 10, total_score: 480 
                 }];
+                // 預設給予一些機關累計數據以供展示
+                globalGovData.generalStats = { carbon: 450.5, green: 3500 };
                 renderGovDashboard(); updateProjectDropdown();
             }
+            updateGovModalSummary();
             updateGlobalSummary();
         }
 
         function initGlobalCounters() {
             if (!db) return;
             try {
+                // 監聽 1. 政府計畫卡片庫
                 onSnapshot(collection(db, 'gov_projects'), (snapshot) => {
                     const projs = [];
                     snapshot.forEach(docSnap => projs.push({ id: docSnap.id, ...docSnap.data() }));
                     projs.sort((a,b) => (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0));
-                    // 修正：移除 length > 0 的限制，允許空陣列清空畫面
                     globalGovData.projects = projs;
                     renderGovDashboard(); updateProjectDropdown();
+                    updateGovModalSummary();
                     updateGlobalSummary();
                 });
+                
+                // 監聽 2. 企業計畫卡片庫
                 onSnapshot(collection(db, 'ent_projects'), (snapshot) => {
                     const projs = [];
                     snapshot.forEach(docSnap => projs.push({ id: docSnap.id, ...docSnap.data() }));
                     projs.sort((a,b) => (b.updatedAt?.toMillis?.() || 0) - (a.updatedAt?.toMillis?.() || 0));
-                    // 修正：移除 length > 0 的限制，允許空陣列清空畫面
                     globalEntData.projects = projs;
                     renderEntProjectsDashboard(); updateEntProjectDropdown();
                     updateGlobalSummary();
                 });
+
+                // 監聽 3. 政府一般機關聚合數據 (選項4)
+                onSnapshot(doc(db, 'gov_stats', 'general'), (docSnap) => {
+                    if (docSnap.exists()) {
+                        globalGovData.generalStats = docSnap.data();
+                    } else {
+                        globalGovData.generalStats = { carbon: 0, green: 0 };
+                    }
+                    updateGovModalSummary();
+                    updateGlobalSummary();
+                });
+
             } catch(e) { console.log('初始化資料庫監聽失敗', e); }
         }
 
