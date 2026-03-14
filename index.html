@@ -3068,6 +3068,66 @@
             }
         }
 
+        // 新增：載入系統廣播與最新活動資訊的非同步函式
+        async function loadDynamicContent() {
+            // 1. 廣播資訊邏輯
+            const broadcastBar = document.getElementById('system-broadcast-bar');
+            const broadcastText = document.getElementById('system-broadcast-text');
+            
+            // 預留 API 串接空間：未來可替換為 fetch(Google Apps Script) 或 Firebase 讀取
+            const mockBroadcast = "🌱 歡迎來到探探里山！本月新增「單人自駕」碳排基準計算，請多加利用大眾運輸響應減碳！";
+            
+            if (broadcastBar && broadcastText) {
+                broadcastText.innerHTML = mockBroadcast;
+                broadcastBar.classList.remove('hidden');
+            }
+
+            // 2. 最新活動資訊邏輯
+            const modalContainer = document.getElementById('event-schedule-container');
+            const inlineContainer = document.getElementById('inline-event-schedule-container');
+            
+            // 模擬活動資料陣列 (未來可替換為真實後端數據)
+            const mockEvents = [
+                { id: 'ev1', title: '2026 里山春季生態導覽', date: '2026-04-15', status: '報名中', tagColor: 'green', url: '#', desc: '由在地青農帶領，深入水里營林區探索春季特有生態與林業文化。' },
+                { id: 'ev2', title: '低碳食農小學堂：手作梅精', date: '2026-05-01', status: '即將額滿', tagColor: 'orange', url: '#', desc: '利用在地無毒青梅，學習傳統手作梅精與減碳知識，適合親子共學。' },
+                { id: 'ev3', title: '星光市集 x 永續餐桌', date: '2026-05-15', status: '開放中', tagColor: 'blue', url: '#', desc: '集結在地小農的無塑市集，提供當季食材打造的永續低碳晚餐。' }
+            ];
+
+            // 解決 Tailwind 動態 Class 渲染問題的輔助函式
+            const getTagClasses = (color) => {
+                const maps = {
+                    green: 'bg-green-100 text-green-800 border-green-200',
+                    orange: 'bg-orange-100 text-orange-800 border-orange-200',
+                    blue: 'bg-blue-100 text-blue-800 border-blue-200',
+                    default: 'bg-gray-100 text-gray-800 border-gray-200'
+                };
+                return maps[color] || maps.default;
+            };
+
+            const renderEvents = (container) => {
+                if (!container) return;
+                if (mockEvents.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">目前尚無最新活動</div>';
+                    return;
+                }
+                
+                container.innerHTML = mockEvents.map(ev => `
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition group text-left">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="${getTagClasses(ev.tagColor)} text-[10px] font-bold px-2 py-0.5 rounded border">${ev.status}</span>
+                            <span class="text-xs text-gray-500 font-bold"><i class="fas fa-calendar-alt mr-1"></i>${ev.date}</span>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1 group-hover:text-mori-forest transition">${ev.title}</h4>
+                        <p class="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">${ev.desc}</p>
+                        <a href="${ev.url}" target="_blank" class="block text-center text-xs font-bold text-mori-forest bg-mori-light py-1.5 rounded hover:bg-mori-sage hover:text-white transition shadow-sm border border-mori-sage/20">前往報名 / 詳情</a>
+                    </div>
+                `).join('');
+            };
+
+            renderEvents(modalContainer);
+            renderEvents(inlineContainer);
+        }
+
         const loadGoogleMaps = () => {
             if(document.querySelector('script[src*="maps.googleapis.com"]')) return;
             const script = document.createElement('script');
@@ -3235,6 +3295,8 @@
         renderPoiList();
         renderSroiOptions();
         renderCityOptions();
+        
+        loadDynamicContent(); // 啟動廣播與活動資訊撈取
         
         initFirebase();
         loadGoogleMaps();
