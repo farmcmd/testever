@@ -1784,57 +1784,64 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>結算生成中...';
                 
-                if (!state.checkoutHistory) state.checkoutHistory = [];
-                state.checkoutHistory.unshift({ time: new Date().toLocaleTimeString('zh-TW'), target: `[企業] ${selectedProj.orgName}`, carbon: Math.round(carbon), green: green });
-                window.addLog(`✅ 企業歸戶：數據歸戶至 ${selectedProj.orgName}`);
+                try {
+                    if (!state.checkoutHistory) state.checkoutHistory = [];
+                    state.checkoutHistory.unshift({ time: new Date().toLocaleTimeString('zh-TW'), target: `[企業] ${selectedProj.orgName}`, carbon: Math.round(carbon), green: green });
+                    window.addLog(`✅ 企業歸戶：數據歸戶至 ${selectedProj.orgName}`);
 
-                // 執行自動下載證書
-                await window.generateAndDownloadCertificate(true, `【企業專案】${selectedProj.orgName}`);
-
-                // 寫入雲端資料庫 (包含以 arrayUnion 寫入意見陣列)
-                const feedbackObj = feedbackText.trim() !== '' ? {
-                    text: feedbackText.trim(),
-                    user: document.getElementById('player-name')?.value || '匿名',
-                    code: document.getElementById('player-code')?.textContent || '',
-                    time: new Date().toISOString()
-                } : null;
-
-                if (!isOfflineMode && db && typeof arrayUnion === 'function') {
-                    try { 
-                        const updateData = { 
-                            carbon: increment(carbon), 
-                            green: increment(green), 
-                            total_score: increment(sum), 
-                            eval_count: increment(1), 
-                            updatedAt: serverTimestamp() 
-                        };
-                        
-                        // 若有填寫心得，則寫入陣列
-                        if (feedbackObj) {
-                            updateData.feedbacks = arrayUnion(feedbackObj);
-                        }
-                        
-                        await setDoc(doc(db, 'ent_projects', projId), updateData, { merge: true }); 
-                    } catch(err) { console.error(err); }
-                } else {
-                    // 離線模式或預覽模式下的本地暫存邏輯 (確保預覽畫面也會更新)
-                    selectedProj.eval_count = (selectedProj.eval_count || 0) + 1;
-                    selectedProj.total_score = (selectedProj.total_score || 0) + sum;
-                    selectedProj.carbon = (selectedProj.carbon || 0) + carbon;
-                    selectedProj.green = (selectedProj.green || 0) + green;
-                    if (feedbackObj) {
-                        if (!selectedProj.feedbacks) selectedProj.feedbacks = [];
-                        selectedProj.feedbacks.unshift(feedbackObj);
+                    // 執行自動下載證書
+                    if(typeof window.generateAndDownloadCertificate === 'function') {
+                        await window.generateAndDownloadCertificate(true, `【企業專案】${selectedProj.orgName}`);
                     }
-                }
 
-                resetStats(); document.getElementById('ent-eval-modal').classList.add('hidden');
-                // 清空輸入框
-                if(document.getElementById('ent-eval-feedback')) document.getElementById('ent-eval-feedback').value = '';
-                renderEntProjectsDashboard(); renderCheckoutHistory();
-                
-                btn.disabled = false;
-                btn.innerHTML = '確認結算歸戶';
+                    // 寫入雲端資料庫 (包含以 arrayUnion 寫入意見陣列)
+                    const feedbackObj = feedbackText.trim() !== '' ? {
+                        text: feedbackText.trim(),
+                        user: document.getElementById('player-name')?.value || '匿名',
+                        code: document.getElementById('player-code')?.textContent || '',
+                        time: new Date().toISOString()
+                    } : null;
+
+                    if (!isOfflineMode && db && typeof arrayUnion === 'function') {
+                        try { 
+                            const updateData = { 
+                                carbon: increment(carbon), 
+                                green: increment(green), 
+                                total_score: increment(sum), 
+                                eval_count: increment(1), 
+                                updatedAt: serverTimestamp() 
+                            };
+                            
+                            // 若有填寫心得，則寫入陣列
+                            if (feedbackObj) {
+                                updateData.feedbacks = arrayUnion(feedbackObj);
+                            }
+                            
+                            await setDoc(doc(db, 'ent_projects', projId), updateData, { merge: true }); 
+                        } catch(err) { console.error(err); }
+                    } else {
+                        // 離線模式或預覽模式下的本地暫存邏輯 (確保預覽畫面也會更新)
+                        selectedProj.eval_count = (selectedProj.eval_count || 0) + 1;
+                        selectedProj.total_score = (selectedProj.total_score || 0) + sum;
+                        selectedProj.carbon = (selectedProj.carbon || 0) + carbon;
+                        selectedProj.green = (selectedProj.green || 0) + green;
+                        if (feedbackObj) {
+                            if (!selectedProj.feedbacks) selectedProj.feedbacks = [];
+                            selectedProj.feedbacks.unshift(feedbackObj);
+                        }
+                    }
+
+                    resetStats(); document.getElementById('ent-eval-modal').classList.add('hidden');
+                    // 清空輸入框
+                    if(document.getElementById('ent-eval-feedback')) document.getElementById('ent-eval-feedback').value = '';
+                    renderEntProjectsDashboard(); renderCheckoutHistory();
+                } catch(e) {
+                    console.error("企業歸戶錯誤:", e);
+                    window.showToast("結算過程發生異常，請重試");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '確認結算歸戶';
+                }
             });
 
             document.getElementById('create-ent-proj-btn')?.addEventListener('click', async () => {
@@ -1919,58 +1926,65 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>結算生成中...';
 
-                if (!state.checkoutHistory) state.checkoutHistory = [];
-                state.checkoutHistory.unshift({ time: new Date().toLocaleTimeString('zh-TW'), target: `[計畫] ${selectedProj.name}`, carbon: Math.round(carbon), green: green });
-                window.addLog(`✅ 計畫歸戶：數據歸戶至 ${selectedProj.name}`);
-                
-                // 執行自動下載證書
-                await window.generateAndDownloadCertificate(true, `【政府計畫】${selectedProj.name}`);
-
-                // 寫入雲端資料庫 (包含以 arrayUnion 寫入意見陣列)
-                const feedbackObj = feedbackText.trim() !== '' ? {
-                    text: feedbackText.trim(),
-                    user: document.getElementById('player-name')?.value || '匿名',
-                    code: document.getElementById('player-code')?.textContent || '',
-                    time: new Date().toISOString()
-                } : null;
-
-                if (!isOfflineMode && db && typeof arrayUnion === 'function') {
-                    try { 
-                        const updateData = { 
-                            carbon: increment(carbon), 
-                            green: increment(green), 
-                            total_score: increment(sum), 
-                            eval_count: increment(1), 
-                            updatedAt: serverTimestamp() 
-                        };
-                        
-                        // 若有填寫心得，則寫入陣列
-                        if (feedbackObj) {
-                            updateData.feedbacks = arrayUnion(feedbackObj);
-                        }
-
-                        await setDoc(doc(db, 'gov_projects', projId), updateData, { merge: true }); 
-                    } catch(err) { console.error(err); }
-                } else {
-                    // 離線模式或預覽模式下的本地暫存邏輯
-                    selectedProj.eval_count = (selectedProj.eval_count || 0) + 1;
-                    selectedProj.total_score = (selectedProj.total_score || 0) + sum;
-                    selectedProj.carbon = (selectedProj.carbon || 0) + carbon;
-                    selectedProj.green = (selectedProj.green || 0) + green;
-                    if (feedbackObj) {
-                        if (!selectedProj.feedbacks) selectedProj.feedbacks = [];
-                        selectedProj.feedbacks.unshift(feedbackObj);
+                try {
+                    if (!state.checkoutHistory) state.checkoutHistory = [];
+                    state.checkoutHistory.unshift({ time: new Date().toLocaleTimeString('zh-TW'), target: `[計畫] ${selectedProj.name}`, carbon: Math.round(carbon), green: green });
+                    window.addLog(`✅ 計畫歸戶：數據歸戶至 ${selectedProj.name}`);
+                    
+                    // 執行自動下載證書
+                    if(typeof window.generateAndDownloadCertificate === 'function') {
+                        await window.generateAndDownloadCertificate(true, `【政府計畫】${selectedProj.name}`);
                     }
+
+                    // 寫入雲端資料庫 (包含以 arrayUnion 寫入意見陣列)
+                    const feedbackObj = feedbackText.trim() !== '' ? {
+                        text: feedbackText.trim(),
+                        user: document.getElementById('player-name')?.value || '匿名',
+                        code: document.getElementById('player-code')?.textContent || '',
+                        time: new Date().toISOString()
+                    } : null;
+
+                    if (!isOfflineMode && db && typeof arrayUnion === 'function') {
+                        try { 
+                            const updateData = { 
+                                carbon: increment(carbon), 
+                                green: increment(green), 
+                                total_score: increment(sum), 
+                                eval_count: increment(1), 
+                                updatedAt: serverTimestamp() 
+                            };
+                            
+                            // 若有填寫心得，則寫入陣列
+                            if (feedbackObj) {
+                                updateData.feedbacks = arrayUnion(feedbackObj);
+                            }
+
+                            await setDoc(doc(db, 'gov_projects', projId), updateData, { merge: true }); 
+                        } catch(err) { console.error(err); }
+                    } else {
+                        // 離線模式或預覽模式下的本地暫存邏輯
+                        selectedProj.eval_count = (selectedProj.eval_count || 0) + 1;
+                        selectedProj.total_score = (selectedProj.total_score || 0) + sum;
+                        selectedProj.carbon = (selectedProj.carbon || 0) + carbon;
+                        selectedProj.green = (selectedProj.green || 0) + green;
+                        if (feedbackObj) {
+                            if (!selectedProj.feedbacks) selectedProj.feedbacks = [];
+                            selectedProj.feedbacks.unshift(feedbackObj);
+                        }
+                    }
+                    
+                    resetStats(); document.getElementById('gov-eval-modal').classList.add('hidden');
+                    // 清空輸入框
+                    if(document.getElementById('gov-eval-feedback')) document.getElementById('gov-eval-feedback').value = '';
+                    renderGovDashboard(); renderCheckoutHistory();
+                    updateGovModalSummary();
+                } catch(e) {
+                    console.error("政府計畫歸戶錯誤:", e);
+                    window.showToast("結算過程發生異常，請重試");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '確認結算歸戶';
                 }
-                
-                resetStats(); document.getElementById('gov-eval-modal').classList.add('hidden');
-                // 清空輸入框
-                if(document.getElementById('gov-eval-feedback')) document.getElementById('gov-eval-feedback').value = '';
-                renderGovDashboard(); renderCheckoutHistory();
-                updateGovModalSummary();
-                
-                btn.disabled = false;
-                btn.innerHTML = '確認結算歸戶';
             });
 
             document.getElementById('log-gov-general-btn')?.addEventListener('click', async (e) => {
@@ -3047,6 +3061,13 @@
             if(sel) sel.innerHTML = sroiUnits.map(u => `<option value="${u.weight}">${u.name} (x${u.weight})</option>`).join('');
         }
 
+        function renderCityOptions() {
+            const sel = document.getElementById('city-select');
+            if(sel) {
+                sel.innerHTML = '<option value="">-- 請選擇縣市 --</option>' + taiwanCities.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            }
+        }
+
         const loadGoogleMaps = () => {
             if(document.querySelector('script[src*="maps.googleapis.com"]')) return;
             const script = document.createElement('script');
@@ -3209,9 +3230,11 @@
         bindGovernmentFlow();
         bindStarRatings();
         bindMapAndActions();
+        bindDownloadEvents(); 
         renderTransportButtons();
         renderPoiList();
         renderSroiOptions();
+        renderCityOptions();
         
         initFirebase();
         loadGoogleMaps();
