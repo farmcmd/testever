@@ -89,8 +89,11 @@
             <p class="mt-2 text-[10px] md:text-xs font-light tracking-wider opacity-90">~ 探索里山的生活方式，學習低碳永續 ~</p>
             
             <div class="mt-6 flex flex-wrap justify-center gap-3">
-                <button id="event-schedule-btn" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-white text-sm font-bold rounded-full shadow-lg border-2 border-yellow-300 flex items-center transition-all">
+                <!-- 修改：加入 relative 以定位紅點 badge -->
+                <button id="event-schedule-btn" class="relative px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-white text-sm font-bold rounded-full shadow-lg border-2 border-yellow-300 flex items-center transition-all">
                     <i class="fas fa-calendar-alt mr-2"></i> 最新活動與報名
+                    <!-- 新增：未讀數量紅點提示 -->
+                    <span id="event-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full shadow-md border-2 border-white hidden">0</span>
                 </button>
             </div>
 
@@ -262,7 +265,7 @@
 
         let state = { totalMileage: 0, totalCarbon: 0, totalScore: 0, playerName: '', playerCode: '', currentTransport: null };
         let db, auth, isOfflineMode = false;
-        let globalAbsolute = { carbon: 0, green: 0, visitor_count: 0 }; // 增加 visitor_count 預設
+        let globalAbsolute = { carbon: 0, green: 0, visitor_count: 0 };
 
         const pois = [
             { categoryId: 4, id: 'poi1', name: '水里溪畔驛站', coords: { lat: 23.809799, lng: 120.849286 }, icon: '🌲', description: '水里鄉商圈創生共好協會總部。' },
@@ -309,18 +312,17 @@
         function updateGlobalSummary() {
             const carbonEl = document.getElementById('network-total-carbon-reduction');
             const treeEl = document.getElementById('trees-planted-count');
-            const visitorEl = document.getElementById('visitor-count'); // 抓取瀏覽人次元素
+            const visitorEl = document.getElementById('visitor-count');
 
             if(carbonEl) carbonEl.textContent = Math.round(globalAbsolute.carbon || 0).toLocaleString();
             if(treeEl) treeEl.textContent = ((globalAbsolute.carbon || 0) / 12000).toFixed(2);
-            if(visitorEl) visitorEl.textContent = (globalAbsolute.visitor_count || 0).toLocaleString(); // 更新畫面
+            if(visitorEl) visitorEl.textContent = (globalAbsolute.visitor_count || 0).toLocaleString();
         }
 
         // ==========================================
         // 3. 連接 Firebase
         // ==========================================
         function initGlobalCounters() {
-            // 監聽 1. 全網總量與瀏覽人次
             onSnapshot(doc(db, 'system_stats', 'global_absolute'), (docSnap) => {
                 if(docSnap.exists()) {
                     globalAbsolute = docSnap.data();
@@ -328,7 +330,6 @@
                 }
             });
 
-            // 監聽 2. 系統廣播
             onSnapshot(doc(db, 'system_messages', 'broadcast'), (docSnap) => {
                 const bar = document.getElementById('system-broadcast-bar');
                 const textEl = document.getElementById('system-broadcast-text');
@@ -340,17 +341,37 @@
                 }
             });
 
-            // 監聽 3. 活動行程
+            // 修改：監聽活動行程並處理未讀數量 (Badge)
             onSnapshot(doc(db, 'system_messages', 'event_schedule'), (docSnap) => {
                 const modalContainer = document.getElementById('event-schedule-container');
                 const inlineContainer = document.getElementById('inline-event-schedule-container');
                 
                 if(docSnap.exists() && docSnap.data().events) {
                     const events = docSnap.data().events;
+                    window.currentEventsList = events; // 暫存到全域，供點擊時標記已讀使用
+                    
+                    // -----------------------------
+                    // 未讀數量比對邏輯
+                    // -----------------------------
+                    const seenEvents = JSON.parse(localStorage.getItem('mori_seen_events') || '[]');
+                    const unreadCount = events.filter(ev => !seenEvents.includes(ev.name)).length;
+                    
+                    const badge = document.getElementById('event-badge');
+                    if (badge) {
+                        if (unreadCount > 0) {
+                            badge.textContent = unreadCount;
+                            badge.classList.remove('hidden');
+                            badge.classList.add('animate-bounce');
+                        } else {
+                            badge.classList.add('hidden');
+                        }
+                    }
+                    // -----------------------------
+
                     if (events.length === 0) {
                         const emptyHtml = '<div class="col-span-full py-12 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
-                        modalContainer.innerHTML = emptyHtml;
-                        inlineContainer.innerHTML = emptyHtml;
+                        if(modalContainer) modalContainer.innerHTML = emptyHtml;
+                        if(inlineContainer) inlineContainer.innerHTML = emptyHtml;
                         return;
                     }
 
@@ -383,8 +404,6 @@
                 onAuthStateChanged(auth, user => { 
                     if(user && db) {
                         initGlobalCounters(); 
-                        
-                        // 【新增】: 紀錄瀏覽人次邏輯 (單一 Session 只加 1 次)
                         if (!sessionStorage.getItem('mori_visited')) {
                             sessionStorage.setItem('mori_visited', 'true');
                             setDoc(doc(db, 'system_stats', 'global_absolute'), {
@@ -465,14 +484,27 @@
                 document.getElementById('homepage').classList.remove('hidden');
             };
 
+            // 修改：點擊活動按鈕時，打開視窗並消除未讀紅點
             document.getElementById('event-schedule-btn').onclick = () => {
                 document.getElementById('event-schedule-modal').classList.remove('hidden');
+                
+                // 標記為已讀邏輯
+                if (window.currentEventsList) {
+                    const currentNames = window.currentEventsList.map(ev => ev.name);
+                    localStorage.setItem('mori_seen_events', JSON.stringify(currentNames));
+                }
+                
+                const badge = document.getElementById('event-badge');
+                if (badge) {
+                    badge.classList.add('hidden');
+                    badge.classList.remove('animate-bounce');
+                }
             };
 
-            // 分享相關按鈕事件
             document.getElementById('header-share-btn')?.addEventListener('click', () => {
                 document.getElementById('qrcode-modal')?.classList.remove('hidden');
             });
+            
             document.getElementById('copy-link-btn')?.addEventListener('click', () => {
                 const url = 'https://farmcmd.github.io/ESGT/';
                 if (navigator.clipboard && window.isSecureContext) {
