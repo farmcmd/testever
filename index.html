@@ -507,13 +507,56 @@
             if(sel) sel.innerHTML = '<option value="">--選擇參與計畫--</option>' + globalGovData.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
         }
 
+        // ==========================================
+        // 🚀 第一步修復：完整解析活動的 6 大欄位與按鈕生成
+        // ==========================================
         function renderEvents(evs) {
             const c = document.getElementById('inline-event-schedule-container');
             const m = document.getElementById('event-schedule-container');
-            if(evs && evs.length > 0) {
-                const h = evs.map(e => `<div class="bg-white p-4 rounded-xl border-l-4 border-yellow-400 shadow-sm relative overflow-hidden h-full flex flex-col justify-between"><div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-400"></div><div><h4 class="font-bold text-sm text-gray-800">${e.name}</h4><p class="text-[10px] text-gray-500 mt-1">${e.date}</p></div><p class="text-[10px] text-blue-600 font-black mt-2">${e.regMethod || ''}</p></div>`).join('');
-                if(c) c.innerHTML = h; if(m) m.innerHTML = h;
+            const badge = document.getElementById('badge-event-schedule');
+
+            // 1. 空狀態防呆處理
+            if(!evs || evs.length === 0) {
+                const emptyHtml = '<div class="col-span-full text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">目前尚無近期活動，敬請期待！</div>';
+                if(c) c.innerHTML = emptyHtml; if(m) m.innerHTML = emptyHtml;
+                if(badge) badge.classList.add('hidden');
+                return;
             }
+
+            // 2. 觸發首頁 New 提醒標籤
+            const curHash = JSON.stringify(evs);
+            window.latestEventsHash = curHash;
+            if(badge && curHash !== localStorage.getItem('mori_seen_events')) {
+                badge.classList.remove('hidden');
+            }
+
+            // 3. 完整卡片渲染
+            const h = evs.map(e => {
+                let regHtml = e.regMethod || '';
+                // 若 Python 端輸入的是網址，自動轉換為點擊按鈕
+                if (/^https?:\/\//.test(regHtml)) {
+                    regHtml = `<a href="${regHtml}" target="_blank" class="inline-flex items-center mt-4 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition shadow-sm w-full justify-center"><i class="fas fa-external-link-alt mr-2"></i>前往報名連結</a>`;
+                } else if (regHtml) {
+                    regHtml = `<div class="mt-4 bg-blue-50 p-2 rounded-lg border border-blue-100"><span class="text-xs text-blue-700 font-bold block break-words">${regHtml}</span></div>`;
+                }
+
+                return `
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative flex flex-col justify-between h-full hover:shadow-md transition">
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-400 rounded-l-2xl"></div>
+                    <div>
+                        <h4 class="font-bold text-lg text-gray-800 mb-3">${e.name}</h4>
+                        <div class="space-y-1.5">
+                            <p class="text-xs text-gray-600 flex items-start"><i class="fas fa-clock w-4 mt-0.5 text-gray-400"></i><span>${e.date}</span></p>
+                            ${e.executor ? `<p class="text-xs text-gray-600 flex items-start"><i class="fas fa-sitemap w-4 mt-0.5 text-gray-400"></i><span>${e.executor}</span></p>` : ''}
+                            ${e.location ? `<p class="text-xs text-gray-600 flex items-start"><i class="fas fa-map-marker-alt w-4 mt-0.5 text-red-400"></i><span>${e.location}</span></p>` : ''}
+                            ${e.deadline ? `<p class="text-xs text-orange-600 font-bold flex items-start"><i class="fas fa-hourglass-half w-4 mt-0.5"></i><span>截止：${e.deadline}</span></p>` : ''}
+                        </div>
+                    </div>
+                    <div>${regHtml}</div>
+                </div>`;
+            }).join('');
+            
+            if(c) c.innerHTML = h; if(m) m.innerHTML = h;
         }
 
         function updateDisplays() { 
