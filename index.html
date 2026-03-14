@@ -270,7 +270,25 @@
     <div id="taxi-info-modal" class="modal-overlay hidden"><div class="modal-content max-w-sm p-6 text-center relative border-t-4 border-yellow-400"><button class="close-button absolute top-3 right-3 text-gray-400"><i class="fas fa-times"></i></button><div class="text-4xl mb-2">🚕</div><h3 class="text-xl font-bold mb-4">預約導覽車</h3><p class="text-sm text-gray-600 text-left mb-4 bg-yellow-50 p-3 rounded">由南投縣水里鄉商圈創生共好協會培訓，上車即導覽，帶您輕鬆探索在地生態！<br><br><i class="fas fa-phone mr-1 text-yellow-600"></i>洽詢：水里商圈創生共好協會</p><button id="taxi-confirm-btn" class="w-full py-2 bg-yellow-500 text-white rounded-lg font-bold">我已了解</button></div></div>
     <div id="drive-alone-modal" class="modal-overlay hidden"><div class="modal-content max-w-sm p-6 text-center relative border-t-4 border-red-500"><button class="close-button absolute top-3 right-3 text-gray-400"><i class="fas fa-times"></i></button><div class="text-4xl mb-2">🚘</div><h3 class="text-xl font-bold mb-4">單人自駕 (高碳排)</h3><p class="text-sm text-gray-600 text-left mb-4 bg-red-50 p-3 rounded">您選擇的是獨自駕駛。此方式為減碳基準，因此您的減碳量將計算為 <span class="text-red-600 font-bold">0</span>。</p><button id="drive-alone-confirm-btn" class="w-full py-2 bg-red-500 text-white rounded-lg font-bold">確認</button></div></div>
     <div id="hsr-modal" class="modal-overlay hidden"><div class="modal-content max-w-sm p-6 relative border-t-4 border-orange-500"><button class="close-button absolute top-3 right-3 text-gray-400"><i class="fas fa-times"></i></button><h3 class="text-xl font-bold mb-4 text-center">🚄 高鐵搭乘紀錄</h3><div class="flex flex-col gap-2 mb-4 bg-gray-50 p-3 rounded"><select id="hsr-start" class="w-full p-2 border rounded text-sm"></select><div class="text-center text-gray-400 text-xs"><i class="fas fa-arrow-down"></i></div><select id="hsr-end" class="w-full p-2 border rounded text-sm"></select></div><div id="hsr-result" class="text-center text-sm font-bold text-gray-500 mb-4 h-5">請選擇起訖站</div><button id="hsr-confirm-btn" class="w-full py-2 bg-orange-500 text-white rounded-lg font-bold opacity-50" disabled>確認搭乘</button></div></div>
-    <div id="event-schedule-modal" class="modal-overlay hidden"><div class="modal-content max-w-2xl p-6 relative border-t-8 border-yellow-500"><button class="close-button absolute top-3 right-3 text-gray-400"><i class="fas fa-times"></i></button><h3 class="text-2xl font-bold mb-4 text-center text-yellow-600"><i class="fas fa-calendar-check mr-2 text-yellow-500"></i>最新活動與報名資訊</h3><div class="flex justify-center gap-3 mb-5 pb-5 border-b border-gray-100"><button id="subscribe-notify-btn" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-full transition-all flex items-center shadow-sm"><i class="fas fa-bell mr-2"></i> 訂閱通知</button><button id="share-events-btn" class="px-5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-sm font-bold rounded-full transition-all flex items-center shadow-sm"><i class="fas fa-link mr-2"></i> 複製活動連結</button></div><div id="event-schedule-container" class="space-y-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar"><div class="text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">資料連線中，請稍候...</div></div></div></div>
+    
+    <!-- 修復：完整還原截圖中的活動 Modal UI -->
+    <div id="event-schedule-modal" class="modal-overlay hidden">
+        <div class="modal-content max-w-2xl p-8 relative">
+            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-2xl"></i></button>
+            <div class="text-center mb-6">
+                <h3 class="text-3xl font-bold text-gray-800 mb-2 flex justify-center items-center"><i class="far fa-calendar-check text-yellow-500 mr-3"></i>最新活動與報名資訊</h3>
+                <p class="text-sm text-gray-500">以下為近期開放報名之永續旅遊與食農教育活動</p>
+            </div>
+            <div class="flex justify-center gap-4 mb-6 pb-6 border-b border-gray-100">
+                <button id="subscribe-notify-btn" class="px-6 py-2.5 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border border-yellow-200 text-sm font-bold rounded-full transition-all flex items-center shadow-sm"><i class="fas fa-bell mr-2"></i> 訂閱新活動通知</button>
+                <button id="share-events-btn" class="px-6 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 text-sm font-bold rounded-full transition-all flex items-center shadow-sm"><i class="fas fa-share-alt mr-2"></i> 複製活動分享連結</button>
+            </div>
+            <div id="event-schedule-container" class="max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div class="text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">資料連線中，請稍候...</div>
+            </div>
+        </div>
+    </div>
+    
     <div id="certificate-dom-container" class="p-8 w-[800px] absolute -left-[9999px] top-0 bg-[#F7F4EF] z-0 font-sans"></div>
 
     <!-- 靜態資料定義 (確保全域可用) -->
@@ -507,52 +525,85 @@
             if(sel) sel.innerHTML = '<option value="">--選擇參與計畫--</option>' + globalGovData.projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
         }
 
-        // ==========================================
-        // 🚀 第一步修復：完整解析活動的 6 大欄位與按鈕生成
-        // ==========================================
+        // 修復：完美還原截圖中的活動卡片 UI 與過期邏輯
         function renderEvents(evs) {
             const c = document.getElementById('inline-event-schedule-container');
             const m = document.getElementById('event-schedule-container');
             const badge = document.getElementById('badge-event-schedule');
 
-            // 1. 空狀態防呆處理
             if(!evs || evs.length === 0) {
-                const emptyHtml = '<div class="col-span-full text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">目前尚無近期活動，敬請期待！</div>';
+                const emptyHtml = '<div class="col-span-full text-center text-gray-500 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">目前尚無近期活動，敬請留意後續公告！</div>';
                 if(c) c.innerHTML = emptyHtml; if(m) m.innerHTML = emptyHtml;
                 if(badge) badge.classList.add('hidden');
                 return;
             }
 
-            // 2. 觸發首頁 New 提醒標籤
-            const curHash = JSON.stringify(evs);
-            window.latestEventsHash = curHash;
-            if(badge && curHash !== localStorage.getItem('mori_seen_events')) {
-                badge.classList.remove('hidden');
-            }
+            const curHash = JSON.stringify(evs); window.latestEventsHash = curHash;
+            if(badge && curHash !== localStorage.getItem('mori_seen_events')) badge.classList.remove('hidden');
 
-            // 3. 完整卡片渲染
+            const checkExpired = (dateStr) => {
+                try {
+                    const parts = (dateStr || '').match(/(\d{4})[^\d](\d{1,2})[^\d](\d{1,2})/);
+                    if (parts) {
+                        const ed = new Date(parseInt(parts[1]), parseInt(parts[2]) - 1, parseInt(parts[3]));
+                        const td = new Date(); td.setHours(0,0,0,0);
+                        return ed < td;
+                    }
+                } catch(e) {}
+                return false;
+            };
+
             const h = evs.map(e => {
-                let regHtml = e.regMethod || '';
-                // 若 Python 端輸入的是網址，自動轉換為點擊按鈕
-                if (/^https?:\/\//.test(regHtml)) {
-                    regHtml = `<a href="${regHtml}" target="_blank" class="inline-flex items-center mt-4 px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-lg text-xs font-bold transition shadow-sm w-full justify-center"><i class="fas fa-external-link-alt mr-2"></i>前往報名連結</a>`;
-                } else if (regHtml) {
-                    regHtml = `<div class="mt-4 bg-blue-50 p-2 rounded-lg border border-blue-100"><span class="text-xs text-blue-700 font-bold block break-words">${regHtml}</span></div>`;
+                let isExpired = checkExpired(e.date);
+                let statusBadge = isExpired ? '<div class="absolute top-0 right-0 bg-gray-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg shadow-sm z-10"><i class="fas fa-flag-checkered mr-1"></i> 活動已圓滿結束</div>' : '';
+                let indicatorColor = isExpired ? 'bg-gray-400' : 'bg-yellow-400';
+                let cardOpacity = isExpired ? 'opacity-80 grayscale-[15%]' : '';
+
+                let regHtml = '';
+                if (e.regMethod) {
+                    if(/^(https?:\/\/[^\s]+)/.test(e.regMethod)) {
+                        regHtml = `<div class="text-sm text-gray-600 flex items-center mt-3"><i class="fas fa-info-circle w-4 text-center text-blue-500 mr-1.5"></i> <span class="font-bold mr-2">報名:</span> <a href="${e.regMethod}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-100 transition shadow-sm break-all">${e.regMethod}</a></div>`;
+                    } else {
+                        let safeMethod = e.regMethod.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+                        regHtml = `<div class="text-sm text-gray-600 flex items-center mt-3"><i class="fas fa-info-circle w-4 text-center text-blue-500 mr-1.5"></i> <span class="font-bold mr-2 shrink-0">報名:</span> <span class="text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold break-words">${safeMethod}</span></div>`;
+                    }
                 }
 
+                let datesParam = '';
+                try {
+                    const dateParts = (e.date||'').match(/(\d{4})[^\d](\d{1,2})[^\d](\d{1,2})/);
+                    if (dateParts) {
+                        const yyyy = dateParts[1]; const mm = dateParts[2].padStart(2, '0'); const dd = dateParts[3].padStart(2, '0');
+                        const d = new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd)); d.setDate(d.getDate() + 1);
+                        datesParam = `&dates=${yyyy}${mm}${dd}/${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+                    }
+                } catch(err) {}
+                const textParam = encodeURIComponent(e.name || '探探里山活動');
+                const locationParam = e.location ? `&location=${encodeURIComponent(e.location)}` : '';
+                const detailsText = `執行單位: ${e.executor || '無'}\n報名資訊: ${e.regMethod || '請見活動頁面'}\n\n👉 探探里山平台: https://farmcmd.github.io/ESGT/`;
+                const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${textParam}${datesParam}${locationParam}&details=${encodeURIComponent(detailsText)}`;
+                const gCalBtn = `<a href="${gCalUrl}" target="_blank" class="inline-flex items-center px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-50 transition shadow-sm mt-4"><i class="far fa-calendar-plus mr-1.5 text-blue-500"></i>加入行事曆</a>`;
+
+                let actionAreaHtml = isExpired
+                    ? `<button onclick="document.getElementById('event-schedule-modal').classList.add('hidden'); document.getElementById('gov-version-btn')?.scrollIntoView({behavior: 'smooth', block: 'center'}); document.getElementById('gov-modal')?.classList.remove('hidden');" class="w-full mt-4 py-3 bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 font-bold rounded-lg text-sm transition flex items-center justify-center shadow-sm"><i class="fas fa-chart-pie mr-2 text-lg"></i>前往儀錶板查詢活動成效</button>`
+                    : `${regHtml}<div class="flex justify-start">${gCalBtn}</div>`;
+
                 return `
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative flex flex-col justify-between h-full hover:shadow-md transition">
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-400 rounded-l-2xl"></div>
-                    <div>
-                        <h4 class="font-bold text-lg text-gray-800 mb-3">${e.name}</h4>
-                        <div class="space-y-1.5">
-                            <p class="text-xs text-gray-600 flex items-start"><i class="fas fa-clock w-4 mt-0.5 text-gray-400"></i><span>${e.date}</span></p>
-                            ${e.executor ? `<p class="text-xs text-gray-600 flex items-start"><i class="fas fa-sitemap w-4 mt-0.5 text-gray-400"></i><span>${e.executor}</span></p>` : ''}
-                            ${e.location ? `<p class="text-xs text-gray-600 flex items-start"><i class="fas fa-map-marker-alt w-4 mt-0.5 text-red-400"></i><span>${e.location}</span></p>` : ''}
-                            ${e.deadline ? `<p class="text-xs text-orange-600 font-bold flex items-start"><i class="fas fa-hourglass-half w-4 mt-0.5"></i><span>截止：${e.deadline}</span></p>` : ''}
+                <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm relative flex flex-col justify-between ${cardOpacity} mb-5 ml-1.5">
+                    ${statusBadge}
+                    <div class="absolute -left-1.5 top-0 bottom-0 w-1.5 ${indicatorColor} rounded-l-2xl"></div>
+                    <div class="pl-2">
+                        <h4 class="font-bold text-xl text-gray-800 mb-3 pr-20">${e.name}</h4>
+                        <span class="${isExpired ? 'bg-gray-100 text-gray-500 border-gray-200' : 'bg-yellow-50 text-yellow-800 border-yellow-200'} text-xs font-bold px-3 py-1.5 rounded-lg border whitespace-nowrap w-fit shrink-0 mb-4 inline-block"><i class="fas fa-clock mr-1"></i> ${e.date}</span>
+                        <div class="space-y-2 mt-2">
+                            ${e.executor ? `<p class="text-sm text-gray-500 flex items-start"><i class="fas fa-sitemap w-5 text-center text-gray-400 mr-2 mt-0.5"></i> <span class="font-bold text-gray-600 mr-1 shrink-0">執行單位:</span> <span>${e.executor}</span></p>` : ''}
+                            ${e.location ? `<p class="text-sm text-gray-500 flex items-start"><i class="fas fa-map-marker-alt w-5 text-center text-red-400 mr-2 mt-0.5"></i> <span class="font-bold text-gray-600 mr-1 shrink-0">活動地點:</span> <span>${e.location}</span></p>` : ''}
+                            ${e.deadline ? `<p class="text-sm text-gray-500 flex items-start"><i class="fas fa-hourglass-half w-5 text-center text-orange-500 mr-2 mt-0.5"></i> <span class="font-bold text-gray-600 mr-1 shrink-0">報名截止:</span> <span class="text-orange-600 font-bold">${e.deadline}</span></p>` : ''}
                         </div>
                     </div>
-                    <div>${regHtml}</div>
+                    <div class="pl-2 border-t border-gray-100 mt-4 pt-2">
+                        ${actionAreaHtml}
+                    </div>
                 </div>`;
             }).join('');
             
