@@ -566,18 +566,11 @@
                 <h3 class="text-3xl font-bold text-blue-900 mb-2"><i class="fas fa-landmark mr-3 text-blue-600"></i>永續政府儀表板</h3>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div class="lg:col-span-2 flex flex-col gap-6">
+                <div class="lg:col-span-3 flex flex-col gap-6">
                     <div class="bg-white p-5 rounded-xl shadow border-2 border-blue-400">
                         <h4 class="font-bold text-gray-800 mb-3 border-b pb-2"><i class="fas fa-user-check mr-2 text-blue-600"></i>1. [參與者] 選擇計畫並登錄</h4>
                         <select id="user-proj-select" class="w-full p-2 border rounded-lg text-sm bg-gray-50 mb-4 focus:outline-none"><option value="">-- 請選擇參與計畫 --</option></select>
                         <button id="log-user-proj-btn" class="w-full py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow hover:bg-blue-700">確認登錄評鑑 (計入計畫並歸零)</button>
-                    </div>
-                    
-                    <div class="bg-white p-5 rounded-xl shadow border border-gray-200">
-                        <h4 class="font-bold text-gray-800 mb-3 border-b pb-2">4. 登錄機關行程數據</h4>
-                        <select id="gov-type-select" class="w-full p-2 border rounded-lg text-sm mb-3 bg-gray-50 focus:outline-none"><option value="中央政府機關">1. 中央政府機關</option><option value="地方政府">2. 地方政府</option></select>
-                        <input type="text" id="gov-agency-name" class="w-full p-2 border rounded-lg text-sm mb-3 focus:outline-none" placeholder="輸入機關/單位名稱">
-                        <button id="log-gov-general-btn" class="w-full py-2 bg-gray-600 text-white rounded-lg font-bold text-sm hover:bg-gray-700 shadow transition">確認機關登錄 (累計至總指標並歸零)</button>
                     </div>
 
                     <div>
@@ -603,23 +596,6 @@
                             </div>
                         </div>
                         <button id="create-proj-btn" class="w-full py-2 bg-blue-600 text-white rounded-lg font-bold text-sm shadow">建立新儀表板</button>
-                    </div>
-                </div>
-                <div class="lg:col-span-1 space-y-6">
-                    <div class="bg-gradient-to-br from-blue-50 to-white p-5 rounded-xl shadow border border-blue-100 text-center relative overflow-hidden">
-                        <div class="absolute -right-6 -top-6 text-6xl text-blue-100 opacity-50"><i class="fas fa-globe"></i></div>
-                        <h4 class="font-bold text-blue-900 mb-4 relative z-10">永續政府總指標</h4>
-                        
-                        <div class="mb-5 relative z-10">
-                            <p class="text-xs text-gray-500 font-bold mb-1">全計畫 + 一般機關 累計減碳量</p>
-                            <p id="gov-total-carbon-display" class="text-3xl font-bold text-green-600 font-mono tracking-tight">0 g</p>
-                        </div>
-                        
-                        <div class="relative z-10">
-                            <p class="text-xs text-gray-500 font-bold mb-1">全計畫 + 一般機關 綠色消費</p>
-                            <p id="gov-total-green-display" class="text-3xl font-bold text-blue-600 font-mono tracking-tight">$0</p>
-                        </div>
-                        <p class="text-[10px] text-gray-400 mt-4 leading-tight relative z-10">此面板僅統計<br>選項1與選項4之政府專屬歸戶數據</p>
                     </div>
                 </div>
             </div>
@@ -1179,13 +1155,13 @@
         // 2. 狀態變數 (State)
         // ==========================================
         let state = { totalMileage: 0, totalCarbon: 0, totalScore: 0, playerName: '', playerCode: '', greenProcure: 0, sroiProcure: 0, projectProcure: 0, activityLogs: [], checkoutHistory: [], currentTransport: null };
-        let globalGovData = { projects: [], generalStats: { carbon: 0, green: 0 } };
+        let globalGovData = { projects: [] };
         let globalEntData = { projects: [] };
         let selectedStart = null, selectedEnd = null, currentModalPoi = null, pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false };
         let mapInitialized = false;
         let pendingGovEvalSubmission = null, pendingEntEvalSubmission = null;
         let db = null, auth = null, isOfflineMode = false;
-        let isBackendReady = false, govLoaded = false, entLoaded = false, statsLoaded = false, absoluteLoaded = false; 
+        let isBackendReady = false, govLoaded = false, entLoaded = false, absoluteLoaded = false; 
         
         let globalAbsolute = { carbon: 0, green: 0, visitor_count: 0 }; 
 
@@ -1315,20 +1291,6 @@
             if(treeEl) treeEl.textContent = trees;
             if(dailyEl) dailyEl.textContent = Math.round(dailyCarbon).toLocaleString();
             if(visitorEl) visitorEl.textContent = visitorCount.toLocaleString(); 
-        }
-
-        function updateGovModalSummary() {
-            if (!isBackendReady) return; 
-            const projectsCarbon = globalGovData.projects.reduce((sum, p) => sum + (Number(p.carbon) || 0), 0);
-            const projectsGreen = globalGovData.projects.reduce((sum, p) => sum + (Number(p.green) || 0), 0);
-            const generalCarbon = Number(globalGovData.generalStats?.carbon || 0);
-            const generalGreen = Number(globalGovData.generalStats?.green || 0);
-            const totalCarbon = projectsCarbon + generalCarbon;
-            const totalGreen = projectsGreen + generalGreen;
-            const cDisp = document.getElementById('gov-total-carbon-display');
-            const gDisp = document.getElementById('gov-total-green-display');
-            if (cDisp) cDisp.textContent = `${Math.round(totalCarbon).toLocaleString()} g`;
-            if (gDisp) gDisp.textContent = `$${totalGreen.toLocaleString()}`;
         }
 
         // ==========================================
@@ -1612,7 +1574,6 @@
                     id: 'mock_gov_1', name: '里山創生示範計畫', event: '地方青農推廣', date: '2026-03-05', budget: 50000, sroi: 1.95,
                     supervisor: '農業部', organizer: '南投縣政府', executor: '水里鄉商圈創生共好協會', carbon: 3200, green: 15000, eval_count: 10, total_score: 480 
                 }];
-                globalGovData.generalStats = { carbon: 451, green: 3500 };
                 renderGovDashboard(); updateProjectDropdown();
             }
             
@@ -1620,7 +1581,7 @@
             globalAbsolute = { carbon: 22647, green: 186500, visitor_count: 1250 }; 
             globalAbsolute[`daily_${todayStr}_carbon`] = 350; 
             
-            updateGovModalSummary(); updateGlobalSummary();
+            updateGlobalSummary();
         }
 
         // ==========================================
@@ -1630,7 +1591,7 @@
             if (!db) return;
             try {
                 const checkBackendReady = () => {
-                    if (govLoaded && entLoaded && statsLoaded && !absoluteLoaded) {
+                    if (govLoaded && entLoaded && !absoluteLoaded) {
                         absoluteLoaded = 'pending';
                         onSnapshot(doc(db, 'system_stats', 'global_absolute'), async (docSnap) => {
                             if (docSnap.exists()) {
@@ -1651,14 +1612,20 @@
                 // 監聽 1. 政府專案
                 onSnapshot(collection(db, 'gov_projects'), (snapshot) => {
                     globalGovData.projects = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    govLoaded = true; checkBackendReady();
-                    renderGovDashboard(); updateProjectDropdown(); updateGovModalSummary();
-                });
+                    
+                    // 計算未讀數量
+                    const currentIds = globalGovData.projects.map(p => p.id);
+                    window.currentGovList = currentIds;
+                    const seenGov = JSON.parse(localStorage.getItem('mori_seen_gov') || '[]');
+                    const unreadCount = currentIds.filter(id => !seenGov.includes(id)).length;
+                    const badge = document.getElementById('badge-gov');
+                    if (badge) {
+                        if (unreadCount > 0) { badge.textContent = unreadCount; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } 
+                        else { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); }
+                    }
 
-                // 監聽政府一般機關
-                onSnapshot(doc(db, 'gov_stats', 'general'), (docSnap) => {
-                    if(docSnap.exists()) globalGovData.generalStats = docSnap.data();
-                    statsLoaded = true; checkBackendReady(); updateGovModalSummary();
+                    govLoaded = true; checkBackendReady();
+                    renderGovDashboard(); updateProjectDropdown();
                 });
 
                 // 監聽 2. 企業專案
@@ -2180,34 +2147,10 @@
                         if (feedbackObj) { if (!selectedProj.feedbacks) selectedProj.feedbacks = []; selectedProj.feedbacks.unshift(feedbackObj); }
                     }
                     
-                    resetStats(); document.getElementById('gov-eval-modal').classList.add('hidden');
+                    resetPlayerStats(); document.getElementById('gov-eval-modal').classList.add('hidden');
                     if(document.getElementById('gov-eval-feedback')) document.getElementById('gov-eval-feedback').value = '';
-                    renderGovDashboard(); renderCheckoutHistory(); updateGovModalSummary();
+                    renderGovDashboard(); renderCheckoutHistory();
                 } catch(e) { window.showToast("結算過程發生異常，請重試"); } finally { btn.disabled = false; btn.innerHTML = '確認結算歸戶'; }
-            });
-
-            document.getElementById('log-gov-general-btn')?.addEventListener('click', async (e) => {
-                const btn = e.currentTarget; if(btn.disabled) return;
-                const agencyName = document.getElementById('gov-agency-name').value.trim() || '未具名機關', govType = document.getElementById('gov-type-select').value;
-                const carbon = state.totalCarbon || 0, green = (state.greenProcure || 0) + (state.sroiProcure || 0) + (state.projectProcure || 0);
-                if (carbon === 0 && green === 0) return window.showToast('目前無可歸戶的永續數據！');
-                
-                btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>結算生成中...';
-
-                if (!state.checkoutHistory) state.checkoutHistory = [];
-                state.checkoutHistory.unshift({ time: new Date().toLocaleTimeString('zh-TW'), target: `[機關] ${govType}-${agencyName}`, carbon: Math.round(carbon), green: green });
-                window.addLog(`✅ 機關歸戶：數據累計至 ${govType}-${agencyName}`);
-                
-                await window.generateAndDownloadCertificate(true, `【機關差勤】${govType} - ${agencyName}`);
-
-                if (!isOfflineMode && db) {
-                    try { await setDoc(doc(db, 'gov_stats', 'general'), { carbon: increment(carbon), green: increment(green), updatedAt: serverTimestamp() }, { merge: true }); } 
-                    catch(err) { window.showToast("資料庫連線失敗"); btn.disabled = false; btn.innerHTML = '確認機關登錄 (累計至總指標並歸零)'; return; }
-                } else { globalGovData.generalStats.carbon = (globalGovData.generalStats.carbon || 0) + carbon; globalGovData.generalStats.green = (globalGovData.generalStats.green || 0) + green; }
-                
-                resetStats(); window.showToast('機關行程數據已成功登錄至總指標！');
-                document.getElementById('gov-agency-name').value = ''; renderCheckoutHistory(); updateGovModalSummary(); updateGlobalSummary();
-                btn.disabled = false; btn.innerHTML = '確認機關登錄 (累計至總指標並歸零)';
             });
 
             document.getElementById('create-proj-btn')?.addEventListener('click', async () => {
