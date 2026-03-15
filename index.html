@@ -1035,17 +1035,32 @@
         </div>
     </div>
 
-    <!-- 10. 活動行程與報名資訊 Modal -->
+    <!-- 10. 活動行程與報名資訊 Modal (依截圖修復還原) -->
     <div id="event-schedule-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-2xl p-8 border-t-8 border-yellow-500">
+        <div class="modal-content max-w-2xl p-6 md:p-8 border-t-8 border-yellow-500 bg-white">
             <button class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition" onclick="this.closest('.modal-overlay').classList.add('hidden')">
                 <i class="fas fa-times text-2xl"></i>
             </button>
+            
             <div class="text-center mb-6">
-                <h3 class="text-3xl font-bold text-gray-800">最新活動與報名資訊</h3>
-                <p class="text-sm text-gray-500 mt-1">來自里山基地的即時公告</p>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 flex justify-center items-center gap-2 mb-2">
+                    <i class="fas fa-calendar-check text-yellow-500"></i> 最新活動與報名資訊
+                </h3>
+                <p class="text-sm text-gray-500 mb-5">以下為近期開放報名之永續旅遊與食農教育活動</p>
+                
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button class="px-5 py-2 bg-yellow-50 text-yellow-700 border border-yellow-200 text-[13px] font-bold rounded-full shadow-sm flex items-center cursor-default">
+                        <i class="fas fa-bell mr-1.5 text-yellow-500"></i> 已成功訂閱新活動通知
+                    </button>
+                    <button id="modal-share-events-btn" class="px-5 py-2 bg-blue-50 text-blue-600 border border-blue-200 text-[13px] font-bold rounded-full shadow-sm flex items-center hover:bg-blue-100 transition">
+                        <i class="fas fa-share-alt mr-1.5"></i> 複製活動分享連結
+                    </button>
+                </div>
             </div>
-            <div id="event-schedule-container" class="space-y-4"></div>
+            
+            <div class="border-t border-gray-100 pt-6"></div>
+            
+            <div id="event-schedule-container" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar"></div>
         </div>
     </div>
 
@@ -1883,7 +1898,7 @@
                     } else { bar.classList.add('hidden'); }
                 });
 
-                // 監聽 3. 活動行程 (含未讀紅點 Badge 計算)
+                // 監聽 3. 活動行程 (依截圖修復還原卡片設計)
                 onSnapshot(doc(db, 'system_messages', 'event_schedule'), (docSnap) => {
                     const modalContainer = document.getElementById('event-schedule-container');
                     const inlineContainer = document.getElementById('inline-event-schedule-container');
@@ -1909,33 +1924,86 @@
                         }
 
                         if (events.length === 0) {
-                            const emptyHtml = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
+                            const emptyHtml = '<div class="col-span-full py-12 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
                             if(modalContainer) modalContainer.innerHTML = emptyHtml;
                             if(inlineContainer) inlineContainer.innerHTML = emptyHtml;
                             return;
                         }
 
-                        const html = events.map(ev => `
-                            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition group text-left">
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="bg-green-100 text-green-800 border-green-200 text-[10px] font-bold px-2 py-0.5 rounded border">即將舉辦</span>
-                                    <span class="text-xs text-gray-500 font-bold"><i class="fas fa-calendar-alt mr-1"></i> ${ev.date}</span>
-                                </div>
-                                <h4 class="font-bold text-gray-800 mb-1 group-hover:text-mori-forest transition">${ev.name}</h4>
-                                <div class="text-xs text-gray-600 mb-3 leading-relaxed">
-                                    <p><i class="fas fa-user-tie mr-1"></i> 執行單位: ${ev.executor || '里山團隊'}</p>
-                                    <p><i class="fas fa-map-marker-alt mr-1 text-red-400"></i> 地點: ${ev.location || '水里里山基地'}</p>
-                                </div>
-                                <a href="${ev.regMethod}" target="_blank" class="block text-center text-xs font-bold text-mori-forest bg-mori-light py-1.5 rounded hover:bg-mori-sage hover:text-white transition shadow-sm border border-mori-sage/20">前往報名 / 詳情</a>
-                            </div>
-                        `).join('');
+                        // 取得今日日期進行過期比對
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+
+                        const html = events.map(ev => {
+                            // 判斷是否過期
+                            let isExpired = false;
+                            if(ev.date) {
+                                const evDate = new Date(ev.date.replace(/-/g, '/')); 
+                                if(!isNaN(evDate) && evDate < today) isExpired = true;
+                            }
+
+                            if(isExpired) {
+                                // 已過期卡片模板 (灰色調)
+                                return `
+                                    <div class="bg-gray-50 p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 opacity-90 transition-all">
+                                        <div class="absolute top-0 right-0 bg-gray-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl z-10 flex items-center shadow-sm">
+                                            <i class="fas fa-flag-checkered mr-1.5"></i>活動已圓滿結束
+                                        </div>
+                                        <h4 class="text-xl font-bold text-gray-600 mb-3 pr-24 leading-snug">${ev.name}</h4>
+                                        <div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold border border-gray-200 mb-4 shadow-sm">
+                                            <i class="fas fa-clock mr-1.5"></i> ${ev.date}
+                                        </div>
+                                        <div class="space-y-2 text-[13px] text-gray-500 mb-5">
+                                            <p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p>
+                                            <p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p>
+                                            <p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-400 font-bold">${ev.deadline || '請見詳情'}</span></p>
+                                        </div>
+                                        <button onclick="document.getElementById('event-schedule-modal').classList.add('hidden'); document.getElementById('gov-modal').classList.remove('hidden');" class="w-full py-3 bg-blue-50/80 text-blue-500 border border-blue-100 rounded-xl hover:bg-blue-100 hover:text-blue-600 transition text-sm font-bold shadow-sm flex items-center justify-center mt-2">
+                                            <i class="fas fa-chart-pie mr-1.5 text-lg"></i> 前往儀錶板查詢活動成效
+                                        </button>
+                                    </div>
+                                `;
+                            } else {
+                                // 進行中卡片模板 (活躍色調)
+                                let regMethodHtml = '';
+                                if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) {
+                                    regMethodHtml = `<a href="${ev.regMethod}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-all font-medium hover:bg-blue-100 transition underline text-center sm:text-left shadow-sm">點擊前往報名網頁</a>`;
+                                } else {
+                                    regMethodHtml = `<div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-words whitespace-normal font-medium shadow-sm">${ev.regMethod || '請洽主辦單位'}</div>`;
+                                }
+
+                                return `
+                                    <div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all">
+                                        <h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4>
+                                        <div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm">
+                                            <i class="fas fa-clock mr-1.5"></i> ${ev.date}
+                                        </div>
+                                        <div class="space-y-2 text-[13px] text-gray-600 mb-5">
+                                            <p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p>
+                                            <p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p>
+                                            <p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>
+                                        </div>
+                                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4">
+                                            <div class="flex items-center text-xs w-full sm:w-auto flex-grow">
+                                                <i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i>
+                                                <span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>
+                                                ${regMethodHtml}
+                                            </div>
+                                            <button onclick="window.showToast('加入行事曆功能準備中！')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center">
+                                                <i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 加入行事曆
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }).join('');
                         
                         if(modalContainer) modalContainer.innerHTML = html;
                         if(inlineContainer) inlineContainer.innerHTML = html;
                     } else {
                         const badge = document.getElementById('event-badge');
                         if (badge) { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); }
-                        const emptyHtml = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
+                        const emptyHtml = '<div class="col-span-full py-12 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
                         if(modalContainer) modalContainer.innerHTML = emptyHtml;
                         if(inlineContainer) inlineContainer.innerHTML = emptyHtml;
                     }
@@ -2067,6 +2135,16 @@
                 try { document.execCommand('copy'); window.showToast('🔗 已複製正式分享連結！'); } catch (err) { window.prompt("請手動複製以下網址分享：", text); }
                 document.body.removeChild(textArea);
             }
+
+            // 新增：綁定 modal 內的複製按鈕與原本的 inline 複製按鈕
+            const copyEventLink = () => {
+                const url = 'https://farmcmd.github.io/ESGT/#latest-events-section';
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(url).then(() => window.showToast('🔗 活動專屬連結複製成功！')).catch(() => fallbackCopy(url));
+                } else { fallbackCopy(url); }
+            };
+            document.getElementById('modal-share-events-btn')?.addEventListener('click', copyEventLink);
+            document.getElementById('inline-share-events-btn')?.addEventListener('click', copyEventLink);
 
             document.getElementById('header-share-btn')?.addEventListener('click', () => {
                 document.getElementById('qrcode-modal')?.classList.remove('hidden');
