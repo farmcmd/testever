@@ -117,7 +117,7 @@
                 <div class="mt-6 flex flex-wrap justify-center gap-3">
                     <!-- 活動按鈕與未讀紅點 Badge -->
                     <div class="relative inline-block">
-                        <span id="event-badge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full shadow-md border-2 border-white z-10 text-center animate-bounce">0</span>
+                        <span id="event-badge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm border border-white z-10 text-center animate-bounce tracking-wider">NEW</span>
                         <button id="event-schedule-btn" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-white text-sm font-bold rounded-full shadow-lg border-2 border-yellow-300 flex items-center transition-all group">
                             <i class="fas fa-calendar-alt mr-2 group-hover:animate-bounce"></i> 最新活動與報名
                         </button>
@@ -179,13 +179,13 @@
                 <!-- 企業與政府按鈕 -->
                 <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
                     <div class="relative inline-block w-full sm:w-auto">
-                        <span id="badge-enterprise" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full shadow-md border-2 border-white z-10 text-center animate-bounce">0</span>
+                        <span id="badge-enterprise" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm border border-white z-10 text-center animate-bounce tracking-wider">NEW</span>
                         <button id="enterprise-version-btn" class="w-full sm:w-auto px-6 py-3 bg-mori-wood hover:bg-yellow-700 text-white text-sm font-bold rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-2 border-mori-wood/50 flex items-center justify-center group">
                             <i class="fas fa-building mr-2 group-hover:scale-110 transition-transform"></i> 企業永續儀表板
                         </button>
                     </div>
                     <div class="relative inline-block w-full sm:w-auto">
-                        <span id="badge-gov" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full shadow-md border-2 border-white z-10 text-center animate-bounce">0</span>
+                        <span id="badge-gov" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-md border-2 border-white z-10 text-center animate-bounce tracking-wider">NEW</span>
                         <button id="gov-version-btn" class="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-2 border-blue-400/50 flex items-center justify-center group">
                             <i class="fas fa-landmark mr-2 group-hover:scale-110 transition-transform"></i> 永續政府計畫儀表板
                         </button>
@@ -438,6 +438,15 @@
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                         <h3 class="font-bold text-gray-700 mb-3 border-b pb-2"><i class="fas fa-map-marker-alt mr-2 text-mori-forest"></i>在地景點列表</h3>
                         <div id="poi-list-container" class="space-y-4"></div>
+                        
+                        <!-- 新增：隱藏座標彩蛋提示 -->
+                        <div class="mt-4 pt-3 border-t border-dashed border-gray-200">
+                            <p class="text-xs font-bold text-mori-forest mb-1.5"><i class="fas fa-search-location mr-1"></i> 景點不夠嗎？</p>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">
+                                在地圖中找尋 <span class="text-green-600 font-bold"><i class="fas fa-map-marker-alt"></i> 綠色座標</span> 或許會有驚喜！<br>
+                                還有 <span class="text-blue-500 font-bold"><i class="fas fa-map-marker-alt"></i> 藍色座標</span> 中有哪些活動與市集？
+                            </p>
+                        </div>
                     </div>
                     
                     <div class="bg-purple-50/50 p-4 rounded-xl shadow-sm border border-purple-100">
@@ -975,19 +984,19 @@
         </div>
     </div>
 
-    <!-- 9. 台灣高鐵說明與計算 Modal -->
+    <!-- 9. 鐵路運輸說明與計算 Modal -->
     <div id="hsr-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-md p-6 bg-white border-t-4 border-orange-500 relative">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
             <div class="text-center mb-4">
-                <div class="text-5xl mb-2">🚄</div>
-                <h3 class="text-2xl font-bold text-gray-800">台灣高鐵搭乘紀錄</h3>
+                <div class="text-5xl mb-2">🚆</div>
+                <h3 class="text-2xl font-bold text-gray-800">鐵路運輸搭乘紀錄</h3>
             </div>
 
             <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 mb-5 text-sm text-gray-700 leading-relaxed text-justify shadow-inner">
-                <p>感謝您選擇高鐵！作為極低碳的大眾運輸工具，高鐵能大幅減少跨縣市移動的碳排放。</p>
+                <p>感謝您選擇鐵路運輸！作為極低碳的大眾運輸工具，軌道運輸能大幅減少跨縣市移動的碳排放。</p>
                 <p class="mt-2 font-bold text-orange-700"><i class="fas fa-magic mr-1"></i>請設定您的搭乘起訖站，系統將自動核算減碳里程（650g / 10km）。</p>
-                <p class="mt-2 font-bold text-mori-forest"><i class="fas fa-info-circle mr-1"></i>抵達高鐵目的站後，請再次選取您在景點中使用的交通移動方式。請儘量保存您的票據證明，做為您的減碳依據。</p>
+                <p class="mt-2 font-bold text-mori-forest"><i class="fas fa-info-circle mr-1"></i>抵達鐵路目的站後，請再次選取您拜訪景點使用的交通方式。請儘量保存您的票據證明，做為您的減碳依據。</p>
             </div>
 
             <div class="flex flex-col gap-3 mb-5 bg-gray-50 p-4 rounded-xl border border-gray-100">
@@ -1108,12 +1117,13 @@
             { categoryId: 3, id: 'poi18', name: '森音 Morinooto', coords: { lat: 23.742587, lng: 120.866954 }, icon: '🎶', description: '食農教育、森態導覽', fbUrl: "https://www.facebook.com/morinooto111?locale=zh_TW" },
             { categoryId: 3, id: 'poi9', name: '蛇窯文化園區', coords: { lat: 23.801177, lng: 120.864479 }, icon: '🏺', description: '手拉坯｜手捏陶', fbUrl: "https://www.facebook.com/sskshop/?locale=zh_TW" },
             { categoryId: 3, id: 'poi15', name: '二坪大觀冰店', coords: { lat: 23.813627, lng: 120.859651 }, icon: '🍦', description: '老牌電廠老店', fbUrl: "https://www.facebook.com/takuanice?locale=zh_TW" },
-            { categoryId: 3, id: 'poi17', name: '水里星光市集(周六市集)', coords: { lat: 23.813636, lng: 120.850816 }, icon: '💡', description: '星光市集2022年開始營運', fbUrl: "https://www.facebook.com/" },
+            { categoryId: 3, id: 'poi17', name: '水里星光市集(周六市集)', coords: { lat: 23.813636, lng: 120.850816 }, icon: '💡', description: '星光市集2022年開始營運，2025年起改為不定期營運，詳細辦理日期請查詢水里溪畔驛站/水里鄉商圈創生共好協會粉專發布。', fbUrl: "https://www.facebook.com/" },
             { categoryId: 3, id: 'poi22', name: '水里槑休閒農業區', coords: { lat: 23.734616, lng: 120.856968 }, icon: '🌸', description: '賞梅導覽預約', fbUrl: "https://www.facebook.com/" },
             { categoryId: 'map_only', id: 'poi31', name: '老五冒煙饅頭', coords: { lat: 23.741302, lng: 120.857310 }, icon: '♨️', description: '手工饅頭DIY', fbUrl: "https://www.facebook.com/" },
-            { categoryId: 'map_only_blue', id: 'poi32', name: '台中農改場', coords: { lat: 24.001265, lng: 120.533769 }, icon: '🏛️', description: '<span class="font-bold text-blue-700">歷史活動: 台中農改場開放日</span>' },
-            { categoryId: 'map_only_blue', id: 'poi33', name: '南投縣青農快閃市集', coords: { lat: 23.900079, lng: 120.711333 }, icon: '⛺', description: '' },
-            { categoryId: 'map_only_blue', id: 'poi34', name: '水里鄉農會', coords: { lat: 23.817368, lng: 120.854835 }, icon: '🏢', description: '' }
+            { categoryId: 'map_only_blue', id: 'poi32', name: '台中農改場', coords: { lat: 24.001265, lng: 120.533769 }, icon: '🏛️', description: '每年辦理開放日活動，活動詳情請上官網查詢。' },
+            { categoryId: 'map_only_blue', id: 'poi33', name: '南投縣青農快閃市集', coords: { lat: 23.900079, lng: 120.711333 }, icon: '⛺', description: '不定期辦理，活動請上南投縣農會FB查詢。' },
+            { categoryId: 'map_only_blue', id: 'poi34', name: '水里鄉農會', coords: { lat: 23.817368, lng: 120.854835 }, icon: '🏢', description: '不定期辦理 青農/家政/四健會等研習活動；每年辦理葡萄節。活動詳情請上官網查詢。' },
+            { categoryId: 'map_only_blue', id: 'poi35', name: '溪頭自然教育園區', coords: { lat: 23.674709405116875, lng: 120.79777184853681 }, icon: '🌲', description: '不定期辦理USR成果/社區林業成果市集/特定季節活動市集。活動詳情請上臺大實驗林官網查詢。' }
         ];
 
         const transportData = {
@@ -1123,7 +1133,7 @@
             carpool_3: { name: '3人共乘', icon: '🚗', reduction: 350, mode: 'DRIVING' },
             carpool_4: { name: '4人共乘', icon: '🚗', reduction: 400, mode: 'DRIVING' },
             carpool_5: { name: '5人共乘', icon: '🚐', reduction: 450, mode: 'DRIVING' },
-            thsr: { name: '台灣高鐵', icon: '🚄', reduction: 650, mode: 'TRANSIT' },
+            thsr: { name: '鐵路運輸', icon: '🚆', reduction: 650, mode: 'TRANSIT' },
             drive_alone: { name: '單人自駕', icon: '🚘', reduction: 0, mode: 'DRIVING' },
             taxi: { name: '預約導覽車', icon: '🚕', reduction: 0, mode: 'DRIVING' }
         };
@@ -1613,14 +1623,14 @@
                 onSnapshot(collection(db, 'gov_projects'), (snapshot) => {
                     globalGovData.projects = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                     
-                    // 計算未讀數量
+                    // 計算未讀數量，顯示 NEW
                     const currentIds = globalGovData.projects.map(p => p.id);
                     window.currentGovList = currentIds;
                     const seenGov = JSON.parse(localStorage.getItem('mori_seen_gov') || '[]');
                     const unreadCount = currentIds.filter(id => !seenGov.includes(id)).length;
                     const badge = document.getElementById('badge-gov');
                     if (badge) {
-                        if (unreadCount > 0) { badge.textContent = unreadCount; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } 
+                        if (unreadCount > 0) { badge.textContent = 'NEW'; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } 
                         else { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); }
                     }
 
@@ -1631,6 +1641,18 @@
                 // 監聽 2. 企業專案
                 onSnapshot(collection(db, 'ent_projects'), (snapshot) => {
                     globalEntData.projects = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    
+                    // 計算未讀數量，顯示 NEW
+                    const currentIds = globalEntData.projects.map(p => p.id);
+                    window.currentEntList = currentIds;
+                    const seenEnt = JSON.parse(localStorage.getItem('mori_seen_ent') || '[]');
+                    const unreadCount = currentIds.filter(id => !seenEnt.includes(id)).length;
+                    const badge = document.getElementById('badge-enterprise');
+                    if (badge) {
+                        if (unreadCount > 0) { badge.textContent = 'NEW'; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } 
+                        else { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); }
+                    }
+
                     entLoaded = true; checkBackendReady();
                     renderEntProjectsDashboard(); updateEntProjectDropdown();
                 });
@@ -1645,7 +1667,7 @@
                     } else { bar.classList.add('hidden'); }
                 });
 
-                // 監聽 3. 活動行程 (依截圖修復還原卡片設計)
+                // 監聽 3. 活動行程 (含未讀紅點 Badge 計算)
                 onSnapshot(doc(db, 'system_messages', 'event_schedule'), (docSnap) => {
                     const modalContainer = document.getElementById('event-schedule-container');
                     const inlineContainer = document.getElementById('inline-event-schedule-container');
@@ -1654,14 +1676,14 @@
                         const events = docSnap.data().events;
                         window.currentEventsList = events; // 儲存至全域供已讀標記使用
                         
-                        // 計算未讀數量
+                        // 計算未讀數量，顯示 NEW
                         const seenEvents = JSON.parse(localStorage.getItem('mori_seen_events') || '[]');
                         const unreadCount = events.filter(ev => !seenEvents.includes(ev.name)).length;
                         
                         const badge = document.getElementById('event-badge');
                         if (badge) {
                             if (unreadCount > 0) {
-                                badge.textContent = unreadCount;
+                                badge.textContent = 'NEW';
                                 badge.classList.remove('hidden');
                                 badge.classList.add('animate-bounce');
                             } else {
@@ -2014,8 +2036,8 @@
                     state.totalCarbon = (state.totalCarbon || 0) + pendingHsrTrip.reduction;
                     state.totalScore = (state.totalScore || 0) + (Math.floor(pendingHsrTrip.reduction / 10) || 5);
                     addToGlobalTotal(pendingHsrTrip.reduction, 0);
-                    window.addLog(`搭乘高鐵 (${hsrStartSel.value}站至${hsrEndSel.value}站)，減碳 ${pendingHsrTrip.reduction}g`);
-                    updateDisplays(); saveData(); window.showToast('高鐵旅程記錄成功！');
+                    window.addLog(`搭乘鐵路 (${hsrStartSel.value}站至${hsrEndSel.value}站)，減碳 ${pendingHsrTrip.reduction}g`);
+                    updateDisplays(); saveData(); window.showToast('鐵路旅程記錄成功！');
                     document.getElementById('hsr-modal')?.classList.add('hidden');
                     hsrStartSel.value = ''; hsrEndSel.value = ''; calculateHsr();
                     startMission('thsr', transportData['thsr']);
@@ -2482,16 +2504,52 @@
             const canvas = document.getElementById('header-canvas');
             if (canvas) {
                 const ctx = canvas.getContext('2d'); let width, height, particles = [];
+                // 定義里山生態與農產元素
+                const emojis = ['🥑', '🥒', '🍎', '🍋', '🥬', '🍐', '🐝', '🦔', '🦋', '🌳', '🌿', '🐞', '🍄', '🍅'];
+                
                 function initCanvas() {
                     width = canvas.width = canvas.parentElement.offsetWidth; height = canvas.height = canvas.parentElement.offsetHeight;
                     particles = [];
-                    for(let i=0; i<30; i++) particles.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() * 20, color: `rgba(255,255,255,${Math.random()*0.3+0.1})` });
+                    // 依據螢幕寬度調整元素數量，避免手機版過於雜亂
+                    const particleCount = width < 768 ? 20 : 35;
+                    
+                    for(let i=0; i<particleCount; i++) {
+                        particles.push({ 
+                            x: Math.random() * width, 
+                            y: Math.random() * height, 
+                            emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                            size: Math.random() * 40 + 30,     // 大小放大至 30px ~ 70px
+                            speedY: Math.random() * 0.6 + 0.2, // 緩慢上升
+                            speedX: (Math.random() - 0.5) * 0.5, // 微微左右飄移
+                            angle: Math.random() * Math.PI * 2,  // 初始旋轉角度
+                            spin: (Math.random() - 0.5) * 0.02   // 旋轉速度
+                            // 移除了 opacity 透明度設定，保持 100% 實體顯示
+                        });
+                    }
                 }
                 function drawCanvas() {
                     ctx.clearRect(0, 0, width, height);
                     particles.forEach(p => {
-                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fillStyle = p.color; ctx.fill();
-                        p.y -= Math.cos(p.d) + 0.5; p.x += Math.sin(p.d) * 0.5; if(p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
+                        ctx.save();
+                        // 移除 ctx.globalAlpha，恢復預設的不透明實體狀態
+                        ctx.font = `${p.size}px Arial`;
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.angle);
+                        ctx.fillText(p.emoji, -p.size/2, p.size/2);
+                        ctx.restore();
+                        
+                        // 更新位置與角度
+                        p.y -= p.speedY;
+                        p.x += p.speedX;
+                        p.angle += p.spin;
+                        
+                        // 飄出邊界後從底部或對向重新進入 (配合放大圖示，將緩衝邊界加大至 80px)
+                        if(p.y < -80) { 
+                            p.y = height + 80; 
+                            p.x = Math.random() * width; 
+                        }
+                        if(p.x < -80) p.x = width + 80;
+                        if(p.x > width + 80) p.x = -80;
                     });
                     requestAnimationFrame(drawCanvas);
                 }
