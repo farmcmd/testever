@@ -1942,6 +1942,27 @@
                                 if(!isNaN(evDate) && evDate < today) isExpired = true;
                             }
 
+                            // 動態生成 Google 行事曆專屬連結
+                            let calendarUrl = '#';
+                            if(ev.date && !isExpired) {
+                                try {
+                                    const evDate = new Date(ev.date.replace(/-/g, '/'));
+                                    if(!isNaN(evDate)) {
+                                        // Google Calendar 全天活動需要 結束日=開始日+1天
+                                        const y1 = evDate.getFullYear(), m1 = String(evDate.getMonth()+1).padStart(2,'0'), d1 = String(evDate.getDate()).padStart(2,'0');
+                                        const nextDate = new Date(evDate); nextDate.setDate(nextDate.getDate() + 1);
+                                        const y2 = nextDate.getFullYear(), m2 = String(nextDate.getMonth()+1).padStart(2,'0'), d2 = String(nextDate.getDate()).padStart(2,'0');
+                                        
+                                        const dates = `${y1}${m1}${d1}/${y2}${m2}${d2}`;
+                                        const title = encodeURIComponent(`探探里山活動: ${ev.name}`);
+                                        const details = encodeURIComponent(`執行單位: ${ev.executor || '里山團隊'}\n報名方式: ${ev.regMethod || '請洽主辦單位'}\n\n👉 更多詳情請至 探探里山-永續旅遊 儀表板查看。`);
+                                        const location = encodeURIComponent(ev.location || '水里里山基地');
+                                        
+                                        calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+                                    }
+                                } catch(e) { console.warn('日期解析異常', e); }
+                            }
+
                             if(isExpired) {
                                 // 已過期卡片模板 (灰色調)
                                 return `
@@ -1989,7 +2010,7 @@
                                                 <span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>
                                                 ${regMethodHtml}
                                             </div>
-                                            <button onclick="window.showToast('加入行事曆功能準備中！')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center">
+                                            <button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center">
                                                 <i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 加入行事曆
                                             </button>
                                         </div>
@@ -2136,7 +2157,7 @@
                 document.body.removeChild(textArea);
             }
 
-            // 新增：綁定 modal 內的複製按鈕與原本的 inline 複製按鈕
+            // 新增：活動專屬分享連結 (定錨至頁面底部)
             const copyEventLink = () => {
                 const url = 'https://farmcmd.github.io/ESGT/#latest-events-section';
                 if (navigator.clipboard && window.isSecureContext) {
