@@ -1310,48 +1310,147 @@
             if (gDisp) gDisp.textContent = `$${totalGreen.toLocaleString()}`;
         }
 
-        // ==========================================
-        // 補回遺失的儀表板渲染與選單更新模組
-        // ==========================================
         function renderGovDashboard() {
             const grid = document.getElementById('gov-projects-grid');
             if(!grid) return;
             grid.innerHTML = '';
+
             if (globalGovData.projects.length === 0) {
-                grid.innerHTML = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無計畫</div>';
+                grid.innerHTML = `
+                    <div class="col-span-1 sm:col-span-2 bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
+                        <i class="fas fa-folder-open text-3xl mb-2 opacity-50"></i>
+                        <p class="text-sm font-bold">目前尚無計畫，請由主辦方建立新儀表板</p>
+                    </div>`;
                 return;
             }
+
             globalGovData.projects.forEach(proj => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "relative h-full";
+
                 const isExpired = proj.deadline && new Date() > new Date(proj.deadline);
                 const opacityClass = isExpired ? 'bg-gray-50 opacity-80' : 'bg-white';
+
                 const ec = Number(proj.eval_count) || 0;
                 const totalScore = Number(proj.total_score) || 0;
                 const avg = ec > 0 ? (totalScore / (ec * 11)).toFixed(1) : "0.0";
                 
+                const budgetVal = Number(proj.budget) || 0;
+                const currentGreen = Number(proj.green) || 0;
+                
+                let socialValueHtml = '';
+                if (proj.sroi && proj.sroi > 0) {
+                    const totalBase = budgetVal + currentGreen;
+                    const socialValue = Math.round(totalBase * proj.sroi);
+                    socialValueHtml = `
+                        <div class="mt-3 mb-3 bg-purple-50/80 p-4 rounded-xl border border-purple-200 shadow-sm">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <p class="text-sm font-bold text-purple-900 flex items-center">
+                                    <i class="fas fa-chart-line mr-2 text-purple-600"></i>社會影響力價值
+                                </p>
+                            </div>
+                            <p class="text-[11px] text-purple-500 mb-2 font-mono tracking-tight">
+                                (預算 $${budgetVal.toLocaleString()} + 綠消 $${currentGreen.toLocaleString()}) × ${proj.sroi.toFixed(2)}
+                            </p>
+                            <p class="text-2xl font-bold text-purple-700 tracking-wider">
+                                <i class="fas fa-hand-holding-heart mr-2 text-purple-500"></i>$${socialValue.toLocaleString()}
+                            </p>
+                        </div>
+                    `;
+                }
+
+                let orgHtml = '';
+                if (proj.supervisor || proj.organizer || proj.executor || proj.coOrganizer) {
+                    orgHtml = `<div class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-2 bg-gray-50/50 px-3 pb-3 rounded-lg">`;
+                    if (proj.supervisor) orgHtml += `<div class="flex items-start text-xs text-gray-600"><i class="fas fa-star text-indigo-400 mr-2 w-3 mt-1 text-center shrink-0"></i><span class="font-bold text-gray-700 mr-1 shrink-0">指導:</span><span class="break-words whitespace-normal leading-relaxed">${proj.supervisor}</span></div>`;
+                    if (proj.organizer) orgHtml += `<div class="flex items-start text-xs text-gray-600"><i class="fas fa-sitemap text-blue-400 mr-2 w-3 mt-1 text-center shrink-0"></i><span class="font-bold text-gray-700 mr-1 shrink-0">主辦:</span><span class="break-words whitespace-normal leading-relaxed">${proj.organizer}</span></div>`;
+                    if (proj.executor) orgHtml += `<div class="flex items-start text-xs text-gray-600"><i class="fas fa-cogs text-emerald-500 mr-2 w-3 mt-1 text-center shrink-0"></i><span class="font-bold text-gray-700 mr-1 shrink-0">執行:</span><span class="break-words whitespace-normal leading-relaxed">${proj.executor}</span></div>`;
+                    if (proj.coOrganizer) orgHtml += `<div class="flex items-start text-xs text-gray-600"><i class="fas fa-hands-helping text-cyan-400 mr-2 w-3 mt-1 text-center shrink-0"></i><span class="font-bold text-gray-700 mr-1 shrink-0">協辦:</span><span class="break-words whitespace-normal leading-relaxed">${proj.coOrganizer}</span></div>`;
+                    orgHtml += `</div>`;
+                }
+
+                let budgetHtml = budgetVal > 0 ? `<span class="inline-block bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs font-bold border border-yellow-200 mb-2 mr-2"><i class="fas fa-coins mr-1"></i>預算 $${budgetVal.toLocaleString()}</span>` : '';
+                let remarkHtml = proj.remark ? `<span class="inline-block bg-gray-50 text-gray-600 px-2 py-1 rounded text-xs font-medium border border-gray-200 mb-2"><i class="fas fa-sticky-note mr-1 text-gray-400"></i>${proj.remark}</span>` : '';
+
+                let feedbackHtml = '';
+                if (proj.feedbacks && proj.feedbacks.length > 0) {
+                    const listItems = proj.feedbacks.map(f => `<div class="mb-2 text-[11px] border-b border-gray-100 pb-1.5 last:border-0 last:pb-0 last:mb-0"><span class="text-gray-400 mr-1">${new Date(f.time).toLocaleDateString('zh-TW')}</span> <span class="font-bold text-gray-700 leading-relaxed">${f.text}</span></div>`).join('');
+                    feedbackHtml = `
+                        <div class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm feedback-section">
+                            <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100">
+                                <span class="text-xs font-bold text-gray-700"><i class="fas fa-comments text-blue-400 mr-1.5"></i>參與者寶貴意見 (${proj.feedbacks.length})</span>
+                                <label class="text-[10px] text-gray-500 cursor-pointer flex items-center print-toggle-label hover:text-blue-600 transition">
+                                    <input type="checkbox" class="mr-1 print-feedback-cb rounded" checked>匯出時包含
+                                </label>
+                            </div>
+                            <div class="feedback-list max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                                ${listItems}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 const card = document.createElement('div');
-                card.className = `${opacityClass} p-5 rounded-2xl shadow-sm border border-gray-100 relative flex flex-col h-full`;
+                card.className = `${opacityClass} p-5 rounded-2xl shadow-sm border border-gray-100 relative flex flex-col justify-between h-full hover:shadow-md transition-all`;
+                
                 card.innerHTML = `
-                    ${isExpired ? '<div class="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-tl-2xl rounded-br-lg shadow-sm z-20"><i class="fas fa-lock mr-1"></i>已截止歸戶</div>' : ''}
-                    <div class="flex-grow">
-                        <p class="text-[11px] text-gray-500 font-bold mb-1"><i class="fas fa-calendar-alt mr-1.5 text-blue-400"></i>${proj.date || '未提供'}</p>
-                        <h4 class="text-lg font-bold text-gray-800 mb-1.5 pr-10 leading-snug">${proj.name}</h4>
-                        <p class="text-sm font-bold text-blue-600 mb-3 flex items-start"><i class="fas fa-flag mr-1.5 mt-0.5"></i>${proj.event || ''}</p>
+                    ${isExpired ? `<div class="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-tl-2xl rounded-br-lg shadow-sm z-20"><i class="fas fa-lock mr-1"></i>已截止歸戶</div>` : ''}
+                    <div class="card-action-btns absolute top-4 right-4 flex gap-2 z-20">
+                        <button class="delete-btn text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm" title="刪除">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button class="download-btn text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 border border-blue-200 rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm" title="下載">
+                            <i class="fas fa-download"></i>
+                        </button>
                     </div>
+                    
+                    <div class="flex-grow">
+                        <p class="text-[11px] text-gray-500 font-bold mb-1 flex items-center">
+                            <i class="fas fa-calendar-alt mr-1.5 text-blue-400"></i>${proj.date || '未提供'}
+                        </p>
+                        ${proj.deadline ? `<p class="text-[11px] font-bold mb-1.5 ${isExpired ? 'text-red-500' : 'text-orange-500'}"><i class="fas fa-clock mr-1.5"></i>數據歸戶截止: ${proj.deadline.replace('T', ' ')}</p>` : ''}
+                        <h4 class="text-lg font-bold text-gray-800 mb-1.5 pr-20 leading-snug ${isExpired ? 'mt-2' : ''}">${proj.name}</h4>
+                        <p class="text-sm font-bold text-blue-600 mb-3 flex items-start"><i class="fas fa-flag mr-1.5 mt-0.5"></i>${proj.event || ''}</p>
+                        
+                        <div class="flex flex-wrap">
+                            ${budgetHtml}
+                            ${remarkHtml}
+                        </div>
+                        
+                        ${socialValueHtml}
+                        ${orgHtml}
+                    </div>
+                    
                     <div class="mt-3 bg-blue-50/50 p-3 rounded-xl border border-blue-100 flex justify-between items-center">
-                        <span class="text-xs font-bold text-gray-700 flex items-center"><i class="fas fa-star text-yellow-400 mr-1.5 text-sm"></i>滿意度 (${ec}人)</span>
+                        <span class="text-xs font-bold text-gray-700 flex items-center"><i class="fas fa-star text-yellow-400 mr-1.5 text-sm"></i>計畫(活動)成效滿意度 (${ec}人)</span>
                         <span class="text-sm font-bold text-blue-600">${avg} ★</span>
                     </div>
+                    
                     <div class="bg-[#F8FAFC] p-3 rounded-xl flex justify-between items-center mt-2 border border-blue-100">
-                        <div><p class="text-[11px] text-gray-500 mb-0.5">累計減碳</p><p class="font-bold text-green-600 text-base">${Math.round(Number(proj.carbon) || 0)}g</p></div>
-                        <div class="text-right"><p class="text-[10px] text-gray-500 mb-0.5">綠色消費</p><p class="font-bold text-blue-600 text-base">$${(Number(proj.green) || 0).toLocaleString()}</p></div>
+                        <div>
+                            <p class="text-[11px] text-gray-500 mb-0.5">累計減碳</p>
+                            <p class="font-bold text-green-600 text-base">${Math.round(Number(proj.carbon) || 0)}g</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-gray-500 mb-0.5">綠色消費</p>
+                            <p class="font-bold text-blue-600 text-base">$${(Number(proj.green) || 0).toLocaleString()}</p>
+                        </div>
                     </div>
-                    <button class="delete-btn absolute top-4 right-4 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm" title="刪除"><i class="fas fa-trash-alt"></i></button>
+                    
+                    ${feedbackHtml}
+                    
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end text-[10px] text-gray-400 pb-2">
+                        <span class="inline-block leading-relaxed break-all pr-2"><i class="fas fa-link mr-1 text-gray-300"></i>溯源網址: https://farmcmd.github.io/ESGT/</span>
+                        <i class="fas fa-qrcode text-gray-300 text-xl flex-shrink-0 mb-0.5"></i>
+                    </div>
                 `;
+
                 card.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation();
-                    const pwd = prompt(`⚠️ 準備刪除「${proj.name}」儀表板。請輸入密碼：`);
+                    const pwd = prompt(`⚠️ 準備刪除「${proj.name}」儀表板。\n請輸入管理員密碼：`);
                     if (pwd !== 'mori2025') { if (pwd !== null) window.showToast('密碼錯誤'); return; }
                     if (!confirm(`確定要永久刪除「${proj.name}」嗎？`)) return;
+                    
                     if (db && !isOfflineMode && !proj.id.startsWith('mock_')) {
                         try { await deleteDoc(doc(db, 'gov_projects', proj.id)); window.showToast('已刪除！'); } catch(err) { window.showToast('刪除失敗'); }
                     } else {
@@ -1359,7 +1458,81 @@
                         renderGovDashboard(); updateProjectDropdown(); window.showToast('已刪除！');
                     }
                 };
-                grid.appendChild(card);
+
+                card.querySelector('.download-btn').onclick = async (e) => {
+                    e.stopPropagation();
+                    if (!window.html2canvas) return window.showToast('截圖模組載入中');
+                    
+                    const feedbackSec = card.querySelector('.feedback-section');
+                    const printCb = card.querySelector('.print-feedback-cb');
+                    const feedbackList = card.querySelector('.feedback-list');
+                    const printToggleLabel = card.querySelector('.print-toggle-label');
+                    
+                    let origDisplay = '', origMaxHeight = '', origOverflow = '';
+
+                    if (feedbackSec) {
+                        origDisplay = feedbackSec.style.display;
+                        if (printCb && !printCb.checked) {
+                            feedbackSec.style.display = 'none'; 
+                        } else {
+                            origMaxHeight = feedbackList.style.maxHeight;
+                            origOverflow = feedbackList.style.overflowY;
+                            feedbackList.style.maxHeight = 'none';
+                            feedbackList.style.overflowY = 'visible';
+                            if (printToggleLabel) printToggleLabel.style.display = 'none';
+                        }
+                    }
+                    
+                    const clone = wrapper.cloneNode(true);
+                    clone.style.cssText = `
+                        position: fixed !important; top: 0 !important; left: 0 !important;
+                        width: 500px !important; padding: 24px 24px 32px 24px !important;
+                        background-color: #F7F4EF !important; border-radius: 16px !important;
+                        z-index: -9999 !important; pointer-events: none !important;
+                    `;
+                    
+                    const btnsClone = clone.querySelector('.card-action-btns');
+                    if(btnsClone) btnsClone.style.display = 'none';
+                    const titleClone = clone.querySelector('h4');
+                    if(titleClone) titleClone.classList.remove('pr-20');
+                    
+                    const cardInside = clone.firstElementChild;
+                    if (cardInside) {
+                        cardInside.style.boxShadow = 'none';
+                        cardInside.style.marginBottom = '4px';
+                    }
+
+                    document.body.appendChild(clone);
+
+                    try {
+                        await new Promise(r => setTimeout(r, 300));
+                        const canvas = await html2canvas(clone, { scale: 2, backgroundColor: '#F7F4EF', useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 500 });
+                        const imgData = canvas.toDataURL('image/png');
+                        if (imgData === 'data:,') throw new Error('Canvas is empty');
+                        
+                        const safeName = proj.name ? proj.name.replace(/[\\/:*?"<>|]/g, '_') : '未命名';
+                        const link = document.createElement('a');
+                        link.download = `探探里山_政府儀表板_${safeName}.png`;
+                        link.href = imgData; link.click();
+                        window.showToast('下載成功！');
+                    } catch(err) { 
+                        console.error("Dashboard download error:", err);
+                        window.showToast('下載失敗，請重試'); 
+                    } finally {
+                        document.body.removeChild(clone);
+                        if (feedbackSec) {
+                            feedbackSec.style.display = origDisplay;
+                            if (printCb && printCb.checked) {
+                                feedbackList.style.maxHeight = origMaxHeight;
+                                feedbackList.style.overflowY = origOverflow;
+                                if (printToggleLabel) printToggleLabel.style.display = 'flex';
+                            }
+                        }
+                    }
+                };
+
+                wrapper.appendChild(card);
+                grid.appendChild(wrapper);
             });
         }
 
@@ -1377,49 +1550,246 @@
             const grid = document.getElementById('enterprise-grid');
             if(!grid) return;
             grid.innerHTML = '';
+
             if (globalEntData.projects.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-dashed border-gray-300">目前尚無企業活動</div>';
+                grid.innerHTML = `
+                    <div class="col-span-1 sm:col-span-2 bg-gray-50 p-6 rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
+                        <i class="fas fa-folder-open text-3xl mb-2 opacity-50"></i>
+                        <p class="text-sm font-bold">目前尚無企業活動，請由企業永續辦公室建立</p>
+                    </div>`;
                 return;
             }
+
             globalEntData.projects.forEach(proj => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "relative h-full";
+
                 const isExpired = proj.deadline && new Date() > new Date(proj.deadline);
                 const opacityClass = isExpired ? 'bg-gray-50 opacity-80' : 'bg-white';
+
                 const ec = Number(proj.eval_count) || 0;
                 const totalScore = Number(proj.total_score) || 0;
+                
+                const avgE = ec > 0 ? ((Number(proj.E_score) || (totalScore*(3/12))) / (ec * 3)).toFixed(1) : "0.0";
+                const avgS = ec > 0 ? ((Number(proj.S_score) || (totalScore*(3/12))) / (ec * 3)).toFixed(1) : "0.0";
+                const avgG = ec > 0 ? ((Number(proj.G_score) || (totalScore*(4/12))) / (ec * 4)).toFixed(1) : "0.0";
                 const avgOverall = ec > 0 ? (totalScore / (ec * 12)).toFixed(1) : "0.0";
 
-                const card = document.createElement('div');
-                card.className = `${opacityClass} p-5 rounded-2xl shadow-sm border border-gray-100 relative flex flex-col h-full`;
-                card.innerHTML = `
-                    ${isExpired ? '<div class="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-tl-2xl rounded-br-lg shadow-sm z-20"><i class="fas fa-lock mr-1"></i>已截止歸戶</div>' : ''}
-                    <div class="flex-grow">
-                        <p class="text-[11px] text-gray-500 font-bold mb-1"><i class="fas fa-calendar-alt mr-1.5 text-mori-sage"></i>年度：${proj.year || '未提供'}</p>
-                        <h4 class="text-lg font-bold text-mori-dark mb-1.5 pr-10 leading-snug">${proj.orgName}</h4>
-                        <p class="text-sm font-bold text-mori-forest mb-2 flex items-start"><i class="fas fa-flag mr-1.5 mt-0.5"></i>${proj.event || ''}</p>
+                let linkedHtml = '';
+                let socialHtml = '';
+                if(proj.linkedProject) {
+                    const lp = proj.linkedProject;
+                    const currentGreen = Number(proj.green) || 0;
+                    const totalBase = (Number(lp.amount) || 0) + currentGreen;
+                    const sroiMultiplier = Number(lp.sroiWeight) || 1;
+                    const socialValue = Math.round(totalBase * sroiMultiplier);
+
+                    linkedHtml = `
+                        <div class="mt-3 mb-2 bg-yellow-50/80 p-3 rounded-xl border border-yellow-200">
+                            <div class="flex justify-between items-center mb-2 border-b border-yellow-200/50 pb-1.5">
+                                <p class="text-xs font-bold text-yellow-800 flex items-center">
+                                    <i class="fas fa-handshake mr-1.5 text-yellow-600"></i>企業採購或協同專案執行
+                                </p>
+                                <span class="bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded text-[10px] font-bold">SROI ${sroiMultiplier}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-700 font-medium">${lp.type}</span>
+                                <span class="font-bold text-mori-wood">投入 $${(Number(lp.amount)||0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    socialHtml = `
+                        <div class="mt-3 mb-3 bg-purple-50/80 p-4 rounded-xl border border-purple-200 shadow-sm">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <p class="text-sm font-bold text-purple-900 flex items-center">
+                                    <i class="fas fa-chart-line mr-2 text-purple-600"></i>社會影響力價值
+                                </p>
+                            </div>
+                            <p class="text-[10px] text-purple-500 mb-2 font-mono">
+                                (採購 $${(Number(lp.amount)||0).toLocaleString()} + 綠消 $${currentGreen.toLocaleString()}) × ${sroiMultiplier.toFixed(2)}
+                            </p>
+                            <p class="text-2xl font-bold text-purple-700 tracking-wider">
+                                <i class="fas fa-hand-holding-heart mr-2 text-purple-500"></i>$${socialValue.toLocaleString()}
+                            </p>
+                        </div>
+                    `;
+                }
+
+                let websiteHtml = proj.websiteUrl ? `<a href="${proj.websiteUrl}" target="_blank" class="inline-flex items-center mt-2 mb-2 text-xs text-blue-500 bg-blue-50 border border-blue-100 px-2 py-1 rounded hover:bg-blue-100 transition font-bold"><i class="fas fa-external-link-alt mr-1"></i>企業永續網站</a>` : '';
+                let remarkHtml = proj.remark ? `<p class="text-xs text-gray-500 mb-2 flex items-center"><i class="fas fa-sticky-note mr-1.5 text-mori-sage"></i>${proj.remark}</p>` : '';
+
+                let feedbackHtml = '';
+                if (proj.feedbacks && proj.feedbacks.length > 0) {
+                    const listItems = proj.feedbacks.map(f => `<div class="mb-2 text-[11px] border-b border-gray-100 pb-1.5 last:border-0 last:pb-0 last:mb-0"><span class="text-gray-400 mr-1">${new Date(f.time).toLocaleDateString('zh-TW')}</span> <span class="font-bold text-gray-700 leading-relaxed">${f.text}</span></div>`).join('');
+                    feedbackHtml = `
+                        <div class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm feedback-section">
+                            <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-gray-100">
+                                <span class="text-xs font-bold text-gray-700"><i class="fas fa-comments text-mori-sage mr-1.5"></i>參與者寶貴意見 (${proj.feedbacks.length})</span>
+                                <label class="text-[10px] text-gray-500 cursor-pointer flex items-center print-toggle-label hover:text-mori-forest transition">
+                                    <input type="checkbox" class="mr-1 print-feedback-cb rounded" checked>匯出時包含
+                                </label>
+                            </div>
+                            <div class="feedback-list max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                                ${listItems}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let evalHtml = `
+                    <div class="mb-3 bg-yellow-50/50 p-3 rounded-xl border border-yellow-100 shadow-sm">
+                        <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-yellow-100">
+                            <span class="text-xs font-bold text-gray-700 flex items-center"><i class="fas fa-star text-yellow-400 mr-1.5 text-sm"></i>企業員工滿意度與透明評鑑 (${ec}人)</span>
+                            <span class="text-sm font-bold text-mori-forest">${avgOverall} ★</span>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-gray-500 font-medium px-1">
+                            <span>環境 E: ${avgE}</span>
+                            <span>社會 S: ${avgS}</span>
+                            <span>治理 G: ${avgG}</span>
+                        </div>
                     </div>
-                    <div class="mb-3 bg-yellow-50/50 p-3 rounded-xl border border-yellow-100 shadow-sm flex justify-between items-center">
-                        <span class="text-xs font-bold text-gray-700 flex items-center"><i class="fas fa-star text-yellow-400 mr-1.5 text-sm"></i>滿意度 (${ec}人)</span>
-                        <span class="text-sm font-bold text-mori-forest">${avgOverall} ★</span>
-                    </div>
-                    <div class="bg-[#F0F7F4] p-3 rounded-xl flex justify-between items-center mt-1 border border-mori-light">
-                        <div><p class="text-[10px] text-gray-500 mb-0.5">累計減碳</p><p class="font-bold text-mori-forest text-sm">${Math.round(Number(proj.carbon) || 0)}g</p></div>
-                        <div class="text-right"><p class="text-[10px] text-gray-500 mb-0.5">綠色消費</p><p class="font-bold text-mori-wood text-sm">$${(Number(proj.green) || 0).toLocaleString()}</p></div>
-                    </div>
-                    <button class="delete-btn absolute top-4 right-4 text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm" title="刪除"><i class="fas fa-trash-alt"></i></button>
                 `;
+
+                const card = document.createElement('div');
+                card.className = `${opacityClass} p-5 rounded-2xl shadow-sm border border-gray-100 relative flex flex-col justify-between h-full hover:shadow-md transition-all`;
+                card.innerHTML = `
+                    ${isExpired ? `<div class="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-tl-2xl rounded-br-lg shadow-sm z-20"><i class="fas fa-lock mr-1"></i>已截止歸戶</div>` : ''}
+                    <div class="card-action-btns absolute top-4 right-4 flex gap-2 z-20">
+                        <button class="delete-btn text-red-400 bg-red-50 hover:bg-red-100 hover:text-red-600 border border-red-100 rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm" title="刪除此儀表板">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button class="download-btn text-mori-forest bg-mori-light hover:bg-mori-sage hover:text-white border border-mori-sage rounded-full w-8 h-8 flex items-center justify-center transition shadow-sm" title="下載此儀表板為圖片">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex-grow">
+                        <p class="text-[11px] text-gray-500 font-bold mb-1 flex items-center">
+                            <i class="fas fa-calendar-alt mr-1.5 text-mori-sage"></i>年度：${proj.year || '未提供'}
+                        </p>
+                        ${proj.deadline ? `<p class="text-[11px] font-bold mb-1.5 ${isExpired ? 'text-red-500' : 'text-orange-500'}"><i class="fas fa-clock mr-1.5"></i>數據歸戶截止: ${proj.deadline.replace('T', ' ')}</p>` : ''}
+                        <h4 class="text-lg font-bold text-mori-dark mb-1.5 pr-20 leading-snug ${isExpired ? 'mt-2' : ''}">${proj.orgName}</h4>
+                        <p class="text-sm font-bold text-mori-forest mb-2 flex items-start"><i class="fas fa-flag mr-1.5 mt-0.5"></i>${proj.event || ''}</p>
+                        ${websiteHtml}
+                        
+                        ${linkedHtml}
+                        ${remarkHtml}
+                        ${socialHtml}
+                    </div>
+                    
+                    ${evalHtml}
+                    
+                    <div class="bg-[#F0F7F4] p-3 rounded-xl flex justify-between items-center mt-1 border border-mori-light">
+                        <div>
+                            <p class="text-[10px] text-gray-500 mb-0.5">累計減碳</p>
+                            <p class="font-bold text-mori-forest text-sm">${Math.round(Number(proj.carbon) || 0)}g</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-gray-500 mb-0.5">綠色消費</p>
+                            <p class="font-bold text-mori-wood text-sm">$${(Number(proj.green) || 0).toLocaleString()}</p>
+                        </div>
+                    </div>
+                    
+                    ${feedbackHtml}
+                    
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end text-[10px] text-gray-400 pb-2">
+                        <span class="inline-block leading-relaxed break-all pr-2"><i class="fas fa-link mr-1 text-gray-300"></i>溯源網址: https://farmcmd.github.io/ESGT/</span>
+                        <i class="fas fa-qrcode text-gray-300 text-xl flex-shrink-0 mb-0.5"></i>
+                    </div>
+                `;
+
                 card.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation();
-                    const pwd = prompt(`⚠️ 準備刪除「${proj.orgName}」儀表板。請輸入密碼：`);
+                    const pwd = prompt(`⚠️ 準備刪除「${proj.orgName}」儀表板。\n請輸入管理員密碼：`);
                     if (pwd !== 'mori2025') { if (pwd !== null) window.showToast('密碼錯誤'); return; }
                     if (!confirm(`確定要永久刪除「${proj.orgName}」嗎？`)) return;
+                    
                     if (db && !isOfflineMode && !proj.id.startsWith('mock_')) {
-                        try { await deleteDoc(doc(db, 'ent_projects', proj.id)); window.showToast('已刪除！'); } catch(err) { window.showToast('刪除失敗'); }
+                        try {
+                            await deleteDoc(doc(db, 'ent_projects', proj.id));
+                            window.showToast('已刪除！');
+                        } catch(err) { window.showToast('刪除失敗'); }
                     } else {
                         globalEntData.projects = globalEntData.projects.filter(p => p.id !== proj.id);
                         renderEntProjectsDashboard(); updateEntProjectDropdown(); window.showToast('已刪除！');
                     }
                 };
-                grid.appendChild(card);
+
+                card.querySelector('.download-btn').onclick = async (e) => {
+                    e.stopPropagation();
+                    if (!window.html2canvas) return window.showToast('截圖模組載入中');
+                    
+                    const feedbackSec = card.querySelector('.feedback-section');
+                    const printCb = card.querySelector('.print-feedback-cb');
+                    const feedbackList = card.querySelector('.feedback-list');
+                    const printToggleLabel = card.querySelector('.print-toggle-label');
+                    
+                    let origDisplay = '', origMaxHeight = '', origOverflow = '';
+
+                    if (feedbackSec) {
+                        origDisplay = feedbackSec.style.display;
+                        if (printCb && !printCb.checked) {
+                            feedbackSec.style.display = 'none'; 
+                        } else {
+                            origMaxHeight = feedbackList.style.maxHeight;
+                            origOverflow = feedbackList.style.overflowY;
+                            feedbackList.style.maxHeight = 'none';
+                            feedbackList.style.overflowY = 'visible';
+                            if (printToggleLabel) printToggleLabel.style.display = 'none';
+                        }
+                    }
+                    
+                    const clone = wrapper.cloneNode(true);
+                    clone.style.cssText = `
+                        position: fixed !important; top: 0 !important; left: 0 !important;
+                        width: 500px !important; padding: 24px 24px 32px 24px !important;
+                        background-color: #F7F4EF !important; border-radius: 16px !important;
+                        z-index: -9999 !important; pointer-events: none !important;
+                    `;
+                    
+                    const btnsClone = clone.querySelector('.card-action-btns');
+                    if(btnsClone) btnsClone.style.display = 'none';
+                    const titleClone = clone.querySelector('h4');
+                    if(titleClone) titleClone.classList.remove('pr-20');
+                    
+                    const cardInside = clone.firstElementChild;
+                    if (cardInside) {
+                        cardInside.style.boxShadow = 'none';
+                        cardInside.style.marginBottom = '4px';
+                    }
+
+                    document.body.appendChild(clone);
+
+                    try {
+                        await new Promise(r => setTimeout(r, 300));
+                        const canvas = await html2canvas(clone, { scale: 2, backgroundColor: '#F7F4EF', useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 500 });
+                        const imgData = canvas.toDataURL('image/png');
+                        if (imgData === 'data:,') throw new Error('Canvas is empty');
+                        
+                        const safeName = proj.orgName ? proj.orgName.replace(/[\\/:*?"<>|]/g, '_') : '未命名';
+                        const link = document.createElement('a');
+                        link.download = `探探里山_企業儀表板_${safeName}.png`;
+                        link.href = imgData; link.click();
+                        window.showToast('下載成功！');
+                    } catch(err) {
+                        console.error("Dashboard download error:", err);
+                        window.showToast('下載失敗，請重試');
+                    } finally {
+                        document.body.removeChild(clone);
+                        if (feedbackSec) {
+                            feedbackSec.style.display = origDisplay;
+                            if (printCb && printCb.checked) {
+                                feedbackList.style.maxHeight = origMaxHeight;
+                                feedbackList.style.overflowY = origOverflow;
+                                if (printToggleLabel) printToggleLabel.style.display = 'flex';
+                            }
+                        }
+                    }
+                };
+
+                wrapper.appendChild(card);
+                grid.appendChild(wrapper);
             });
         }
 
