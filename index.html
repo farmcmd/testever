@@ -1704,7 +1704,7 @@
                         }
 
                         if (events.length === 0) {
-                            const emptyHtml = '<div class="col-span-full py-12 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
+                            const emptyHtml = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
                             if(modalContainer) modalContainer.innerHTML = emptyHtml;
                             if(inlineContainer) inlineContainer.innerHTML = emptyHtml;
                             return;
@@ -1714,13 +1714,22 @@
                         const today = new Date();
                         today.setHours(0,0,0,0);
 
-                        const html = events.map(ev => {
-                            // 判斷是否過期
+                        // 新增：預處理並排序活動 (未過期優先置頂，已過期自動沉底)
+                        const processedEvents = [...events].map(ev => {
                             let isExpired = false;
                             if(ev.date) {
                                 const evDate = new Date(ev.date.replace(/-/g, '/')); 
                                 if(!isNaN(evDate) && evDate < today) isExpired = true;
                             }
+                            return { ...ev, isExpired };
+                        }).sort((a, b) => {
+                            if (a.isExpired === b.isExpired) return 0; // 若狀態相同，維持原順序
+                            return a.isExpired ? 1 : -1;               // false (未過期) 排在 true (已過期) 前面
+                        });
+
+                        const html = processedEvents.map(ev => {
+                            // 判斷是否過期 (已於上方預處理)
+                            let isExpired = ev.isExpired;
 
                             // 動態生成 Google 行事曆專屬連結
                             let calendarUrl = '#';
