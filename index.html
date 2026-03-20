@@ -2393,10 +2393,9 @@
 
             document.getElementById('confirm-short-dist-btn')?.addEventListener('click', () => {
                 if (!pendingShortTrip.isValid) return;
-                state.totalMileage = (state.totalMileage || 0) + pendingShortTrip.distMeters; state.totalCarbon = (state.totalCarbon || 0) + pendingShortTrip.reduction; state.totalScore = (state.totalScore || 0) + (Math.floor(pendingShortTrip.reduction / 10) || 5);
-                addToGlobalTotal(pendingShortTrip.reduction, 0); window.addLog(`完成市區短距旅程 (${pendingShortTrip.distKm}km)，減碳 ${pendingShortTrip.reduction}g`); updateDisplays(); saveData();
-                document.getElementById('confirm-short-dist-btn').classList.add('hidden'); document.getElementById('short-dist-result').textContent = '';
-                document.querySelectorAll('.short-dist-btn').forEach(b => b.classList.remove('bg-emerald-200', 'border-emerald-500', 'shadow-inner')); window.showToast('短距旅程記錄成功！'); pendingShortTrip.isValid = false;
+                window.currentPendingReward = { type: 'short_trip', data: pendingShortTrip };
+                document.getElementById('reward-verify-code').value = '';
+                window.openModal('reward-verification-modal');
             });
 
             document.getElementById('preview-trip-button')?.addEventListener('click', () => {
@@ -2429,12 +2428,53 @@
 
             document.getElementById('confirm-trip-button')?.addEventListener('click', () => {
                 if (!pendingTrip.isValid) return;
-                state.totalMileage = (state.totalMileage || 0) + pendingTrip.distMeters; state.totalCarbon = (state.totalCarbon || 0) + pendingTrip.reduction; state.totalScore = (state.totalScore || 0) + (Math.floor(pendingTrip.reduction / 10) || 5);
-                addToGlobalTotal(pendingTrip.reduction, 0); window.addLog(`完成旅程：${selectedStart.name} 到 ${selectedEnd.name}，減碳 ${pendingTrip.reduction}g`);
-                updateDisplays(); saveData(); document.getElementById('confirm-trip-button')?.classList.add('hidden'); document.getElementById('preview-trip-button')?.classList.remove('hidden');
-                if(document.getElementById('trip-calculation-status')) document.getElementById('trip-calculation-status').textContent = ''; window.showToast('旅程記錄成功！');
-                selectedStart = null; selectedEnd = null; pendingTrip.isValid = false; updateTripDisplay(); renderPoiList();
+                window.currentPendingReward = { type: 'trip', data: pendingTrip };
+                const codeInput = document.getElementById('reward-verify-code');
+                if (codeInput) codeInput.value = ''; // 加入安全防護
+                window.openModal('reward-verification-modal');
             });
+
+            // --- 修復新增：獎勵乘數過濾引擎 (Multiplier Logic) ---
+            const processReward = (multiplier) => {
+                if (!window.currentPendingReward) return;
+                const { type, data } = window.currentPendingReward;
+                
+                const finalMeters = data.distMeters * multiplier;
+                const finalKm = data.distKm * multiplier;
+                const finalReduction = Math.round(data.reduction * multiplier);
+                const finalScore = Math.floor(finalReduction / 10) || (multiplier === 1 ? 5 : 1);
+                
+                state.totalMileage = (state.totalMileage || 0) + finalMeters;
+                state.totalCarbon = (state.totalCarbon || 0) + finalReduction;
+                state.totalScore = (state.totalScore || 0) + finalScore;
+                addToGlobalTotal(finalReduction, 0);
+                
+                const modeText = multiplier === 1 ? "(完整獎勵)" : "(體驗獎勵 1/10)";
+                
+                if (type === 'trip') {
+                    window.addLog(`完成旅程 ${modeText}：${selectedStart.name} 到 ${selectedEnd.name}，減碳 ${finalReduction}g`);
+                    document.getElementById('confirm-trip-button')?.classList.add('hidden'); document.getElementById('preview-trip-button')?.classList.remove('hidden');
+                    if(document.getElementById('trip-calculation-status')) document.getElementById('trip-calculation-status').textContent = ''; 
+                    selectedStart = null; selectedEnd = null; pendingTrip.isValid = false; updateTripDisplay(); renderPoiList();
+                } else if (type === 'short_trip') {
+                    window.addLog(`完成市區短距旅程 ${modeText} (${data.distKm}km)，減碳 ${finalReduction}g`);
+                    document.getElementById('confirm-short-dist-btn').classList.add('hidden'); document.getElementById('short-dist-result').textContent = '';
+                    document.querySelectorAll('.short-dist-btn').forEach(b => b.classList.remove('bg-emerald-200', 'border-emerald-500', 'shadow-inner')); pendingShortTrip.isValid = false;
+                }
+                
+                updateDisplays(); saveData(); window.showToast(`旅程記錄成功！獲得減碳 ${finalReduction}g`);
+                window.closeModal('reward-verification-modal');
+                window.currentPendingReward = null;
+            };
+
+            document.getElementById('reward-verify-full-btn')?.addEventListener('click', () => {
+                const code = document.getElementById('reward-verify-code')?.value.trim();
+                if (/^\d{7}$/.test(code)) { processReward(1); } else { window.showToast('❌ 請輸入正確的 7 碼數字密碼！'); }
+            });
+
+            document.getElementById('reward-verify-tenth-btn')?.addEventListener('click', () => { processReward(0.1); });
+            // --- 結束：獎勵乘數過濾引擎 ---
+
         }
 
         function renderMap() {
