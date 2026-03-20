@@ -2394,7 +2394,8 @@
             document.getElementById('confirm-short-dist-btn')?.addEventListener('click', () => {
                 if (!pendingShortTrip.isValid) return;
                 window.currentPendingReward = { type: 'short_trip', data: pendingShortTrip };
-                document.getElementById('reward-verify-code').value = '';
+                const codeInput = document.getElementById('reward-verify-code');
+                if (codeInput) codeInput.value = ''; // 加入安全防護，避免介面遺失時引發當機
                 window.openModal('reward-verification-modal');
             });
 
