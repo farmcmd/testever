@@ -950,15 +950,15 @@
         </div>
     </div>
 
-    <!-- 9. 鐵路運輸說明 Modal -->
+    <!-- 9. 搭乘高鐵說明 Modal -->
     <div id="hsr-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-md p-6 bg-white border-t-4 border-orange-500 relative">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-            <div class="text-center mb-4"><div class="text-5xl mb-2">🚆</div><h3 class="text-2xl font-bold text-gray-800">鐵路運輸搭乘紀錄</h3></div>
+            <div class="text-center mb-4"><div class="text-5xl mb-2">🚆</div><h3 class="text-2xl font-bold text-gray-800">高鐵運輸搭乘紀錄</h3></div>
             <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 mb-5 text-sm text-gray-700 leading-relaxed text-justify shadow-inner">
-                <p>感謝您選擇鐵路運輸！作為極低碳的大眾運輸工具，軌道運輸能大幅減少跨縣市移動的碳排放。</p>
-                <p class="mt-2 font-bold text-orange-700"><i class="fas fa-magic mr-1"></i>請設定您的搭乘起訖站，系統將自動核算減碳里程（650g / 10km）。</p>
-                <p class="mt-2 font-bold text-mori-forest"><i class="fas fa-info-circle mr-1"></i>抵達鐵路目的站後，請再次選取您拜訪景點使用的交通方式。請儘量保存您的票據證明，做為您的減碳依據。</p>
+                <p>選擇鐵路運輸！作為極低碳的大眾運輸工具，軌道運輸能大幅減少跨縣市移動的碳排放。</p>
+                <p class="mt-2 font-bold text-orange-700"><i class="fas fa-magic mr-1"></i>請設定您的搭乘起訖站，系統將自動核算減碳里程，</p>
+                <p class="mt-2 font-bold text-mori-forest"><i class="fas fa-exclamation-circle text-red-500 mr-1 animate-pulse"></i>抵達鐵路目的站後，請再次選取您拜訪景點使用的交通方式。請儘量保存您的票據證明，做為您的減碳依據。</p>
             </div>
             <div class="flex flex-col gap-3 mb-5 bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <div class="flex items-center gap-3"><span class="font-bold text-gray-600 whitespace-nowrap text-sm"><i class="fas fa-map-marker-alt text-orange-400 mr-1"></i>起站</span><select id="hsr-start" class="flex-1 p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 font-bold text-gray-700"></select></div>
@@ -1193,7 +1193,7 @@
             carpool_3: { name: '3人共乘', icon: '🚗', reduction: 350, mode: 'DRIVING' },
             carpool_4: { name: '4人共乘', icon: '🚗', reduction: 400, mode: 'DRIVING' },
             carpool_5: { name: '5人共乘', icon: '🚐', reduction: 450, mode: 'DRIVING' },
-            thsr: { name: '鐵路運輸', icon: '🚆', reduction: 650, mode: 'TRANSIT' },
+            thsr: { name: '搭乘高鐵', icon: '🚆', reduction: 650, mode: 'TRANSIT' },
             drive_alone: { name: '單人自駕', icon: '🚘', reduction: 0, mode: 'DRIVING' },
             taxi: { name: '預約導覽車', icon: '🚕', reduction: 0, mode: 'DRIVING' }
         };
@@ -2219,12 +2219,36 @@
                     }
                 };
                 hsrStartSel.addEventListener('change', calculateHsr); hsrEndSel.addEventListener('change', calculateHsr);
+                
+                // 修復：修改確認按鈕邏輯，改為開啟二次驗證視窗
                 hsrConfirmBtn.addEventListener('click', () => {
                     if (!pendingHsrTrip.isValid) return;
-                    state.totalMileage = (state.totalMileage || 0) + (pendingHsrTrip.distKm * 1000); state.totalCarbon = (state.totalCarbon || 0) + pendingHsrTrip.reduction; state.totalScore = (state.totalScore || 0) + (Math.floor(pendingHsrTrip.reduction / 10) || 5); addToGlobalTotal(pendingHsrTrip.reduction, 0);
-                    window.addLog(`搭乘鐵路 (${hsrStartSel.value}站至${hsrEndSel.value}站)，減碳 ${pendingHsrTrip.reduction}g`);
-                    updateDisplays(); saveData(); window.showToast('鐵路旅程記錄成功！'); window.closeModal('hsr-modal');
-                    hsrStartSel.value = ''; hsrEndSel.value = ''; calculateHsr(); startMission('thsr', transportData['thsr']);
+                    window.closeModal('hsr-modal');
+                    const ticketInput = document.getElementById('hsr-ticket-verify-input');
+                    if (ticketInput) ticketInput.value = ''; // 清空上次輸入
+                    window.openModal('hsr-ticket-modal');
+                });
+
+                // 新增：高鐵票號專屬驗證邏輯 (嚴格要求13碼，且盲測不提示)
+                document.getElementById('hsr-ticket-verify-btn')?.addEventListener('click', () => {
+                    const ticketVal = document.getElementById('hsr-ticket-verify-input')?.value.trim();
+                    if (ticketVal.length !== 13) {
+                        window.showToast('❌ 票號驗證失敗，請確認票號是否正確');
+                        return;
+                    }
+                    // 驗證通過，寫入資料與日誌
+                    state.totalMileage = (state.totalMileage || 0) + (pendingHsrTrip.distKm * 1000); 
+                    state.totalCarbon = (state.totalCarbon || 0) + pendingHsrTrip.reduction; 
+                    state.totalScore = (state.totalScore || 0) + (Math.floor(pendingHsrTrip.reduction / 10) || 5); 
+                    addToGlobalTotal(pendingHsrTrip.reduction, 0);
+                    
+                    window.addLog(`搭乘高鐵 (${hsrStartSel.value}站至${hsrEndSel.value}站)，票號已驗證，減碳 ${pendingHsrTrip.reduction}g`);
+                    updateDisplays(); saveData(); window.showToast('高鐵旅程與票號驗證成功！'); 
+                    window.closeModal('hsr-ticket-modal');
+                    
+                    // 重置選單並啟動地圖任務
+                    hsrStartSel.value = ''; hsrEndSel.value = ''; calculateHsr(); 
+                    startMission('thsr', transportData['thsr']);
                 });
             }
 
