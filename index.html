@@ -970,6 +970,24 @@
         </div>
     </div>
 
+    <!-- 9.5 高鐵票號二次驗證 Modal (修復：補回因版本回退而遺失的實體視窗) -->
+    <div id="hsr-ticket-modal" class="modal-overlay hidden">
+        <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-orange-500 relative text-center">
+            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10" onclick="window.closeModal('hsr-ticket-modal')"><i class="fas fa-times text-xl"></i></button>
+            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-ticket-alt text-2xl text-orange-500"></i></div></div>
+            <h3 class="text-xl font-bold text-mori-dark mb-2">請輸入高鐵票號</h3>
+            
+            <p class="text-[12px] md:text-[13px] text-gray-700 mb-5 leading-relaxed text-justify bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                <i class="fas fa-info-circle mr-1 text-orange-500"></i>票號顯示於實體車票、手機 T-EX App、超商繳費單或車票上。
+            </p>
+
+            <input type="text" id="hsr-ticket-verify-input" class="w-full p-3 border-2 border-gray-200 rounded-xl text-center text-lg font-mono tracking-widest focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 transition-all mb-5 bg-white uppercase placeholder-gray-300" placeholder="輸入票號">
+            <div class="flex flex-col gap-3">
+                <button id="hsr-ticket-verify-btn" class="w-full py-3 bg-orange-500 text-white rounded-xl font-bold shadow-md hover:bg-orange-600 transition flex justify-center items-center"><i class="fas fa-check-circle mr-2"></i>確認票號並記錄里程</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 10. 活動行程與報名資訊 Modal -->
     <div id="event-schedule-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-2xl p-6 md:p-8 border-t-8 border-yellow-500 bg-white">
@@ -2098,16 +2116,33 @@
                 });
             });
 
-            // 終極修復：偷偷置入自動重載邏輯 (完美落實您的決策，100% 成功率)
+            // 終極修復：偷偷置入自動重載邏輯 (結合嚴格初始化與快取淨化)
             const langSelect = document.getElementById('custom-lang-select');
             if (langSelect) {
-                // 同步 Cookie 狀態，讓選單維持在使用者的選擇
+                // 1. 安全讀取 Cookie 並驗證
                 const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]+)/);
+                let currentLang = 'zh-TW'; // 絕對預設值
+                
                 if (match) {
-                    const currentLang = match[1].split('/').pop();
-                    if (currentLang) langSelect.value = currentLang;
+                    const parsedLang = match[1].split('/').pop();
+                    // 檢查 Cookie 的語言是否真的在我們的支援清單中
+                    const validLangs = Array.from(langSelect.options).map(o => o.value);
+                    if (validLangs.includes(parsedLang)) {
+                        currentLang = parsedLang;
+                    }
                 }
 
+                // 2. 強制設定 UI 顯示，不受瀏覽器干擾
+                langSelect.value = currentLang;
+
+                // 3. 若預設為繁體中文，主動淨化可能殘留的 Google 翻譯 Cookie
+                if (currentLang === 'zh-TW') {
+                    const domain = window.location.hostname;
+                    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+                    if (domain) document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+                }
+
+                // 4. 綁定切換事件
                 langSelect.addEventListener('change', function(e) {
                     const lang = e.target.value;
                     const domain = window.location.hostname;
