@@ -2098,51 +2098,7 @@
                 });
             });
 
-            // 修復：客製化語言選單連動邏輯 (無重整、無閃退版)
-            const langSelect = document.getElementById('custom-lang-select');
-            if (langSelect) {
-                // 1. 頁面載入時，同步 Cookie 狀態
-                const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]+)/);
-                if (match) {
-                    const currentLang = match[1].split('/').pop();
-                    if (currentLang) langSelect.value = currentLang;
-                }
-
-                // 2. 監聽切換事件
-                langSelect.addEventListener('change', function(e) {
-                    const lang = e.target.value;
-                    const domain = window.location.hostname;
-                    
-                    // 寫入 Cookie 確保狀態記住
-                    document.cookie = `googtrans=/zh-TW/${lang}; path=/;`;
-                    if (domain) document.cookie = `googtrans=/zh-TW/${lang}; path=/; domain=${domain};`;
-
-                    const triggerTranslation = () => {
-                        const selectField = document.querySelector('.goog-te-combo');
-                        if (selectField) {
-                            selectField.value = lang;
-                            selectField.dispatchEvent(new Event('change'));
-                            window.showToast('🌐 語言切換成功！');
-                            return true;
-                        }
-                        return false;
-                    };
-
-                    if (!triggerTranslation()) {
-                        window.showToast('⏳ 翻譯模組喚醒中...');
-                        let retryCount = 0;
-                        const retryInterval = setInterval(() => {
-                            if (triggerTranslation()) {
-                                clearInterval(retryInterval);
-                            } else if (retryCount > 15) {
-                                clearInterval(retryInterval);
-                                window.showToast('⚠️ 模組載入較慢，請稍候再次選擇');
-                            }
-                            retryCount++;
-                        }, 500);
-                    }
-                });
-            }
+            // (已徹底刪除客製化選單的連動與重整邏輯，完全交由 Google 原生腳本接管，確保穩定且絕不重整)
 
             // 匯出與匯入個人進度檔邏輯
             document.getElementById('export-data-button')?.addEventListener('click', () => {
