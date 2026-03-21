@@ -2098,7 +2098,56 @@
                 });
             });
 
-            // (已徹底刪除客製化選單的連動與重整邏輯，完全交由 Google 原生腳本接管，確保穩定且絕不重整)
+            // 終極修復：無痛語言轉換邏輯 (絕不重整網頁，完美連動客製化選單)
+            const langSelect = document.getElementById('custom-lang-select');
+            if (langSelect) {
+                // 同步 Cookie 狀態
+                const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]+)/);
+                if (match) {
+                    const currentLang = match[1].split('/').pop();
+                    if (currentLang) langSelect.value = currentLang;
+                }
+
+                langSelect.addEventListener('change', function(e) {
+                    const lang = e.target.value;
+                    const domain = window.location.hostname;
+                    
+                    // 根據選擇寫入或清除 Cookie
+                    if (lang === 'zh-TW') {
+                        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+                        if (domain) document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+                    } else {
+                        document.cookie = `googtrans=/zh-TW/${lang}; path=/;`;
+                        if (domain) document.cookie = `googtrans=/zh-TW/${lang}; path=/; domain=${domain};`;
+                    }
+
+                    const triggerTranslation = () => {
+                        const selectField = document.querySelector('.goog-te-combo');
+                        if (selectField) {
+                            selectField.value = lang;
+                            selectField.dispatchEvent(new Event('change'));
+                            window.showToast(lang === 'zh-TW' ? '🌐 已恢復繁體中文' : '🌐 語言切換成功！');
+                            return true;
+                        }
+                        return false;
+                    };
+
+                    // 若找不到開關，啟動無感輪詢
+                    if (!triggerTranslation()) {
+                        window.showToast('⏳ 翻譯模組喚醒中...');
+                        let retryCount = 0;
+                        const retryInterval = setInterval(() => {
+                            if (triggerTranslation()) {
+                                clearInterval(retryInterval);
+                            } else if (retryCount > 15) {
+                                clearInterval(retryInterval);
+                                window.showToast('⚠️ 網路連線較慢，請稍後再次選擇語言');
+                            }
+                            retryCount++;
+                        }, 500);
+                    }
+                });
+            }
 
             // 匯出與匯入個人進度檔邏輯
             document.getElementById('export-data-button')?.addEventListener('click', () => {
