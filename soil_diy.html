@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="台灣氣候與地質下的土壤生成互動學習網頁">
+    <title>台灣土壤生成之旅 | Taiwan Soil Journey</title>
+    <style>
+:root {
+    --color-r: #4a4a4a; /* Rock */
+    --color-c: #8b7355; /* Weathered rock */
+    --color-b: #b24d2e; /* Red soil */
+    --color-a: #5a3c21; /* Top soil */
+    --color-o: #2d1c10; /* Organic */
+    
+    --bg-dark: #121212;
+    --text-light: #f5f5f5;
+    --accent: #4caf50;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    overflow: hidden; /* We might handle scrolling via JS for full sections */
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+#start-btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background-color: var(--accent);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s, background-color 0.3s;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+#start-btn:hover {
+    transform: scale(1.05);
+    background-color: #45a049;
+}
+
+/* Main Soil Layers Container */
+#soil-layers {
+    height: 100vh;
+    width: 100vw;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+/* Individual Layer */
+.soil-layer {
+    height: 100vh;
+    width: 100vw;
+    scroll-snap-align: start;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 2rem;
+}
+
+.layer-r { background-color: var(--color-r); background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path d="M0,50 L50,0 L100,50 L50,100 Z" fill="rgba(0,0,0,0.1)"/></svg>'); }
+.layer-c { background-color: var(--color-c); }
+.layer-b { background-color: var(--color-b); }
+.layer-a { background-color: var(--color-a); }
+.layer-o { background-color: var(--color-o); }
+.layer-agri { background-color: #3b592d; }
+
+.layer-content {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+.layer-content h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.info-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 5px solid var(--accent);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    border-radius: 0 10px 10px 0;
+}
+
+.info-card strong {
+    color: var(--accent);
+    font-size: 1.3rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+/* Game Containers */
+.game-container {
+    width: 100%;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Navigation */
+#layer-nav {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+}
+
+#layer-nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#layer-nav li {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+#layer-nav li:hover, #layer-nav li.active {
+    background: var(--accent);
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+</style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header class="hero">
+            <h1>台灣土壤生成之旅</h1>
+            <p>點擊開始，從最深處的堅硬岩床，見證土壤的誕生。</p>
+            <button id="start-btn">開始探索</button>
+        </header>
+
+        <main id="soil-layers" class="hidden">
+            <!-- Layers will be appended here or hardcoded -->
+            <section id="layer-r" class="soil-layer layer-r">
+                <div class="layer-content">
+                    <h2>R層：堅硬岩床 (Bedrock)</h2>
+                    <div class="info-card">
+                        <strong>深藏的巨石</strong><br>
+                        台灣位於歐亞板塊與菲律賓海板塊交界，頻繁的造山運動與地震讓地底深處的岩盤受到強烈擠壓，多數為變質岩與沉積岩。這正是孕育台灣特殊土壤的起點。
+                    </div>
+                    <div class="game-container" id="game-r"></div>
+                </div>
+            </section>
+            
+            <section id="layer-c" class="soil-layer layer-c">
+                <div class="layer-content">
+                    <h2>C層：母質層 (Parent Material)</h2>
+                    <div class="info-card">
+                        <strong>從岩石到土壤的過渡</strong><br>
+                        受台灣高溫多雨潮濕氣候、頻繁颱風與地震影響，岩床劇烈風化碎裂成礫石。這些初具土壤雛形的「母質」，是決定未來土壤礦物成分的關鍵。
+                    </div>
+                    <div class="game-container" id="game-c"></div>
+                </div>
+            </section>
+            
+            <section id="layer-b" class="soil-layer layer-b">
+                <div class="layer-content">
+                    <h2>B層：澱積層 (Subsoil)</h2>
+                    <div class="info-card">
+                        <strong>養分與礦物的沉澱帶</strong><br>
+                        因台灣多雨，表層水流將上方溶解的礦物質（如鐵、鋁離子）及黏粒往下洗刷，並聚積於此。這就是為何台灣常見呈現紅棕色的「紅土」甚至形成堅硬的鐵鋁磐。
+                    </div>
+                    <div class="game-container" id="game-b"></div>
+                </div>
+            </section>
+            
+            <section id="layer-a" class="soil-layer layer-a">
+                <div class="layer-content">
+                    <h2>A層：表土層 (Topsoil)</h2>
+                    <div class="info-card">
+                        <strong>生命扎根的沃土</strong><br>
+                        A層混合了豐富的有機質（來自O層）與無機礦物質，顏色較深且土壤結構疏鬆，適合植物根系發展與儲存水分。像嘉南平原的沖積土，就是極具農業價值的A層。
+                    </div>
+                    <div class="game-container" id="game-a"></div>
+                </div>
+            </section>
+
+            <section id="layer-o" class="soil-layer layer-o">
+                <div class="layer-content">
+                    <h2>O層：有機質層 (Organic Horizon)</h2>
+                    <div class="info-card">
+                        <strong>地表的微觀宇宙</strong><br>
+                        落葉、枯枝與動物遺體堆積在未開墾的森林地表，由龐大的地下工作者（馬陸、蚯蚓、腐植菌等）進行分解，轉換成能提供植物大量養分的「腐植質」。
+                    </div>
+                    <div class="game-container" id="game-o"></div>
+                </div>
+            </section>
+
+            <section id="layer-agri" class="soil-layer layer-agri">
+                <div class="layer-content">
+                    <h2>人類與土壤：農業環境抉擇</h2>
+                    <div class="info-card">
+                        <strong>土地的回饋取決於我們的對待</strong><br>
+                        人類在表土（O層與A層）上進行農作。友善農業與草生栽培能維護生態多樣性，讓土壤呼吸；而化肥與農藥雖能帶來短期增產，卻容易造成土壤板結（硬化），失去生命力與永續性。
+                    </div>
+                    <div class="game-container" id="game-agri"></div>
+                </div>
+            </section>
+        </main>
+        
+        <nav id="layer-nav" class="hidden">
+            <ul>
+                <li data-target="layer-r" class="active">R</li>
+                <li data-target="layer-c">C</li>
+                <li data-target="layer-b">B</li>
+                <li data-target="layer-a">A</li>
+                <li data-target="layer-o">O</li>
+                <li data-target="layer-agri" style="font-size: 0.8rem; line-height: 1;">農</li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Game Scripts -->
+    <script>
+function initGameR() {
+    const container = document.getElementById('game-r');
+    
+    // Create UI elements
+    container.innerHTML = `
+        <div class="shakes-counter">板塊能量: <span id="shake-energy">0</span>%</div>
+        <div class="plate-container">
+            <div id="plate-left" class="tectonic-plate">歐亞板塊</div>
+            <div id="plate-right" class="tectonic-plate">菲律賓海板塊</div>
+            <div id="bedrock"></div>
+        </div>
+        <button id="quake-btn">引發地震 (點擊或按空白鍵)</button>
+        <div id="r-message" class="game-message hidden">岩床已碎裂！進入下一層（C層）</div>
+    `;
+
+    // Inject local styles dynamically
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .plate-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            height: 250px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 5px solid var(--color-r);
+        }
+        .tectonic-plate {
+            width: 45%;
+            height: 150px;
+            background: #333;
+            border: 2px solid #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ccc;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+        #bedrock {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background: #555;
+            border-radius: 10px 10px 0 0;
+            background-image: radial-gradient(#666 20%, transparent 20%),
+                              radial-gradient(#444 20%, transparent 20%);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            box-shadow: inset 0 0 20px #222;
+            transition: all 0.2s;
+            z-index: 2;
+        }
+        .shake {
+            animation: shakeLayer 0.2s infinite;
+        }
+        .crack-1 { clip-path: polygon(0 0, 100% 0, 100% 100%, 70% 80%, 50% 100%, 30% 70%, 0 100%); }
+        .crack-2 { clip-path: polygon(0 0, 40% 30%, 60% 10%, 100% 0, 100% 100%, 80% 60%, 50% 100%, 20% 50%, 0 100%); }
+        .crack-final { transform: translateX(-50%) translateY(50px) scale(0.8) rotate(15deg) !important; opacity: 0.5; }
+        
+        @keyframes shakeLayer {
+            0% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(-5px); }
+        }
+        #quake-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        #quake-btn:active {
+            transform: scale(0.95);
+        }
+        .shakes-counter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .game-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: #2ecc71;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+    `;
+    document.head.appendChild(style);
+
+    let energy = 0;
+    const maxEnergy = 100;
+    const energyDisplay = document.getElementById('shake-energy');
+    const bedrock = document.getElementById('bedrock');
+    const plates = document.querySelectorAll('.tectonic-plate');
+    const msg = document.getElementById('r-message');
+    let isCompleted = false;
+
+    function triggerQuake() {
+        if (isCompleted) return;
+        
+        energy += 5;
+        if (energy > maxEnergy) energy = maxEnergy;
+        energyDisplay.textContent = energy;
+
+        // Visual effects for plates squeezing together
+        plates[0].style.transform = `translateX(${energy / 2}px) skewX(-${energy/10}deg)`;
+        plates[1].style.transform = `translateX(-${energy / 2}px) skewX(${energy/10}deg)`;
+
+        // Shake bedrock
+        bedrock.classList.add('shake');
+        setTimeout(() => bedrock.classList.remove('shake'), 200);
+
+        // Cracking phases
+        if (energy > 30) bedrock.classList.add('crack-1');
+        if (energy > 60) bedrock.classList.add('crack-2');
+
+        if (energy >= maxEnergy) {
+            completeGame();
+        }
+    }
+
+    function completeGame() {
+        isCompleted = true;
+        bedrock.classList.add('crack-final');
+        msg.classList.remove('hidden');
+        document.getElementById('quake-btn').disabled = true;
+
+        setTimeout(() => {
+            document.getElementById('layer-c').scrollIntoView({ behavior: 'smooth' });
+        }, 2000);
+    }
+
+    // Event Listeners
+    document.getElementById('quake-btn').addEventListener('click', triggerQuake);
+    document.addEventListener('keydown', (e) => {
+        // Spacebar triggers if we're focused on this layer roughly
+        if (e.code === 'Space' && !isCompleted && window.getSelection().toString() === '') {
+            const rect = container.getBoundingClientRect();
+            if (rect.top >= 0 && rect.bottom <= window.innerHeight + 200) {
+                triggerQuake();
+                e.preventDefault();
+            }
+        }
+    });
+}
+
+
+function initGameC() {
+    const container = document.getElementById('game-c');
+    
+    container.innerHTML = `
+        <div class="weathering-ui">
+            <div class="weathering-progress">風化程度: <span id="weather-pct">0</span>%</div>
+            <div class="tools-panel">
+                <button class="tool-btn" id="tool-rain" data-tool="rain">🌧️ 降雨</button>
+                <button class="tool-btn" id="tool-sun" data-tool="sun">☀️ 烈日</button>
+            </div>
+            <div id="c-rock" class="c-rock-base"></div>
+        </div>
+        <div id="c-message" class="game-message hidden">岩石已風化碎裂成母質！進入下一層（B層）</div>
+    `;
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .weathering-ui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            padding-top: 20px;
+            position: relative;
+        }
+        .weathering-progress {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .tools-panel {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            z-index: 10;
+        }
+        .tool-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tool-btn.active-tool {
+            background: var(--accent);
+            transform: scale(1.1);
+        }
+        .c-rock-base {
+            width: 150px;
+            height: 120px;
+            background: #6D6A65;
+            border-radius: 30% 70% 50% 50% / 50% 40% 60% 50%;
+            position: relative;
+            cursor: crosshair;
+            transition: all 0.3s;
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5);
+            background-image: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 10%, transparent 10%);
+        }
+        .c-rock-base:active {
+            transform: scale(0.95);
+        }
+        .rock-chip {
+            position: absolute;
+            background: #5A5753;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall 1s forwards;
+            width: 15px;
+            height: 15px;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(100px) scale(0); opacity: 0; }
+        }
+        .gravel-pile {
+            position: absolute;
+            bottom: 20px;
+            width: 200px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="8" fill="%238b7355" opacity="0.8"/></svg>');
+            border-radius: 50% 50% 0 0;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        .c-rain-effect, .c-sun-effect {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 30% 70% 50% 50% / 50% 40% 60% 50%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .c-rain-effect { background: rgba(0, 150, 255, 0.3); }
+        .c-sun-effect { background: rgba(255, 100, 0, 0.3); }
+        .flash { opacity: 1 !important; }
+    `;
+    document.head.appendChild(style);
+
+    const rainBtn = document.getElementById('tool-rain');
+    const sunBtn = document.getElementById('tool-sun');
+    const rock = document.getElementById('c-rock');
+    const pctSpan = document.getElementById('weather-pct');
+    const msg = document.getElementById('c-message');
+
+    // Add visual effects layers to rock
+    const rainEffect = document.createElement('div');
+    rainEffect.className = 'c-rain-effect';
+    const sunEffect = document.createElement('div');
+    sunEffect.className = 'c-sun-effect';
+    rock.appendChild(rainEffect);
+    rock.appendChild(sunEffect);
+
+    // Add gravel pile
+    const gravel = document.createElement('div');
+    gravel.className = 'gravel-pile';
+    document.querySelector('.weathering-ui').appendChild(gravel);
+
+    let activeTool = null;
+    let weatherPct = 0;
+    let isCompleted = false;
+
+    function selectTool(toolKey, btn) {
+        if(isCompleted) return;
+        activeTool = toolKey;
+        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active-tool'));
+        btn.classList.add('active-tool');
+    }
+
+    rainBtn.addEventListener('click', () => selectTool('rain', rainBtn));
+    sunBtn.addEventListener('click', () => selectTool('sun', sunBtn));
+
+    rock.addEventListener('click', (e) => {
+        if(isCompleted || !activeTool) return;
+
+        // Visual flash based on tool
+        if(activeTool === 'rain') {
+            rainEffect.classList.add('flash');
+            setTimeout(() => rainEffect.classList.remove('flash'), 200);
+        } else {
+            sunEffect.classList.add('flash');
+            setTimeout(() => sunEffect.classList.remove('flash'), 200);
+        }
+
+        // Spawn rock chips
+        for(let i=0; i<3; i++) {
+            const chip = document.createElement('div');
+            chip.className = 'rock-chip';
+            chip.style.left = (e.offsetX + (Math.random() * 40 - 20)) + 'px';
+            chip.style.top = e.offsetY + 'px';
+            rock.appendChild(chip);
+            setTimeout(() => chip.remove(), 1000);
+        }
+
+        weatherPct += 4;
+        if(weatherPct > 100) weatherPct = 100;
+        pctSpan.textContent = weatherPct;
+        
+        // Shrink the rock
+        const scale = 1 - (weatherPct * 0.005);
+        rock.style.transform = `scale(${scale})`;
+        
+        // Show gravel forming
+        gravel.style.opacity = weatherPct / 100;
+
+        if(weatherPct >= 100) {
+            isCompleted = true;
+            rock.style.display = 'none';
+            msg.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('layer-b').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+    });
+}
+
+
+function initGameB() {
+    const container = document.getElementById('game-b');
+    
+    container.innerHTML = `
+        <div class="b-game-ui">
+            <div class="b-progress">紅土化程度: <span id="b-pct">0</span>%</div>
+            <div id="b-game-area">
+                <div id="catcher">澱積區</div>
+            </div>
+        </div>
+        <div id="b-message" class="game-message hidden">礦物質已澱積成紅土！進入下一層（A層）</div>
+    `;
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .b-game-ui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            padding-top: 10px;
+        }
+        .b-progress {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+        #b-game-area {
+            position: relative;
+            width: 100%;
+            flex-grow: 1;
+            overflow: hidden;
+            background: linear-gradient(to bottom, transparent, rgba(178, 77, 46, 0.1));
+            transition: background-color 0.5s;
+        }
+        #catcher {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid #fff;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        #catcher:active {
+            cursor: grabbing;
+        }
+        .mineral {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        .mineral.fe { background: #e74c3c; } /* Iron */
+        .mineral.al { background: #bdc3c7; color: #333; } /* Aluminum */
+    `;
+    document.head.appendChild(style);
+
+    const gameArea = document.getElementById('b-game-area');
+    const catcher = document.getElementById('catcher');
+    const pctSpan = document.getElementById('b-pct');
+    const msg = document.getElementById('b-message');
+
+    let catchPct = 0;
+    let isCompleted = false;
+    let gameLoop;
+    let minerals = [];
+    
+    // Catcher Drag Logic
+    let isDragging = false;
+    let catcherX = gameArea.clientWidth / 2;
+    
+    // Initialize position
+    catcher.style.left = catcherX + 'px';
+
+    const startDrag = (e) => {
+        isDragging = true;
+    };
+    const moveDrag = (e) => {
+        if(!isDragging) return;
+        const rect = gameArea.getBoundingClientRect();
+        let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        if(!clientX) return;
+        
+        let x = clientX - rect.left;
+        // boundary check
+        const halfWidth = catcher.clientWidth / 2;
+        if(x < halfWidth) x = halfWidth;
+        if(x > gameArea.clientWidth - halfWidth) x = gameArea.clientWidth - halfWidth;
+        
+        catcherX = x;
+        catcher.style.left = catcherX + 'px';
+    };
+    const endDrag = () => {
+        isDragging = false;
+    };
+
+    catcher.addEventListener('mousedown', startDrag);
+    catcher.addEventListener('touchstart', startDrag);
+    document.addEventListener('mousemove', moveDrag);
+    document.addEventListener('touchmove', moveDrag);
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchend', endDrag);
+
+    // Spawning minerals
+    function spawnMineral() {
+        if(isCompleted) return;
+        const type = Math.random() > 0.5 ? 'fe' : 'al';
+        const el = document.createElement('div');
+        el.className = 'mineral ' + type;
+        el.textContent = type === 'fe' ? 'Fe' : 'Al';
+        
+        const x = Math.random() * (gameArea.clientWidth - 30) + 15;
+        el.style.left = x + 'px';
+        el.style.top = '-20px';
+        
+        gameArea.appendChild(el);
+        
+        minerals.push({
+            el: el,
+            x: x,
+            y: -20,
+            speed: Math.random() * 2 + 1.5,
+            active: true
+        });
+        
+        setTimeout(spawnMineral, Math.random() * 1000 + 500);
+    }
+    
+    // Check intersection observation for animation loop
+    const observer = new IntersectionObserver((entries) => {
+        if(entries[0].isIntersecting && !gameLoop && !isCompleted) {
+            startGame();
+        } else if(!entries[0].isIntersecting && gameLoop) {
+            cancelAnimationFrame(gameLoop);
+            gameLoop = null;
+        }
+    });
+    observer.observe(document.getElementById('layer-b'));
+
+    function startGame() {
+        spawnMineral();
+        updateGame();
+    }
+
+    function updateGame() {
+        if(isCompleted) return;
+        
+        const catcherRect = catcher.getBoundingClientRect();
+        const areaRect = gameArea.getBoundingClientRect();
+        
+        const catcherTop = catcher.offsetTop;
+        const catcherLeft = catcherX - catcher.clientWidth/2;
+        const catcherRight = catcherX + catcher.clientWidth/2;
+
+        minerals.forEach(m => {
+            if(!m.active) return;
+            m.y += m.speed;
+            m.el.style.top = m.y + 'px';
+            
+            // Check collision
+            if(m.y > catcherTop - 10 && m.y < catcherTop + 20) {
+                if(m.x > catcherLeft && m.x < catcherRight) {
+                    // Caught!
+                    m.active = false;
+                    m.el.remove();
+                    
+                    catchPct += 5;
+                    if(catchPct > 100) catchPct = 100;
+                    pctSpan.textContent = catchPct;
+                    
+                    // Change background color to redder
+                    gameArea.style.backgroundColor = 'rgba(178, 77, 46, ' + (catchPct/100 * 0.5) + ')';
+                    
+                    if(catchPct >= 100) {
+                        completeGame();
+                    }
+                }
+            }
+            
+            // Out of bounds
+            if(m.y > areaRect.height) {
+                m.active = false;
+                m.el.remove();
+            }
+        });
+        
+        minerals = minerals.filter(m => m.active);
+        
+        if(!isCompleted) {
+            gameLoop = requestAnimationFrame(updateGame);
+        }
+    }
+
+    function completeGame() {
+        isCompleted = true;
+        msg.classList.remove('hidden');
+        minerals.forEach(m => m.el.remove());
+        
+        setTimeout(() => {
+            document.getElementById('layer-a').scrollIntoView({ behavior: 'smooth' });
+        }, 2000);
+    }
+}
+
+
+function initGameA() {
+    const container = document.getElementById('game-a');
+    
+    container.innerHTML = `
+        <div class="a-game-ui">
+            <div class="a-progress">養分吸收: <span id="a-pct">0</span>%</div>
+            <p style="font-size: 0.9rem; color: #ccc;">拖拉從種子畫出根系吸收養分粒子</p>
+            <div id="a-canvas-container">
+                <canvas id="a-canvas" width="400" height="250"></canvas>
+            </div>
+        </div>
+        <div id="a-message" class="game-message hidden">表土層生機蓬勃！進入最高層（O層）</div>
+    `;
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .a-game-ui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+        .a-progress {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            z-index: 10;
+        }
+        #a-canvas-container {
+            position: relative;
+            width: 400px;
+            height: 250px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            cursor: crosshair;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            touch-action: none;
+        }
+        canvas {
+            display: block;
+        }
+    `;
+    document.head.appendChild(style);
+
+    const canvas = document.getElementById('a-canvas');
+    const ctx = canvas.getContext('2d');
+    const pctSpan = document.getElementById('a-pct');
+    const msg = document.getElementById('a-message');
+
+    let nutrition = 0;
+    const maxNutrition = 100;
+    let isCompleted = false;
+
+    // Roots
+    let roots = []; // array of points {x, y}
+    let isDrawing = false;
+    
+    // Nutrients
+    let nutrients = [];
+    for(let i=0; i<15; i++) {
+        nutrients.push({
+            x: Math.random() * 360 + 20,
+            y: Math.random() * 200 + 40,
+            radius: 8,
+            collected: false
+        });
+    }
+
+    // Start seed
+    const seed = { x: 200, y: 10, radius: 10 };
+
+    function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw Nutrients
+        nutrients.forEach(n => {
+            if(!n.collected) {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.radius, 0, Math.PI*2);
+                ctx.fillStyle = '#6ab04c';
+                ctx.fill();
+                ctx.strokeStyle = '#badc58';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        });
+
+        // Draw seed
+        ctx.beginPath();
+        ctx.arc(seed.x, seed.y, seed.radius, 0, Math.PI*2);
+        ctx.fillStyle = '#f9ca24';
+        ctx.fill();
+
+        // Draw Roots
+        if (roots.length > 0) {
+            ctx.beginPath();
+            ctx.moveTo(roots[0].x, roots[0].y);
+            for(let i=1; i<roots.length; i++) {
+                ctx.lineTo(roots[i].x, roots[i].y);
+            }
+            ctx.strokeStyle = '#f6e58d';
+            ctx.lineWidth = 4;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
+    }
+
+    render();
+
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+
+    const startDraw = (e) => {
+        if(isCompleted) return;
+        const pos = getPos(e);
+        // Start from seed or last root end
+        if(roots.length === 0) {
+            const dist = Math.hypot(pos.x - seed.x, pos.y - seed.y);
+            if(dist < 30) {
+                isDrawing = true;
+                roots.push(pos);
+            }
+        } else {
+            const last = roots[roots.length - 1];
+            const dist = Math.hypot(pos.x - last.x, pos.y - last.y);
+            if(dist < 40) {
+                isDrawing = true;
+            }
+        }
+    };
+
+    const moveDraw = (e) => {
+        if(!isDrawing || isCompleted) return;
+        const pos = getPos(e);
+        
+        roots.push(pos);
+        
+        // Check nutrient collision
+        nutrients.forEach(n => {
+            if(!n.collected) {
+                const dist = Math.hypot(pos.x - n.x, pos.y - n.y);
+                if(dist < n.radius + 10) {
+                    n.collected = true;
+                    nutrition += 100/15;
+                    if(nutrition > 100) nutrition = 100;
+                    pctSpan.textContent = Math.round(nutrition);
+                    
+                    if(nutrition >= 99) {
+                        completeGame();
+                    }
+                }
+            }
+        });
+        
+        render();
+    };
+
+    const endDraw = () => {
+        isDrawing = false;
+    };
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('touchstart', startDraw);
+    canvas.addEventListener('mousemove', moveDraw);
+    canvas.addEventListener('touchmove', moveDraw);
+    document.addEventListener('mouseup', endDraw);
+    document.addEventListener('touchend', endDraw);
+
+    function completeGame() {
+        if(isCompleted) return;
+        isCompleted = true;
+        pctSpan.textContent = "100";
+        msg.classList.remove('hidden');
+        
+        setTimeout(() => {
+            document.getElementById('layer-o').scrollIntoView({ behavior: 'smooth' });
+        }, 2000);
+    }
+}
+
+
+function initGameO() {
+    const container = document.getElementById('game-o');
+    
+    container.innerHTML = `
+        <div class="o-game-ui">
+            <div class="o-progress">腐植質累積: <span id="o-pct">0</span>%</div>
+            <p style="font-size: 0.9rem; color: #ccc;">左右滑動接住落葉。點擊下方按鈕切換分解者！接住特殊落花可長出真菌幫忙分解。</p>
+            <div class="decomposer-controls">
+                <button class="d-btn active" data-type="millipede">🐛 馬陸 (快速)</button>
+                <button class="d-btn" data-type="earthworm">🪱 蚯蚓 (廣域)</button>
+            </div>
+            <div id="o-game-area">
+                <div id="player-org">🐛</div>
+            </div>
+        </div>
+        <div id="o-message" class="game-message hidden">太棒了！進入最終的農業抉擇層</div>
+    `;
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .o-game-ui { display: flex; flex-direction: column; align-items: center; height: 100%; padding-top: 5px; }
+        .o-progress { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; z-index: 10; }
+        .decomposer-controls { display: flex; gap: 10px; margin-bottom: 10px; z-index: 10; }
+        .d-btn { background: rgba(255,255,255,0.2); border: 2px solid #ccc; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .d-btn.active { background: var(--accent); border-color: white; font-weight: bold; }
+        #o-game-area { position: relative; width: 100%; flex-grow: 1; overflow: hidden; background: rgba(0,0,0,0.2); border-radius: 10px; }
+        #player-org { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 2rem; display: flex; justify-content: center; align-items: center; user-select: none; touch-action: none; transition: font-size 0.2s; }
+        .leaf { position: absolute; font-size: 1.5rem; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5)); }
+        .fungi { position: absolute; bottom: 5px; font-size: 1.8rem; filter: drop-shadow(0 0 5px #ff9ff3); animation: pop 0.3s ease-out; }
+        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+    `;
+    document.head.appendChild(style);
+
+    const gameArea = document.getElementById('o-game-area');
+    const playerOrg = document.getElementById('player-org');
+    const pctSpan = document.getElementById('o-pct');
+    const msg = document.getElementById('o-message');
+    const dBtns = document.querySelectorAll('.d-btn');
+
+    let humusPct = 0;
+    let isCompleted = false;
+    let gameLoop;
+    let leaves = [];
+    let fungis = []; // Store stationary fungi
+    
+    let playerX = gameArea.clientWidth / 2;
+    playerOrg.style.left = playerX + 'px';
+
+    // Organism types
+    let orgType = 'millipede';
+    let catchRadius = 25;
+
+    dBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            dBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            orgType = btn.getAttribute('data-type');
+            if(orgType === 'millipede') {
+                playerOrg.textContent = '🐛';
+                catchRadius = 25;
+            } else {
+                playerOrg.textContent = '🪱';
+                catchRadius = 45; // Wider catch
+            }
+        });
+    });
+
+    const handleMove = (e) => {
+        if(isCompleted) return;
+        const rect = gameArea.getBoundingClientRect();
+        let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        if(!clientX) return;
+        
+        let x = clientX - rect.left;
+        let speedLimit = orgType === 'millipede' ? 1 : 0.4;
+        
+        // Pseudo speed limit for earthworm via interpolation
+        let dx = x - playerX;
+        playerX += dx * speedLimit;
+        
+        if(playerX < catchRadius) playerX = catchRadius;
+        if(playerX > gameArea.clientWidth - catchRadius) playerX = gameArea.clientWidth - catchRadius;
+        
+        playerOrg.style.left = playerX + 'px';
+    };
+
+    gameArea.addEventListener('mousemove', handleMove);
+    gameArea.addEventListener('touchmove', handleMove);
+
+    const normalLeaves = ['🍂', '🍃', '🍁'];
+    function spawnLeaf() {
+        if(isCompleted) return;
+        
+        const isSpecial = Math.random() < 0.15; // 15% chance for special flower
+        const content = isSpecial ? '🥀' : normalLeaves[Math.floor(Math.random() * normalLeaves.length)];
+        const el = document.createElement('div');
+        el.className = 'leaf';
+        el.textContent = content;
+        
+        const x = Math.random() * (gameArea.clientWidth - 40) + 20;
+        el.style.left = x + 'px';
+        el.style.top = '-30px';
+        el.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
+        
+        gameArea.appendChild(el);
+        
+        leaves.push({ el, x, y: -30, speed: Math.random() * 1.5 + 1, isSpecial, active: true });
+        setTimeout(spawnLeaf, Math.random() * 800 + 400);
+    }
+
+    function spawnFungi(x) {
+        const f = document.createElement('div');
+        f.className = 'fungi';
+        f.textContent = '🍄';
+        f.style.left = x + 'px';
+        gameArea.appendChild(f);
+        fungis.push({ x: x });
+    }
+    
+    const observer = new IntersectionObserver((entries) => {
+        if(entries[0].isIntersecting && !gameLoop && !isCompleted) {
+            startGame();
+        } else if(!entries[0].isIntersecting && gameLoop) {
+            cancelAnimationFrame(gameLoop);
+            gameLoop = null;
+        }
+    });
+    observer.observe(document.getElementById('layer-o'));
+
+    function startGame() { spawnLeaf(); updateGame(); }
+
+    function updateGame() {
+        if(isCompleted) return;
+        
+        const playerTop = playerOrg.offsetTop;
+        const areaRect = gameArea.getBoundingClientRect();
+
+        leaves.forEach(l => {
+            if(!l.active) return;
+            l.y += l.speed;
+            l.el.style.top = l.y + 'px';
+            
+            let caught = false;
+
+            // Player collision
+            if(l.y > playerTop - 20 && l.y < playerTop + 20) {
+                if(l.x > playerX - catchRadius && l.x < playerX + catchRadius) {
+                    caught = true;
+                }
+            }
+
+            // Fungi collision
+            if(!caught && l.y > areaRect.height - 40) {
+                for(let f of fungis) {
+                    if(l.x > f.x - 30 && l.x < f.x + 30) {
+                        caught = true;
+                        break;
+                    }
+                }
+            }
+            
+            if(caught) {
+                l.active = false;
+                l.el.remove();
+                
+                if(l.isSpecial) spawnFungi(l.x);
+
+                humusPct += l.isSpecial ? 15 : 5;
+                if(humusPct > 100) humusPct = 100;
+                pctSpan.textContent = Math.round(humusPct);
+                gameArea.style.backgroundColor = 'rgba(0,0,0,' + (0.2 + (humusPct/100)*0.5) + ')';
+                
+                if(humusPct >= 99) completeGame();
+            } else if(l.y > areaRect.height) {
+                l.active = false;
+                l.el.remove();
+            }
+        });
+        
+        leaves = leaves.filter(l => l.active);
+        if(!isCompleted) gameLoop = requestAnimationFrame(updateGame);
+    }
+
+    function completeGame() {
+        isCompleted = true;
+        pctSpan.textContent = "100";
+        msg.classList.remove('hidden');
+        leaves.forEach(l => l.el.remove());
+        setTimeout(() => {
+            document.getElementById('layer-agri').scrollIntoView({ behavior: 'smooth' });
+        }, 2000);
+    }
+}
+
+
+function initGameAgri() {
+    const container = document.getElementById('game-agri');
+    
+    container.innerHTML = `
+        <div class="agri-game-ui">
+            <div class="agri-status">土壤活力: <span id="agri-vitality">50</span>%</div>
+            <p style="font-size: 0.9rem; color: #ccc;">選擇一種農業經營模式觀察土壤變化</p>
+            
+            <div class="farming-options">
+                <button class="farm-btn action-organic" id="btn-organic">🌱 有機/草生栽培</button>
+                <button class="farm-btn action-chemical" id="btn-chemical">🧪 化學肥料/農藥</button>
+            </div>
+            
+            <div id="farm-field">
+                <div class="soil-surface" id="soil-surface"></div>
+                <div class="crop" id="crop">🌱</div>
+                <div class="soil-organisms" id="soil-orgs">
+                    <span class="org">🐛</span>
+                    <span class="org">🪱</span>
+                    <span class="org">🦠</span>
+                </div>
+            </div>
+            <button id="final-restart-btn" class="hidden">重新一趟旅程</button>
+        </div>
+        <div id="agri-message" class="game-message hidden" style="font-size:1.2rem; width:80%;"></div>
+    `;
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .agri-game-ui { display: flex; flex-direction: column; align-items: center; height: 100%; padding-top: 10px; }
+        .agri-status { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+        .farming-options { display: flex; gap: 15px; margin: 15px 0; z-index: 10; }
+        .farm-btn { padding: 10px 20px; font-size: 1.1rem; border-radius: 8px; border: 2px solid white; cursor: pointer; color: white; background: rgba(0,0,0,0.4); transition: transform 0.2s; }
+        .farm-btn:active { transform: scale(0.95); }
+        .action-organic:hover { background: #27ae60; }
+        .action-chemical:hover { background: #e74c3c; }
+        
+        #farm-field {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(to bottom, #87CEEB 40%, transparent 40%);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .soil-surface {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background: #5a3c21;
+            transition: all 2s ease;
+        }
+        .crop {
+            position: absolute;
+            bottom: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            transition: all 2s ease;
+            transform-origin: bottom center;
+        }
+        .soil-organisms {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.5rem;
+            transition: opacity 2s ease;
+        }
+        .org { animation: wiggle 2s infinite alternate; }
+        @keyframes wiggle { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
+        
+        /* States */
+        .soil-organic { background: #3e2723 !important; }
+        .soil-chemical { background: #795548 !important; border-top: 5px solid #d7ccc8; } /* Hardened pale top */
+        
+        .crop-organic { font-size: 5rem; filter: drop-shadow(0 0 10px #2ecc71); }
+        .crop-chemical { font-size: 4rem; filter: grayscale(50%); animation: wither 2s forwards; }
+        @keyframes wither { 100% { transform: translateX(-50%) scaleY(0.8) rotate(15deg); filter: grayscale(80%) sepia(50%); } }
+        
+        #final-restart-btn {
+            margin-top: 20px;
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 20;
+        }
+        #final-restart-btn:hover { transform: scale(1.05); }
+    `;
+    document.head.appendChild(style);
+
+    const btnOrganic = document.getElementById('btn-organic');
+    const btnChemical = document.getElementById('btn-chemical');
+    const soil = document.getElementById('soil-surface');
+    const crop = document.getElementById('crop');
+    const orgs = document.getElementById('soil-orgs');
+    const vitalitySpan = document.getElementById('agri-vitality');
+    const msg = document.getElementById('agri-message');
+    const restartBtn = document.getElementById('final-restart-btn');
+
+    function animateVitality(target) {
+        let current = parseInt(vitalitySpan.textContent);
+        const diff = target - current;
+        const step = diff > 0 ? 1 : -1;
+        
+        const interval = setInterval(() => {
+            if(current === target) {
+                clearInterval(interval);
+                return;
+            }
+            current += step;
+            vitalitySpan.textContent = current;
+            
+            if(current > 70) vitalitySpan.style.color = '#2ecc71';
+            else if(current < 30) vitalitySpan.style.color = '#e74c3c';
+            else vitalitySpan.style.color = 'white';
+            
+        }, 30);
+    }
+
+    btnOrganic.addEventListener('click', () => {
+        btnOrganic.disabled = true;
+        btnChemical.disabled = true;
+        
+        soil.className = 'soil-surface soil-organic';
+        crop.className = 'crop crop-organic';
+        crop.textContent = '🌳';
+        orgs.style.opacity = '1';
+        orgs.innerHTML = '<span class="org">🐛</span><span class="org">🪱</span><span class="org">🦠</span><span class="org">🍄</span><span class="org">🐞</span>'; // More life
+        
+        animateVitality(100);
+        
+        setTimeout(() => {
+            msg.innerHTML = "<strong>永續的選擇</strong><br>友善農業維持了土壤生態系，讓土壤變得鬆軟、保水，生機盎然！";
+            msg.style.color = '#2ecc71';
+            msg.classList.remove('hidden');
+            restartBtn.classList.remove('hidden');
+        }, 2500);
+    });
+
+    btnChemical.addEventListener('click', () => {
+        btnOrganic.disabled = true;
+        btnChemical.disabled = true;
+        
+        soil.className = 'soil-surface soil-chemical';
+        crop.className = 'crop crop-chemical';
+        orgs.style.opacity = '0'; // Organisms die
+        
+        animateVitality(10);
+        
+        setTimeout(() => {
+            msg.innerHTML = "<strong>短視的後果</strong><br>過度化肥使土壤鹽化、板結變硬，失去生物分解能力，最終導致農地退化休耕。";
+            msg.style.color = '#e74c3c';
+            msg.classList.remove('hidden');
+            restartBtn.classList.remove('hidden');
+        }, 2500);
+    });
+
+    restartBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => location.reload(), 800);
+    });
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const startBtn = document.getElementById('start-btn');
+    const hero = document.querySelector('.hero');
+    const mainContent = document.getElementById('soil-layers');
+    const nav = document.getElementById('layer-nav');
+    
+    startBtn.addEventListener('click', () => {
+        hero.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        nav.classList.remove('hidden');
+        
+        document.getElementById('layer-r').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    const navItems = document.querySelectorAll('#layer-nav li');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetId = item.getAttribute('data-target');
+            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    mainContent.addEventListener('scroll', () => {
+        let current = '';
+        const sections = document.querySelectorAll('.soil-layer');
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (mainContent.scrollTop >= (sectionTop - sectionHeight / 3)) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navItems.forEach(li => {
+            li.classList.remove('active');
+            if (li.getAttribute('data-target') === current) {
+                li.classList.add('active');
+            }
+        });
+    });
+    
+    initGameR();
+    initGameC();
+    initGameB();
+    initGameA();
+    initGameO();
+    initGameAgri();
+});
+
+
+
+</script>
+</body>
+</html>
