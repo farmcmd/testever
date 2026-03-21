@@ -2098,54 +2098,6 @@
                 });
             });
 
-            // 終極修復：原生 Google 翻譯優化器 (Native Enhancer)
-            // 解決原生小工具「載入緩慢」與「偶發失效掉包」的官方缺陷
-            const enhanceNativeTranslate = () => {
-                let retry = 0;
-                const checkTimer = setInterval(() => {
-                    const combo = document.querySelector('.goog-te-combo');
-                    if (combo) {
-                        clearInterval(checkTimer);
-                        combo.addEventListener('change', (e) => {
-                            const lang = e.target.value;
-                            if (!lang || lang === 'zh-TW') {
-                                window.showToast('🌐 恢復預設語言...');
-                                return;
-                            }
-                            
-                            window.showToast('⏳ 翻譯伺服器連線中，請稍候...');
-                            let waitTime = 0;
-                            
-                            // 監測 Google 是否成功翻譯 (成功時會在 html 標籤加上 translated-ltr 等 class)
-                            const waitTimer = setInterval(() => {
-                                waitTime += 500;
-                                const htmlClass = document.documentElement.className;
-                                if (htmlClass.includes('translated-ltr') || htmlClass.includes('translated-rtl')) {
-                                    clearInterval(waitTimer);
-                                    window.showToast('✅ 翻譯完成！');
-                                } else if (waitTime > 2500) {
-                                    // 2.5 秒沒反應，判定為 Google CDN 掉包或嚴重延遲，啟動強迫備案
-                                    clearInterval(waitTimer);
-                                    window.showToast('⚠️ 網路稍慢，系統將自動套用翻譯設定...');
-                                    
-                                    // 強制寫入涵蓋所有可能路徑的 Cookie (解決 GitHub Pages 路徑衝突)
-                                    document.cookie = `googtrans=/zh-TW/${lang}; path=/;`;
-                                    if (window.location.hostname) {
-                                        document.cookie = `googtrans=/zh-TW/${lang}; path=/; domain=${window.location.hostname};`;
-                                    }
-                                    document.cookie = `googtrans=/zh-TW/${lang}; path=${window.location.pathname};`;
-                                    
-                                    // 強制重整以立刻載入翻譯好的畫面
-                                    setTimeout(() => { window.location.reload(); }, 800);
-                                }
-                            }, 500);
-                        });
-                    }
-                    if(retry++ > 20) clearInterval(checkTimer); // 最多尋找 10 秒
-                }, 500);
-            };
-            enhanceNativeTranslate();
-
             // 匯出與匯入個人進度檔邏輯
             document.getElementById('export-data-button')?.addEventListener('click', () => {
                 try {
