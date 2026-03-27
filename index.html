@@ -2179,20 +2179,8 @@
                 });
             });
 
-            // --- 新增：Facebook SDK 初始化與大頭貼一鍵報名邏輯 ---
+            // --- 新增：Facebook SDK 大頭貼一鍵報名邏輯 ---
             
-            // ⚠️ 已經為您填入真實的 Facebook App ID
-            const MY_FACEBOOK_APP_ID = '803120779511252'; 
-
-            window.fbAsyncInit = function() {
-                FB.init({
-                    appId      : MY_FACEBOOK_APP_ID,
-                    cookie     : true,                     // 允許 Cookie 以便伺服器存取工作階段
-                    xfbml      : true,                     // 解析網頁上的社群外掛程式
-                    version    : 'v19.0'                   // 使用最新的 Graph API 版本
-                });
-            };
-
             let currentFbData = null; // 暫存抓取到的 FB 資料
 
             window.openRegistrationModal = function(eventName) {
@@ -2218,8 +2206,8 @@
 
             // 處理 FB 登入按鈕點擊
             document.getElementById('fb-login-btn')?.addEventListener('click', () => {
-                if (MY_FACEBOOK_APP_ID === '請在這裡填入您的_APP_ID') {
-                    return window.showToast('⚠️ 系統尚未設定 Facebook App ID，請聯繫管理員！');
+                if (typeof FB === 'undefined') {
+                    return window.showToast('⚠️ Facebook 模組尚未載入，請關閉擋廣告外掛或稍後再試！');
                 }
 
                 // 呼叫 FB 官方授權視窗
