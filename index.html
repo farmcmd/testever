@@ -2379,13 +2379,7 @@
                             timestamp: serverTimestamp()
                         });
                     }
-                    window.showToast('✅ 報名成功！正在為您導向主辦單位...');
-
-                    setTimeout(() => {
-                        let targetUrl = window.currentRegMethodUrl;
-                        if (targetUrl.startsWith('www')) targetUrl = 'https://' + targetUrl;
-                        window.open(targetUrl, '_blank');
-                    }, 800);
+                    window.showToast('✅ 報名成功！感謝您的參與。');
 
                     window.closeModal('event-registration-modal');
                     window.openModal('event-schedule-modal');
@@ -2396,7 +2390,7 @@
                     e.currentTarget.innerHTML = originalHtml;
                 }
             });
-            // --- 結束：雙軌大頭貼一鍵報名邏輯 ---
+            // --- 結束：單軌大頭貼一鍵報名邏輯 ---
 
             // 終極修復：偷偷置入自動重載邏輯 (結合嚴格初始化與快取淨化)
             const langSelect = document.getElementById('custom-lang-select');
