@@ -1024,6 +1024,32 @@
         </div>
     </div>
 
+    <!-- 10.5 活動快速報名 Modal (修復：補回遺失的實體視窗，確保 JS 不報錯) -->
+    <div id="event-registration-modal" class="modal-overlay hidden">
+        <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-600 relative text-center">
+            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10" onclick="window.closeModal('event-registration-modal'); window.openModal('event-schedule-modal');"><i class="fas fa-times text-xl"></i></button>
+            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-bolt text-2xl text-blue-500"></i></div></div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">活動快速報名</h3>
+            <p id="reg-event-name" class="text-sm font-bold text-blue-700 mb-5 bg-blue-50/50 p-2 rounded-lg border border-blue-100"></p>
+            
+            <div class="mb-4">
+                <p class="text-[13px] text-gray-600 font-bold mb-2 text-left"><i class="fas fa-check-circle text-blue-400 mr-1"></i>1. 選擇聯繫您的社群平台</p>
+                <div class="flex gap-2">
+                    <button class="reg-platform-btn flex-1 py-2.5 rounded-lg border-2 border-gray-200 text-gray-500 font-bold hover:border-blue-600 hover:text-blue-600 transition shadow-sm bg-gray-50" data-platform="FB"><i class="fab fa-facebook text-lg mr-1.5"></i> Facebook</button>
+                    <button class="reg-platform-btn flex-1 py-2.5 rounded-lg border-2 border-gray-200 text-gray-500 font-bold hover:border-green-500 hover:text-green-500 transition shadow-sm bg-gray-50" data-platform="LINE"><i class="fab fa-line text-lg mr-1.5"></i> LINE ID</button>
+                </div>
+            </div>
+            
+            <div class="mb-6 text-left">
+                <p class="text-[13px] text-gray-600 font-bold mb-2"><i class="fas fa-keyboard text-blue-400 mr-1"></i>2. 輸入您的社群 ID 或帳號名稱</p>
+                <input type="text" id="reg-social-id" class="w-full p-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all font-mono tracking-wide" placeholder="請輸入對應的 ID 或連結...">
+                <p class="text-[10px] text-gray-400 mt-1.5 leading-relaxed"><i class="fas fa-lock mr-1 text-gray-300"></i>主辦單位將透過此 ID 與您聯繫，您的個資將受到嚴格加密保護。</p>
+            </div>
+            
+            <button id="submit-registration-btn" class="w-full py-3.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition flex justify-center items-center"><i class="fas fa-paper-plane mr-2"></i>確認送出報名</button>
+        </div>
+    </div>
+
     <!-- 12. 分享 QR Code Modal -->
     <div id="qrcode-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-mori-forest relative text-center">
@@ -1961,7 +1987,11 @@
                                 if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) { regMethodHtml = `<a href="${ev.regMethod}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-all font-medium hover:bg-blue-100 transition underline text-center sm:text-left shadow-sm">點擊前往報名網頁</a>`; } 
                                 else { regMethodHtml = `<div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-words whitespace-normal font-medium shadow-sm">${ev.regMethod || '請洽主辦單位'}</div>`; }
                                 
-                                const quickRegBtnHtml = `<button onclick="window.openRegistrationModal('${ev.name}')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-bolt mr-1.5 text-yellow-300"></i>快速報名</button>`;
+                                // 修復：根據後台傳來的 isRegistrationOpen 開關，決定按鈕狀態
+                                const isRegOpen = ev.isRegistrationOpen !== false; // 預設為 true，只有後台明確設為 false 才關閉
+                                const quickRegBtnHtml = isRegOpen 
+                                    ? `<button onclick="window.openRegistrationModal('${ev.name}')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-bolt mr-1.5 text-yellow-300"></i>快速報名</button>`
+                                    : `<button disabled class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gray-100 border border-gray-200 text-gray-400 rounded-lg cursor-not-allowed text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-lock mr-1.5 opacity-50"></i>報名未開放</button>`;
 
                                 return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center text-xs w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><div class="flex gap-2 w-full sm:w-auto">${quickRegBtnHtml}<button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 行事曆</button></div></div></div>`;
                             }
