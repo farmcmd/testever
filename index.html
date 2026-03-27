@@ -1,15 +1,27 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>探探里山-永續旅遊 | 企業ESG自評版 | 永續政府 |</title>
-    <!-- 引入外部樣式庫 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>探探里山 - 永續旅遊 ESG 平台</title>
+    
+    <!-- 新增：企業級效能優化 (Preconnect 加速通道) -->
+    <!-- 預先打通 Google Fonts、Firebase 與 Google 翻譯的底層連線，減少載入延遲 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://translate.google.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+
+    <!-- 外部資源載入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF 與長圖匯出工具 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- Tailwind 客製化設定與基礎 CSS -->
     <script>
         tailwind.config = {
             theme: {
@@ -532,15 +544,22 @@
                                 <a href="https://farmcmd.github.io/testgame/" target="_blank" class="p-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition flex flex-col items-center justify-center text-center min-h-[60px]">
                                     <i class="fas fa-vr-cardboard text-base mb-1 opacity-90"></i>沉浸式農田<br>微生態導覽程式
                                 </a>
-                                <button class="p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition flex flex-col items-center justify-center text-center min-h-[60px]" onclick="window.showToast('互動小教室即將上線！')">
+                                <!-- 修復：將原本的 button 改為 <a> 標籤，並使用相對路徑指向離線 HTML 檔案 -->
+                                <a href="./soil_diy.html" target="_blank" class="p-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition flex flex-col items-center justify-center text-center min-h-[60px] cursor-pointer">
                                     <i class="fas fa-flask text-base mb-1 opacity-90"></i>土壤教具DIY<br>數位互動小教室
-                                </button>
-                                <button class="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition flex flex-col items-center justify-center text-center min-h-[60px]" onclick="window.showToast('互動教學即將上線！')">
+                                </a>
+                                
+                                <!-- 新增：梅好時光 食農教育互動教案 (使用粉色系與嫩芽圖示) -->
+                                <a href="./plum.html" target="_blank" class="p-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition flex flex-col items-center justify-center text-center min-h-[60px] cursor-pointer">
+                                    <i class="fas fa-seedling text-base mb-1 opacity-90"></i>梅好時光<br>食農互動教案
+                                </a>
+
+                                <!-- 修復：將原本的「即將上線」按鈕，正式改為指向 Formosan.html 的實體連結 -->
+                                <a href="./Formosan.html" target="_blank" class="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-bold shadow-sm transition flex flex-col items-center justify-center text-center min-h-[60px] cursor-pointer">
                                     <i class="fas fa-leaf text-base mb-1 opacity-90"></i>金線連<br>互動教學
-                                </button>
-                                <button class="p-2 bg-gray-200 text-gray-400 rounded-lg text-[11px] font-bold cursor-not-allowed flex flex-col items-center justify-center text-center min-h-[60px]">
-                                    <i class="fas fa-tools text-base mb-1 opacity-50"></i>開發中...
-                                </button>
+                                </a>
+                                
+                                <!-- 移除了其中一個開發中按鈕以維持排版整潔 -->
                                 <button class="p-2 bg-gray-200 text-gray-400 rounded-lg text-[11px] font-bold cursor-not-allowed flex flex-col items-center justify-center text-center min-h-[60px]">
                                     <i class="fas fa-hammer text-base mb-1 opacity-50"></i>開發中...
                                 </button>
@@ -1941,7 +1960,10 @@
                                 let regMethodHtml = '';
                                 if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) { regMethodHtml = `<a href="${ev.regMethod}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-all font-medium hover:bg-blue-100 transition underline text-center sm:text-left shadow-sm">點擊前往報名網頁</a>`; } 
                                 else { regMethodHtml = `<div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-words whitespace-normal font-medium shadow-sm">${ev.regMethod || '請洽主辦單位'}</div>`; }
-                                return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center text-xs w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 加入行事曆</button></div></div>`;
+                                
+                                const quickRegBtnHtml = `<button onclick="window.openRegistrationModal('${ev.name}')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-bolt mr-1.5 text-yellow-300"></i>快速報名</button>`;
+
+                                return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center text-xs w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><div class="flex gap-2 w-full sm:w-auto">${quickRegBtnHtml}<button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 行事曆</button></div></div></div>`;
                             }
                         }).join('');
                         
@@ -2115,6 +2137,59 @@
                     if (m) m.classList.add('hidden');
                 });
             });
+
+            // --- 新增：活動快速報名邏輯 ---
+            window.openRegistrationModal = function(eventName) {
+                window.currentRegEvent = eventName;
+                document.getElementById('reg-event-name').textContent = eventName;
+                document.getElementById('reg-social-id').value = '';
+                window.currentRegPlatform = '';
+                document.querySelectorAll('.reg-platform-btn').forEach(b => b.classList.remove('border-blue-600', 'text-blue-600', 'border-green-500', 'text-green-500', 'bg-blue-50', 'bg-green-50', 'shadow-md'));
+                window.closeModal('event-schedule-modal'); // 關閉原本的列表視窗避免重疊
+                window.openModal('event-registration-modal');
+            };
+
+            document.querySelectorAll('.reg-platform-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const btnEl = e.currentTarget;
+                    window.currentRegPlatform = btnEl.dataset.platform;
+                    document.querySelectorAll('.reg-platform-btn').forEach(b => b.classList.remove('border-blue-600', 'text-blue-600', 'border-green-500', 'text-green-500', 'bg-blue-50', 'bg-green-50', 'shadow-md'));
+                    if (window.currentRegPlatform === 'FB') btnEl.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50', 'shadow-md');
+                    if (window.currentRegPlatform === 'LINE') btnEl.classList.add('border-green-500', 'text-green-500', 'bg-green-50', 'shadow-md');
+                });
+            });
+
+            document.getElementById('submit-registration-btn')?.addEventListener('click', async () => {
+                const socialId = document.getElementById('reg-social-id').value.trim();
+                if (!window.currentRegPlatform) return window.showToast('⚠️ 請先選擇 Facebook 或 LINE 平台！');
+                if (!socialId) return window.showToast('⚠️ 請輸入您的社群 ID 或連結！');
+                
+                const btn = document.getElementById('submit-registration-btn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>資料送出中...';
+                
+                try {
+                    if (!isOfflineMode && db && typeof addDoc === 'function') {
+                        await addDoc(collection(db, 'event_registrations'), {
+                            eventName: window.currentRegEvent,
+                            platform: window.currentRegPlatform,
+                            socialId: socialId,
+                            userId: document.getElementById('player-code')?.textContent || 'anonymous',
+                            userName: document.getElementById('player-name')?.value || '匿名',
+                            timestamp: serverTimestamp()
+                        });
+                    }
+                    window.showToast('✅ 報名成功！主辦單位將盡快與您聯繫。');
+                    window.closeModal('event-registration-modal');
+                    window.openModal('event-schedule-modal'); // 報名完成後自動返回活動列表
+                } catch (err) {
+                    window.showToast('❌ 報名失敗，請檢查網路連線。');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>確認送出報名';
+                }
+            });
+            // --- 結束：活動快速報名邏輯 ---
 
             // 終極修復：偷偷置入自動重載邏輯 (結合嚴格初始化與快取淨化)
             const langSelect = document.getElementById('custom-lang-select');
