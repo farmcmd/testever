@@ -2168,7 +2168,7 @@
                 });
             });
 
-            // --- 新增：活動快速報名邏輯 ---
+            // --- 新增：活動快速報名邏輯 (加入安全防呆機制) ---
             window.openRegistrationModal = function(eventName) {
                 window.currentRegEvent = eventName;
                 
@@ -2178,8 +2178,12 @@
                     ? ev.regMethod 
                     : 'https://www.facebook.com/Satoyamadining';
 
-                document.getElementById('reg-event-name').textContent = eventName;
-                document.getElementById('reg-contact-info').value = '';
+                const nameEl = document.getElementById('reg-event-name');
+                if(nameEl) nameEl.textContent = eventName;
+                
+                // 防呆保護：檢查元素是否存在，避免 null 導致當機
+                const contactInput = document.getElementById('reg-contact-info');
+                if(contactInput) contactInput.value = '';
                 
                 window.closeModal('event-schedule-modal'); 
                 window.openModal('event-registration-modal');
@@ -2188,7 +2192,8 @@
             document.querySelectorAll('.reg-submit-action-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     const platform = e.currentTarget.dataset.platform;
-                    const contactInfo = document.getElementById('reg-contact-info').value.trim();
+                    const contactInput = document.getElementById('reg-contact-info');
+                    const contactInfo = contactInput ? contactInput.value.trim() : '';
 
                     if (!contactInfo) return window.showToast('⚠️ 請輸入聯絡電話或 Email！');
 
