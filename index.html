@@ -1358,12 +1358,17 @@
                     } catch(e) { console.warn('日期解析異常', e); }
                 }
 
-                // --- 新增：動態抓取並渲染已報名者大頭貼與 ID 區塊 ---
+                // --- 新增：動態抓取並渲染已報名者大頭貼、ID 與 時間區塊 ---
                 const regs = globalEventRegistrations[ev.name] || [];
                 let regsHtml = '';
                 if(regs.length > 0) {
-                    // 將最新報名的人排在最前面
-                    regs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                    // 將最新報名的人排在最前面 (加入防呆：處理剛寫入時 serverTimestamp 尚未回傳的狀況)
+                    regs.sort((a, b) => {
+                        const timeA = a.timestamp ? (typeof a.timestamp.toMillis === 'function' ? a.timestamp.toMillis() : (a.timestamp.seconds * 1000)) : Date.now();
+                        const timeB = b.timestamp ? (typeof b.timestamp.toMillis === 'function' ? b.timestamp.toMillis() : (b.timestamp.seconds * 1000)) : Date.now();
+                        return timeB - timeA;
+                    });
+                    
                     const avatarsHtml = regs.map(r => {
                         const borderColor = r.platform === 'LINE' ? 'border-[#06C755]' : (r.platform === 'Facebook' ? 'border-[#1877F2]' : 'border-gray-300');
                         
@@ -1371,14 +1376,34 @@
                         const displayId = (r.userId && r.userId !== 'anonymous') 
                             ? r.userId 
                             : (r.socialId ? r.socialId.substring(0, 5) + '***' : '無代碼');
+                            
+                        // 處理報名時間格式 (防呆處理 null 狀況)
+                        let timeStr = '剛剛';
+                        if (r.timestamp) {
+                            try {
+                                const ms = typeof r.timestamp.toMillis === 'function' ? r.timestamp.toMillis() : (r.timestamp.seconds * 1000);
+                                const dateObj = new Date(ms);
+                                if (!isNaN(dateObj)) {
+                                    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                    const d = String(dateObj.getDate()).padStart(2, '0');
+                                    const h = String(dateObj.getHours()).padStart(2, '0');
+                                    const min = String(dateObj.getMinutes()).padStart(2, '0');
+                                    timeStr = `${m}/${d} ${h}:${min}`;
+                                }
+                            } catch(e) {}
+                        }
                         
-                        return `<div class="flex flex-col items-center shrink-0 w-16" title="社群名稱: ${r.socialName || '匿名'}&#10;識別碼: ${displayId}">
-                            <img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full border-2 ${borderColor} shadow-sm object-cover mb-1 bg-white">
-                            <span class="text-[10px] text-gray-800 truncate w-full text-center font-bold">${r.socialName || '匿名'}</span>
-                            <span class="text-[8.5px] text-gray-500 font-mono tracking-tighter bg-gray-100 border border-gray-200 px-1 py-px rounded mt-0.5 w-full text-center truncate shadow-sm">${displayId}</span>
+                        // 獨立的微型立體卡片結構
+                        return `<div class="flex flex-col items-center shrink-0 w-[76px] bg-white p-2 rounded-xl border border-gray-200 shadow-sm relative group mt-2.5 hover:border-blue-300 transition-colors" title="社群名稱: ${r.socialName || '匿名'}&#10;識別碼: ${displayId}">
+                            <span class="absolute -top-2.5 bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm border border-green-200 whitespace-nowrap z-10">${timeStr}</span>
+                            <img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full border-2 ${borderColor} shadow-sm object-cover mb-1.5 relative z-0">
+                            <span class="text-[11px] text-gray-800 truncate w-full text-center font-bold mb-0.5">${r.socialName || '匿名'}</span>
+                            <span class="text-[9px] text-gray-500 font-mono tracking-tighter bg-gray-50 border border-gray-200 px-1 py-px rounded w-full text-center truncate">${displayId}</span>
                         </div>`;
                     }).join('');
-                    regsHtml = `<div class="mb-4 pt-4 border-t border-gray-100"><p class="text-[12px] font-bold text-gray-600 mb-2.5 flex items-center"><i class="fas fa-users text-blue-500 mr-1.5"></i>已報名成功 (${regs.length})</p><div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2 pr-2">${avatarsHtml}</div></div>`;
+                    
+                    // 獨立顯眼的榮譽榜區塊底板
+                    regsHtml = `<div class="mb-4 pt-4 border-t-2 border-dashed border-blue-100 bg-blue-50/40 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-1"><p class="text-[13px] font-black text-blue-900 mb-1 flex items-center"><i class="fas fa-users text-blue-500 mr-2 text-lg"></i>最新報名名單 (${regs.length}人)</p><div class="flex gap-2.5 overflow-x-auto custom-scrollbar pb-3 pt-1 pr-2">${avatarsHtml}</div></div>`;
                 }
                 // ---------------------------------------------
 
