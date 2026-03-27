@@ -1329,6 +1329,67 @@
         
         let globalAbsolute = { carbon: 0, green: 0, visitor_count: 0 }; 
         let summaryState = { entMode: false, entSelected: new Set(), govMode: false, govSelected: new Set() };
+        let globalEventRegistrations = {}; // 新增：全域報名名單儲存庫
+
+        // 新增：解耦後的獨立渲染引擎，負責組合活動卡片與報名者大頭貼
+        window.renderEventsListUI = function() {
+            const modalContainer = document.getElementById('event-schedule-container'), inlineContainer = document.getElementById('inline-event-schedule-container');
+            if (!window.currentEventsList || window.currentEventsList.length === 0) {
+                const emptyHtml = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
+                if(modalContainer) modalContainer.innerHTML = emptyHtml; if(inlineContainer) inlineContainer.innerHTML = emptyHtml; return;
+            }
+            
+            const today = new Date(); today.setHours(0,0,0,0);
+            const processedEvents = [...window.currentEventsList].map(ev => { let isExpired = false; if(ev.date) { const evDate = new Date(ev.date.replace(/-/g, '/')); if(!isNaN(evDate) && evDate < today) isExpired = true; } return { ...ev, isExpired }; }).sort((a, b) => { if (a.isExpired === b.isExpired) return 0; return a.isExpired ? 1 : -1; });
+
+            const html = processedEvents.map(ev => {
+                let isExpired = ev.isExpired, calendarUrl = '#';
+                if(ev.date && !isExpired) {
+                    try {
+                        const evDate = new Date(ev.date.replace(/-/g, '/'));
+                        if(!isNaN(evDate)) {
+                            const y1 = evDate.getFullYear(), m1 = String(evDate.getMonth()+1).padStart(2,'0'), d1 = String(evDate.getDate()).padStart(2,'0');
+                            const nextDate = new Date(evDate); nextDate.setDate(nextDate.getDate() + 1);
+                            const y2 = nextDate.getFullYear(), m2 = String(nextDate.getMonth()+1).padStart(2,'0'), d2 = String(nextDate.getDate()).padStart(2,'0');
+                            const dates = `${y1}${m1}${d1}/${y2}${m2}${d2}`, title = encodeURIComponent(`探探里山活動: ${ev.name}`);
+                            const details = encodeURIComponent(`執行單位: ${ev.executor || '里山團隊'}\n報名方式: ${ev.regMethod || '請洽主辦單位'}\n\n👉 更多詳情請至 探探里山-永續旅遊 儀表板查看。`), location = encodeURIComponent(ev.location || '水里里山基地');
+                            calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+                        }
+                    } catch(e) { console.warn('日期解析異常', e); }
+                }
+
+                // --- 新增：動態抓取並渲染已報名者大頭貼區塊 ---
+                const regs = globalEventRegistrations[ev.name] || [];
+                let regsHtml = '';
+                if(regs.length > 0) {
+                    // 將最新報名的人排在最前面
+                    regs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                    const avatarsHtml = regs.map(r => {
+                        const borderColor = r.platform === 'LINE' ? 'border-[#06C755]' : (r.platform === 'Facebook' ? 'border-[#1877F2]' : 'border-gray-300');
+                        return `<div class="flex flex-col items-center shrink-0 w-12" title="${r.socialName || '匿名'}"><img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-9 h-9 rounded-full border-2 ${borderColor} shadow-sm object-cover mb-1 bg-gray-50"><span class="text-[9px] text-gray-500 truncate w-full text-center font-medium">${r.socialName || '匿名'}</span></div>`;
+                    }).join('');
+                    regsHtml = `<div class="mb-4 pt-4 border-t border-gray-100"><p class="text-[12px] font-bold text-gray-600 mb-2.5 flex items-center"><i class="fas fa-users text-blue-500 mr-1.5"></i>已報名成功 (${regs.length})</p><div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2 pr-2">${avatarsHtml}</div></div>`;
+                }
+                // ---------------------------------------------
+
+                if(isExpired) {
+                    return `<div class="bg-gray-50 p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 opacity-90 transition-all"><div class="absolute top-0 right-0 bg-gray-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl z-10 flex items-center shadow-sm"><i class="fas fa-flag-checkered mr-1.5"></i>活動已圓滿結束</div><h4 class="text-xl font-bold text-gray-600 mb-3 pr-24 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold border border-gray-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-500 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-400 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-200"><i class="fas fa-sticky-note mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">備註:</span> <span class="leading-relaxed text-gray-500">${ev.remark}</span></p>` : ''}</div>${regsHtml}<button onclick="window.closeModal('event-schedule-modal'); window.openModal('gov-modal');" class="w-full py-3 bg-blue-50/80 text-blue-500 border border-blue-100 rounded-xl hover:bg-blue-100 hover:text-blue-600 transition text-sm font-bold shadow-sm flex items-center justify-center mt-2"><i class="fas fa-chart-pie mr-1.5 text-lg"></i> 前往儀錶板查詢活動成效</button></div>`;
+                } else {
+                    let regMethodHtml = '';
+                    if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) { regMethodHtml = `<a href="${ev.regMethod}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-all font-medium hover:bg-blue-100 transition underline text-center sm:text-left shadow-sm">點擊前往報名網頁</a>`; } 
+                    else { regMethodHtml = `<div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-words whitespace-normal font-medium shadow-sm">${ev.regMethod || '請洽主辦單位'}</div>`; }
+                    
+                    const isRegOpen = ev.isRegistrationOpen !== false; 
+                    const quickRegBtnHtml = isRegOpen 
+                        ? `<button onclick="window.openRegistrationModal('${ev.name}')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-bolt mr-1.5 text-yellow-300"></i>快速報名</button>`
+                        : `<button disabled class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gray-100 border border-gray-200 text-gray-400 rounded-lg cursor-not-allowed text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-lock mr-1.5 opacity-50"></i>報名未開放</button>`;
+
+                    return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div>${regsHtml}<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center text-xs w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><div class="flex gap-2 w-full sm:w-auto">${quickRegBtnHtml}<button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 行事曆</button></div></div></div>`;
+                }
+            }).join('');
+            
+            if(modalContainer) modalContainer.innerHTML = html; if(inlineContainer) inlineContainer.innerHTML = html;
+        };
 
         // ==========================================
         // 3. 核心工具函數 (Core Utils)
@@ -1955,15 +2016,6 @@
                     entLoaded = true; checkBackendReady(); renderEntProjectsDashboard(); updateEntProjectDropdown(); renderAuthList();
                 });
 
-                onSnapshot(collection(db, 'ent_projects'), (snapshot) => {
-                    globalEntData.projects = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                    const currentIds = globalEntData.projects.map(p => p.id); window.currentEntList = currentIds;
-                    const seenEnt = JSON.parse(localStorage.getItem('mori_seen_ent') || '[]'); const unreadCount = currentIds.filter(id => !seenEnt.includes(id)).length;
-                    const badge = document.getElementById('badge-enterprise');
-                    if (badge) { if (unreadCount > 0) { badge.textContent = 'NEW'; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } else { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); } }
-                    entLoaded = true; checkBackendReady(); renderEntProjectsDashboard(); updateEntProjectDropdown();
-                });
-
                 onSnapshot(doc(db, 'system_messages', 'broadcast'), (docSnap) => {
                     const bar = document.getElementById('system-broadcast-bar'), textEl = document.getElementById('system-broadcast-text');
                     if(docSnap.exists() && docSnap.data().message) { textEl.textContent = docSnap.data().message; bar.classList.remove('hidden'); } else { bar.classList.add('hidden'); }
@@ -1991,10 +2043,13 @@
                     if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
                 });
 
+                // 修復：將原本寫死的活動渲染移除，改交由頂部的 renderEventsListUI 統一處理，避免舊代碼覆蓋導致活動消失
                 onSnapshot(doc(db, 'system_messages', 'event_schedule'), (docSnap) => {
                     if(docSnap.exists() && docSnap.data().events) {
-                        const events = docSnap.data().events; window.currentEventsList = events; 
-                        const seenEvents = JSON.parse(localStorage.getItem('mori_seen_events') || '[]'); const unreadCount = events.filter(ev => !seenEvents.includes(ev.name)).length;
+                        const events = docSnap.data().events; 
+                        window.currentEventsList = events; 
+                        const seenEvents = JSON.parse(localStorage.getItem('mori_seen_events') || '[]'); 
+                        const unreadCount = events.filter(ev => !seenEvents.includes(ev.name)).length;
                         const badge = document.getElementById('event-badge');
                         if (badge) { if (unreadCount > 0) { badge.textContent = 'NEW'; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } else { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); } }
                         
