@@ -1361,6 +1361,10 @@
                 // --- 新增：動態抓取並渲染已報名者大頭貼、ID 與 時間區塊 ---
                 const regs = globalEventRegistrations[ev.name] || [];
                 let regsHtml = '';
+                
+                // 加入底層除錯雷達，方便 F12 檢查是否有執行到這裡
+                console.log(`[渲染雷達] 活動：${ev.name} | 抓取報名數：${regs.length}人`);
+
                 if(regs.length > 0) {
                     // 將最新報名的人排在最前面 (加入防呆：處理剛寫入時 serverTimestamp 尚未回傳的狀況)
                     regs.sort((a, b) => {
@@ -1404,6 +1408,9 @@
                     
                     // 獨立顯眼的榮譽榜區塊底板
                     regsHtml = `<div class="mb-4 pt-4 border-t-2 border-dashed border-blue-100 bg-blue-50/40 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-1"><p class="text-[13px] font-black text-blue-900 mb-1 flex items-center"><i class="fas fa-users text-blue-500 mr-2 text-lg"></i>最新報名名單 (${regs.length}人)</p><div class="flex gap-2.5 overflow-x-auto custom-scrollbar pb-3 pt-1 pr-2">${avatarsHtml}</div></div>`;
+                } else {
+                    // 新增防呆：即使沒人報名，也會顯示空的底板，證明區塊有在運作 (稍微加深底色以利辨識)
+                    regsHtml = `<div class="mb-4 pt-4 border-t-2 border-dashed border-gray-200 bg-gray-100/80 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-3"><p class="text-[13px] font-black text-gray-500 mb-1 flex items-center"><i class="fas fa-users text-gray-400 mr-2 text-lg"></i>最新報名名單 (0人)</p><p class="text-[11px] text-gray-500 font-bold">目前尚無人報名，快來搶先成為第一位！</p></div>`;
                 }
                 // ---------------------------------------------
 
