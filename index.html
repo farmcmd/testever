@@ -21,6 +21,9 @@
     <!-- PDF 與長圖匯出工具 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- 新增：Facebook SDK for JavaScript (異步載入) -->
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js"></script>
+
     <!-- Tailwind 客製化設定與基礎 CSS -->
     <script>
         tailwind.config = {
@@ -1024,26 +1027,36 @@
         </div>
     </div>
 
-    <!-- 10.5 活動快速報名 Modal (終極修復：將介面徹底升級為與 JS 相符的「一鍵報名版」) -->
+    <!-- 10.5 活動快速報名 Modal (終極升級：FB SDK 大頭貼授權版) -->
     <div id="event-registration-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-600 relative text-center">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10" onclick="window.closeModal('event-registration-modal'); window.openModal('event-schedule-modal');"><i class="fas fa-times text-xl"></i></button>
-            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-bolt text-2xl text-blue-500"></i></div></div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">活動一鍵報名</h3>
+            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-id-badge text-2xl text-blue-500"></i></div></div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">社群一鍵報名</h3>
             <p id="reg-event-name" class="text-sm font-bold text-blue-700 mb-5 bg-blue-50/50 p-2 rounded-lg border border-blue-100"></p>
             
-            <div class="mb-6 text-left">
-                <p class="text-[13px] text-gray-600 font-bold mb-2"><i class="fas fa-keyboard text-blue-400 mr-1"></i>1. 輸入聯絡電話或 Email <span class="text-red-500">*</span></p>
-                <input type="text" id="reg-contact-info" class="w-full p-3 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all font-mono tracking-wide" placeholder="例如：0912345678 或 test@gmail.com">
-                <p class="text-[10px] text-gray-400 mt-1.5 leading-relaxed"><i class="fas fa-lock mr-1 text-gray-300"></i>主辦單位將透過此資訊與您聯繫，個資將受嚴格加密保護。</p>
+            <!-- 步驟一：FB 授權按鈕 -->
+            <div id="fb-auth-step" class="mb-6">
+                <p class="text-[13px] text-gray-600 font-bold mb-3 text-left"><i class="fas fa-shield-alt text-blue-400 mr-1"></i>1. 授權取得社群身分 (免填寫)</p>
+                <button id="fb-login-btn" class="w-full py-3.5 bg-[#1877F2] text-white rounded-xl font-bold shadow-md hover:bg-[#166FE5] transition flex justify-center items-center">
+                    <i class="fab fa-facebook text-xl mr-2"></i> 以 Facebook 登入並帶入資料
+                </button>
+                <p class="text-[10px] text-gray-400 mt-2 leading-relaxed"><i class="fas fa-lock mr-1 text-gray-300"></i>我們僅會取得您的公開大頭貼與姓名作為報名憑證。</p>
             </div>
 
-            <div class="mb-2">
-                <p class="text-[13px] text-gray-600 font-bold mb-3 text-left"><i class="fas fa-paper-plane text-blue-400 mr-1"></i>2. 一鍵送出並呼叫社群聯繫主辦</p>
-                <div class="flex gap-2">
-                    <button class="reg-submit-action-btn flex-1 py-3.5 bg-blue-600 text-white rounded-xl font-bold shadow-md hover:bg-blue-700 transition flex justify-center items-center" data-platform="FB"><i class="fab fa-facebook text-lg mr-1.5"></i> FB 報名</button>
-                    <button class="reg-submit-action-btn flex-1 py-3.5 bg-green-500 text-white rounded-xl font-bold shadow-md hover:bg-green-600 transition flex justify-center items-center" data-platform="LINE"><i class="fab fa-line text-lg mr-1.5"></i> LINE 報名</button>
+            <!-- 步驟二：大頭貼預覽與送出 (預設隱藏，授權後顯示) -->
+            <div id="fb-preview-step" class="mb-2 hidden">
+                <p class="text-[13px] text-green-600 font-bold mb-3 text-left"><i class="fas fa-check-circle mr-1"></i>身分驗證成功，請確認報名資料：</p>
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-4 flex items-center gap-4">
+                    <img id="fb-user-avatar" src="" alt="大頭貼" class="w-12 h-12 rounded-full border-2 border-blue-500 shadow-sm object-cover">
+                    <div class="text-left">
+                        <p id="fb-user-name" class="font-bold text-gray-800 text-sm"></p>
+                        <p id="fb-user-id" class="text-xs text-gray-500 font-mono"></p>
+                    </div>
                 </div>
+                <button id="final-submit-reg-btn" class="w-full py-3.5 bg-green-500 text-white rounded-xl font-bold shadow-md hover:bg-green-600 transition flex justify-center items-center">
+                    <i class="fas fa-paper-plane mr-2"></i> 確認報名並聯絡主辦方
+                </button>
             </div>
         </div>
     </div>
@@ -2166,11 +2179,26 @@
                 });
             });
 
-            // --- 新增：活動快速報名邏輯 (加入安全防呆機制) ---
+            // --- 新增：Facebook SDK 初始化與大頭貼一鍵報名邏輯 ---
+            
+            // ⚠️ 已經為您填入真實的 Facebook App ID
+            const MY_FACEBOOK_APP_ID = '803120779511252'; 
+
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId      : MY_FACEBOOK_APP_ID,
+                    cookie     : true,                     // 允許 Cookie 以便伺服器存取工作階段
+                    xfbml      : true,                     // 解析網頁上的社群外掛程式
+                    version    : 'v19.0'                   // 使用最新的 Graph API 版本
+                });
+            };
+
+            let currentFbData = null; // 暫存抓取到的 FB 資料
+
             window.openRegistrationModal = function(eventName) {
                 window.currentRegEvent = eventName;
                 
-                // 動態抓取主辦單位設定的網址，若無則預設導向里山粉專
+                // 動態抓取主辦單位設定的網址
                 const ev = window.currentEventsList?.find(e => e.name === eventName);
                 window.currentRegMethodUrl = (ev && ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) 
                     ? ev.regMethod 
@@ -2179,57 +2207,87 @@
                 const nameEl = document.getElementById('reg-event-name');
                 if(nameEl) nameEl.textContent = eventName;
                 
-                // 防呆保護：檢查元素是否存在，避免 null 導致當機
-                const contactInput = document.getElementById('reg-contact-info');
-                if(contactInput) contactInput.value = '';
+                // 重置介面狀態
+                document.getElementById('fb-auth-step').classList.remove('hidden');
+                document.getElementById('fb-preview-step').classList.add('hidden');
+                currentFbData = null;
                 
                 window.closeModal('event-schedule-modal'); 
                 window.openModal('event-registration-modal');
             };
 
-            document.querySelectorAll('.reg-submit-action-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const platform = e.currentTarget.dataset.platform;
-                    const contactInput = document.getElementById('reg-contact-info');
-                    const contactInfo = contactInput ? contactInput.value.trim() : '';
+            // 處理 FB 登入按鈕點擊
+            document.getElementById('fb-login-btn')?.addEventListener('click', () => {
+                if (MY_FACEBOOK_APP_ID === '請在這裡填入您的_APP_ID') {
+                    return window.showToast('⚠️ 系統尚未設定 Facebook App ID，請聯繫管理員！');
+                }
 
-                    if (!contactInfo) return window.showToast('⚠️ 請輸入聯絡電話或 Email！');
-
-                    const originalHtml = e.currentTarget.innerHTML;
-                    e.currentTarget.disabled = true;
-                    e.currentTarget.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>送出中...';
-
-                    try {
-                        if (!isOfflineMode && db && typeof addDoc === 'function') {
-                            await addDoc(collection(db, 'event_registrations'), {
-                                eventName: window.currentRegEvent,
-                                platform: platform,
-                                socialId: contactInfo, // 保持變數名為 socialId，確保 Python Excel 匯出能無痛相容
-                                userId: document.getElementById('player-code')?.textContent || 'anonymous',
-                                userName: document.getElementById('player-name')?.value || '匿名',
-                                timestamp: serverTimestamp()
-                            });
-                        }
-                        window.showToast('✅ 報名成功！正在為您呼叫社群...');
-
-                        // 呼叫社群：一鍵開啟主辦單位的 LINE 或 FB 連結
-                        setTimeout(() => {
-                            let targetUrl = window.currentRegMethodUrl;
-                            if (targetUrl.startsWith('www')) targetUrl = 'https://' + targetUrl;
-                            window.open(targetUrl, '_blank');
-                        }, 800);
-
-                        window.closeModal('event-registration-modal');
-                        window.openModal('event-schedule-modal');
-                    } catch (err) {
-                        window.showToast('❌ 報名失敗，請檢查網路連線。');
-                    } finally {
-                        e.currentTarget.disabled = false;
-                        e.currentTarget.innerHTML = originalHtml;
+                // 呼叫 FB 官方授權視窗
+                FB.login(function(response) {
+                    if (response.authResponse) {
+                        window.showToast('🔄 授權成功，正在抓取大頭貼...');
+                        // 呼叫 Graph API 獲取姓名與大頭貼
+                        FB.api('/me', {fields: 'name,picture.width(150).height(150)'}, function(userResponse) {
+                            currentFbData = {
+                                id: userResponse.id,
+                                name: userResponse.name,
+                                picture: userResponse.picture.data.url
+                            };
+                            
+                            // 更新 UI 顯示大頭貼與姓名
+                            document.getElementById('fb-user-avatar').src = currentFbData.picture;
+                            document.getElementById('fb-user-name').textContent = currentFbData.name;
+                            document.getElementById('fb-user-id').textContent = 'FB ID: ' + currentFbData.id;
+                            
+                            // 切換步驟顯示
+                            document.getElementById('fb-auth-step').classList.add('hidden');
+                            document.getElementById('fb-preview-step').classList.remove('hidden');
+                        });
+                    } else {
+                        window.showToast('❌ 您取消了授權或登入失敗。');
                     }
-                });
+                }, {scope: 'public_profile'}); // 我們只需要最基本的公開資料權限
             });
-            // --- 結束：活動快速報名邏輯 ---
+
+            // 處理最終確認送出資料到 Firebase
+            document.getElementById('final-submit-reg-btn')?.addEventListener('click', async (e) => {
+                if (!currentFbData) return;
+
+                const originalHtml = e.currentTarget.innerHTML;
+                e.currentTarget.disabled = true;
+                e.currentTarget.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>資料寫入中...';
+
+                try {
+                    if (!isOfflineMode && db && typeof addDoc === 'function') {
+                        await addDoc(collection(db, 'event_registrations'), {
+                            eventName: window.currentRegEvent,
+                            platform: 'Facebook',
+                            socialId: currentFbData.id,        // 真實的 FB ID
+                            fbName: currentFbData.name,        // 真實的 FB 姓名
+                            fbPicture: currentFbData.picture,  // 大頭貼圖片網址
+                            userId: document.getElementById('player-code')?.textContent || 'anonymous',
+                            timestamp: serverTimestamp()
+                        });
+                    }
+                    window.showToast('✅ 報名成功！正在為您導向主辦單位...');
+
+                    // 另開新分頁呼叫主辦單位的連結
+                    setTimeout(() => {
+                        let targetUrl = window.currentRegMethodUrl;
+                        if (targetUrl.startsWith('www')) targetUrl = 'https://' + targetUrl;
+                        window.open(targetUrl, '_blank');
+                    }, 800);
+
+                    window.closeModal('event-registration-modal');
+                    window.openModal('event-schedule-modal');
+                } catch (err) {
+                    window.showToast('❌ 報名失敗，請檢查網路連線。');
+                } finally {
+                    e.currentTarget.disabled = false;
+                    e.currentTarget.innerHTML = originalHtml;
+                }
+            });
+            // --- 結束：Facebook SDK 報名邏輯 ---
 
             // 終極修復：偷偷置入自動重載邏輯 (結合嚴格初始化與快取淨化)
             const langSelect = document.getElementById('custom-lang-select');
