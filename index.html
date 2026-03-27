@@ -1978,60 +1978,31 @@
                     renderCertifications();
                 });
 
+                // 新增：即時監聽報名資料庫，瞬間抓取最新大頭貼
+                onSnapshot(collection(db, 'event_registrations'), (snapshot) => {
+                    globalEventRegistrations = {};
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if(data.eventName) {
+                            if(!globalEventRegistrations[data.eventName]) globalEventRegistrations[data.eventName] = [];
+                            globalEventRegistrations[data.eventName].push(data);
+                        }
+                    });
+                    if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
+                });
+
                 onSnapshot(doc(db, 'system_messages', 'event_schedule'), (docSnap) => {
-                    const modalContainer = document.getElementById('event-schedule-container'), inlineContainer = document.getElementById('inline-event-schedule-container');
                     if(docSnap.exists() && docSnap.data().events) {
                         const events = docSnap.data().events; window.currentEventsList = events; 
                         const seenEvents = JSON.parse(localStorage.getItem('mori_seen_events') || '[]'); const unreadCount = events.filter(ev => !seenEvents.includes(ev.name)).length;
                         const badge = document.getElementById('event-badge');
                         if (badge) { if (unreadCount > 0) { badge.textContent = 'NEW'; badge.classList.remove('hidden'); badge.classList.add('animate-bounce'); } else { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); } }
-
-                        if (events.length === 0) {
-                            const emptyHtml = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
-                            if(modalContainer) modalContainer.innerHTML = emptyHtml; if(inlineContainer) inlineContainer.innerHTML = emptyHtml; return;
-                        }
-
-                        const today = new Date(); today.setHours(0,0,0,0);
-                        const processedEvents = [...events].map(ev => { let isExpired = false; if(ev.date) { const evDate = new Date(ev.date.replace(/-/g, '/')); if(!isNaN(evDate) && evDate < today) isExpired = true; } return { ...ev, isExpired }; }).sort((a, b) => { if (a.isExpired === b.isExpired) return 0; return a.isExpired ? 1 : -1; });
-
-                        const html = processedEvents.map(ev => {
-                            let isExpired = ev.isExpired, calendarUrl = '#';
-                            if(ev.date && !isExpired) {
-                                try {
-                                    const evDate = new Date(ev.date.replace(/-/g, '/'));
-                                    if(!isNaN(evDate)) {
-                                        const y1 = evDate.getFullYear(), m1 = String(evDate.getMonth()+1).padStart(2,'0'), d1 = String(evDate.getDate()).padStart(2,'0');
-                                        const nextDate = new Date(evDate); nextDate.setDate(nextDate.getDate() + 1);
-                                        const y2 = nextDate.getFullYear(), m2 = String(nextDate.getMonth()+1).padStart(2,'0'), d2 = String(nextDate.getDate()).padStart(2,'0');
-                                        const dates = `${y1}${m1}${d1}/${y2}${m2}${d2}`, title = encodeURIComponent(`探探里山活動: ${ev.name}`);
-                                        const details = encodeURIComponent(`執行單位: ${ev.executor || '里山團隊'}\n報名方式: ${ev.regMethod || '請洽主辦單位'}\n\n👉 更多詳情請至 探探里山-永續旅遊 儀表板查看。`), location = encodeURIComponent(ev.location || '水里里山基地');
-                                        calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
-                                    }
-                                } catch(e) { console.warn('日期解析異常', e); }
-                            }
-
-                            if(isExpired) {
-                                return `<div class="bg-gray-50 p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 opacity-90 transition-all"><div class="absolute top-0 right-0 bg-gray-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl z-10 flex items-center shadow-sm"><i class="fas fa-flag-checkered mr-1.5"></i>活動已圓滿結束</div><h4 class="text-xl font-bold text-gray-600 mb-3 pr-24 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold border border-gray-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-500 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-400 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-200"><i class="fas fa-sticky-note mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">備註:</span> <span class="leading-relaxed text-gray-500">${ev.remark}</span></p>` : ''}</div><button onclick="window.closeModal('event-schedule-modal'); window.openModal('gov-modal');" class="w-full py-3 bg-blue-50/80 text-blue-500 border border-blue-100 rounded-xl hover:bg-blue-100 hover:text-blue-600 transition text-sm font-bold shadow-sm flex items-center justify-center mt-2"><i class="fas fa-chart-pie mr-1.5 text-lg"></i> 前往儀錶板查詢活動成效</button></div>`;
-                            } else {
-                                let regMethodHtml = '';
-                                if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) { regMethodHtml = `<a href="${ev.regMethod}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-all font-medium hover:bg-blue-100 transition underline text-center sm:text-left shadow-sm">點擊前往報名網頁</a>`; } 
-                                else { regMethodHtml = `<div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-words whitespace-normal font-medium shadow-sm">${ev.regMethod || '請洽主辦單位'}</div>`; }
-                                
-                                // 修復：根據後台傳來的 isRegistrationOpen 開關，決定按鈕狀態
-                                const isRegOpen = ev.isRegistrationOpen !== false; // 預設為 true，只有後台明確設為 false 才關閉
-                                const quickRegBtnHtml = isRegOpen 
-                                    ? `<button onclick="window.openRegistrationModal('${ev.name}')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-bolt mr-1.5 text-yellow-300"></i>快速報名</button>`
-                                    : `<button disabled class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gray-100 border border-gray-200 text-gray-400 rounded-lg cursor-not-allowed text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-lock mr-1.5 opacity-50"></i>報名未開放</button>`;
-
-                                return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center text-xs w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><div class="flex gap-2 w-full sm:w-auto">${quickRegBtnHtml}<button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 行事曆</button></div></div></div>`;
-                            }
-                        }).join('');
                         
-                        if(modalContainer) modalContainer.innerHTML = html; if(inlineContainer) inlineContainer.innerHTML = html;
+                        if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
                     } else {
                         const badge = document.getElementById('event-badge'); if (badge) { badge.classList.add('hidden'); badge.classList.remove('animate-bounce'); }
-                        const emptyHtml = '<div class="col-span-full py-12 text-center text-gray-400 border border-dashed rounded-xl">目前尚無近期活動，敬請留意。</div>';
-                        if(modalContainer) modalContainer.innerHTML = emptyHtml; if(inlineContainer) inlineContainer.innerHTML = emptyHtml;
+                        window.currentEventsList = [];
+                        if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
                     }
                 });
 
@@ -2292,32 +2263,6 @@
                         document.getElementById('social-preview-step').classList.remove('hidden');
                     });
                 }
-            });
-
-            // 處理 FB 登入按鈕點擊
-            document.getElementById('fb-login-btn')?.addEventListener('click', () => {
-                if (typeof FB === 'undefined') {
-                    return window.showToast('⚠️ Facebook 模組尚未載入，請關閉擋廣告外掛或稍後再試！');
-                }
-                FB.login(function(response) {
-                    if (response.authResponse) {
-                        window.showToast('🔄 授權成功，正在抓取大頭貼...');
-                        FB.api('/me', {fields: 'name,picture.width(150).height(150)'}, function(userResponse) {
-                            currentSocialData = {
-                                platform: 'Facebook',
-                                id: userResponse.id,
-                                name: userResponse.name,
-                                picture: userResponse.picture.data.url
-                            };
-                            document.getElementById('social-user-avatar').src = currentSocialData.picture;
-                            document.getElementById('social-user-avatar').className = "w-12 h-12 rounded-full border-2 border-[#1877F2] shadow-sm object-cover";
-                            document.getElementById('social-user-name').textContent = currentSocialData.name;
-                            document.getElementById('social-user-id').textContent = 'FB ID: ' + currentSocialData.id;
-                            document.getElementById('social-auth-step').classList.add('hidden');
-                            document.getElementById('social-preview-step').classList.remove('hidden');
-                        });
-                    } else { window.showToast('❌ 您取消了授權或登入失敗。'); }
-                }, {scope: 'public_profile'}); 
             });
 
             // 處理最終確認送出資料到 Firebase
