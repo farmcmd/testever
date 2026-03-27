@@ -1358,7 +1358,7 @@
                     } catch(e) { console.warn('日期解析異常', e); }
                 }
 
-                // --- 新增：動態抓取並渲染已報名者大頭貼區塊 ---
+                // --- 新增：動態抓取並渲染已報名者大頭貼與 ID 區塊 ---
                 const regs = globalEventRegistrations[ev.name] || [];
                 let regsHtml = '';
                 if(regs.length > 0) {
@@ -1366,7 +1366,17 @@
                     regs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
                     const avatarsHtml = regs.map(r => {
                         const borderColor = r.platform === 'LINE' ? 'border-[#06C755]' : (r.platform === 'Facebook' ? 'border-[#1877F2]' : 'border-gray-300');
-                        return `<div class="flex flex-col items-center shrink-0 w-12" title="${r.socialName || '匿名'}"><img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-9 h-9 rounded-full border-2 ${borderColor} shadow-sm object-cover mb-1 bg-gray-50"><span class="text-[9px] text-gray-500 truncate w-full text-center font-medium">${r.socialName || '匿名'}</span></div>`;
+                        
+                        // 資安防護：顯示系統代碼 (userId) 或對長串社群 ID (socialId) 進行部分遮蔽
+                        const displayId = (r.userId && r.userId !== 'anonymous') 
+                            ? r.userId 
+                            : (r.socialId ? r.socialId.substring(0, 5) + '***' : '無代碼');
+                        
+                        return `<div class="flex flex-col items-center shrink-0 w-16" title="社群名稱: ${r.socialName || '匿名'}&#10;識別碼: ${displayId}">
+                            <img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full border-2 ${borderColor} shadow-sm object-cover mb-1 bg-white">
+                            <span class="text-[10px] text-gray-800 truncate w-full text-center font-bold">${r.socialName || '匿名'}</span>
+                            <span class="text-[8.5px] text-gray-500 font-mono tracking-tighter bg-gray-100 border border-gray-200 px-1 py-px rounded mt-0.5 w-full text-center truncate shadow-sm">${displayId}</span>
+                        </div>`;
                     }).join('');
                     regsHtml = `<div class="mb-4 pt-4 border-t border-gray-100"><p class="text-[12px] font-bold text-gray-600 mb-2.5 flex items-center"><i class="fas fa-users text-blue-500 mr-1.5"></i>已報名成功 (${regs.length})</p><div class="flex gap-2 overflow-x-auto custom-scrollbar pb-2 pr-2">${avatarsHtml}</div></div>`;
                 }
@@ -2030,8 +2040,9 @@
                     renderCertifications();
                 });
 
-                // 新增：即時監聽報名資料庫，瞬間抓取最新大頭貼
+                // 新增：即時監聽報名資料庫，瞬間抓取最新大頭貼 (加入錯誤攔截與防呆提示)
                 onSnapshot(collection(db, 'event_registrations'), (snapshot) => {
+                    console.log(`[系統連線] 成功讀取報名資料，共 ${snapshot.size} 筆`);
                     globalEventRegistrations = {};
                     snapshot.forEach(doc => {
                         const data = doc.data();
@@ -2041,6 +2052,9 @@
                         }
                     });
                     if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
+                }, (error) => {
+                    console.error("❌ 讀取報名名單失敗 (Firebase 安全規則阻擋):", error);
+                    window.showToast("⚠️ 無法載入大頭貼，請檢查 Firebase 讀取權限！");
                 });
 
                 // 修復：將原本寫死的活動渲染移除，改交由頂部的 renderEventsListUI 統一處理，避免舊代碼覆蓋導致活動消失
