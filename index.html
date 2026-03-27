@@ -2171,53 +2171,60 @@
             // --- 新增：活動快速報名邏輯 ---
             window.openRegistrationModal = function(eventName) {
                 window.currentRegEvent = eventName;
+                
+                // 動態抓取主辦單位設定的網址，若無則預設導向里山粉專
+                const ev = window.currentEventsList?.find(e => e.name === eventName);
+                window.currentRegMethodUrl = (ev && ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) 
+                    ? ev.regMethod 
+                    : 'https://www.facebook.com/Satoyamadining';
+
                 document.getElementById('reg-event-name').textContent = eventName;
-                document.getElementById('reg-social-id').value = '';
-                window.currentRegPlatform = '';
-                document.querySelectorAll('.reg-platform-btn').forEach(b => b.classList.remove('border-blue-600', 'text-blue-600', 'border-green-500', 'text-green-500', 'bg-blue-50', 'bg-green-50', 'shadow-md'));
-                window.closeModal('event-schedule-modal'); // 關閉原本的列表視窗避免重疊
+                document.getElementById('reg-contact-info').value = '';
+                
+                window.closeModal('event-schedule-modal'); 
                 window.openModal('event-registration-modal');
             };
 
-            document.querySelectorAll('.reg-platform-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const btnEl = e.currentTarget;
-                    window.currentRegPlatform = btnEl.dataset.platform;
-                    document.querySelectorAll('.reg-platform-btn').forEach(b => b.classList.remove('border-blue-600', 'text-blue-600', 'border-green-500', 'text-green-500', 'bg-blue-50', 'bg-green-50', 'shadow-md'));
-                    if (window.currentRegPlatform === 'FB') btnEl.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50', 'shadow-md');
-                    if (window.currentRegPlatform === 'LINE') btnEl.classList.add('border-green-500', 'text-green-500', 'bg-green-50', 'shadow-md');
-                });
-            });
+            document.querySelectorAll('.reg-submit-action-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const platform = e.currentTarget.dataset.platform;
+                    const contactInfo = document.getElementById('reg-contact-info').value.trim();
 
-            document.getElementById('submit-registration-btn')?.addEventListener('click', async () => {
-                const socialId = document.getElementById('reg-social-id').value.trim();
-                if (!window.currentRegPlatform) return window.showToast('⚠️ 請先選擇 Facebook 或 LINE 平台！');
-                if (!socialId) return window.showToast('⚠️ 請輸入您的社群 ID 或連結！');
-                
-                const btn = document.getElementById('submit-registration-btn');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>資料送出中...';
-                
-                try {
-                    if (!isOfflineMode && db && typeof addDoc === 'function') {
-                        await addDoc(collection(db, 'event_registrations'), {
-                            eventName: window.currentRegEvent,
-                            platform: window.currentRegPlatform,
-                            socialId: socialId,
-                            userId: document.getElementById('player-code')?.textContent || 'anonymous',
-                            userName: document.getElementById('player-name')?.value || '匿名',
-                            timestamp: serverTimestamp()
-                        });
+                    if (!contactInfo) return window.showToast('⚠️ 請輸入聯絡電話或 Email！');
+
+                    const originalHtml = e.currentTarget.innerHTML;
+                    e.currentTarget.disabled = true;
+                    e.currentTarget.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>送出中...';
+
+                    try {
+                        if (!isOfflineMode && db && typeof addDoc === 'function') {
+                            await addDoc(collection(db, 'event_registrations'), {
+                                eventName: window.currentRegEvent,
+                                platform: platform,
+                                socialId: contactInfo, // 保持變數名為 socialId，確保 Python Excel 匯出能無痛相容
+                                userId: document.getElementById('player-code')?.textContent || 'anonymous',
+                                userName: document.getElementById('player-name')?.value || '匿名',
+                                timestamp: serverTimestamp()
+                            });
+                        }
+                        window.showToast('✅ 報名成功！正在為您呼叫社群...');
+
+                        // 呼叫社群：一鍵開啟主辦單位的 LINE 或 FB 連結
+                        setTimeout(() => {
+                            let targetUrl = window.currentRegMethodUrl;
+                            if (targetUrl.startsWith('www')) targetUrl = 'https://' + targetUrl;
+                            window.open(targetUrl, '_blank');
+                        }, 800);
+
+                        window.closeModal('event-registration-modal');
+                        window.openModal('event-schedule-modal');
+                    } catch (err) {
+                        window.showToast('❌ 報名失敗，請檢查網路連線。');
+                    } finally {
+                        e.currentTarget.disabled = false;
+                        e.currentTarget.innerHTML = originalHtml;
                     }
-                    window.showToast('✅ 報名成功！主辦單位將盡快與您聯繫。');
-                    window.closeModal('event-registration-modal');
-                    window.openModal('event-schedule-modal'); // 報名完成後自動返回活動列表
-                } catch (err) {
-                    window.showToast('❌ 報名失敗，請檢查網路連線。');
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>確認送出報名';
-                }
+                });
             });
             // --- 結束：活動快速報名邏輯 ---
 
