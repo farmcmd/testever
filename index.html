@@ -69,6 +69,10 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .hidden { display: none !important; }
         
+        /* 新增：名單展開漸顯動畫 */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-down { animation: fadeInDown 0.3s ease-out forwards; }
+        
         #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6; }
         header { position: relative; overflow: hidden; z-index: 10; }
         .header-content { position: relative; z-index: 10; }
@@ -239,7 +243,10 @@
                     
                     <div id="transport-info-text" class="hidden max-w-3xl mx-auto bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner text-sm text-gray-600 leading-relaxed text-left md:text-center mt-2 relative transition-all">
                         <button onclick="document.getElementById('transport-info-text').classList.add('hidden')" class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-lg"><i class="fas fa-times"></i></button>
-                        <div class="mb-3 pr-6"><i class="fas fa-info-circle text-mori-sage mr-1"></i> 此處碳里程計算以「學習體驗」為目的，用概算的方法讓使用者瞭解低碳交通方式。期能讓使用者學習後直覺應用於日常生活。</div>
+                        <div class="mb-3 pr-6 space-y-2">
+                            <p><i class="fas fa-info-circle text-mori-sage mr-1"></i> 此處碳里程計算以「學習體驗」為目的，用概算的方法讓使用者瞭解低碳交通方式。期能讓使用者學習後直覺應用於日常生活。</p>
+                            <p class="text-[12px] bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-600 text-left"><span class="font-black text-mori-forest"><i class="fas fa-bullseye mr-1"></i>📌 邊界界定：</span>本系統減碳基準線 (Baseline) 設定為『單人駕駛燃油小客車』，計算結果供民眾學習與企業範疇三 (員工通勤/差旅) 減碳成效參考。</p>
+                        </div>
 
                         <div class="bg-emerald-50/80 p-3 md:p-4 rounded-xl border border-emerald-200 shadow-sm transition-all text-left mt-2">
                             <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -897,10 +904,14 @@
             <h3 class="text-2xl font-bold text-mori-forest mb-4 text-center">綠色消費計算機</h3>
             
             <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 mb-4 shadow-inner">
-                <p class="text-xs text-amber-800 font-bold leading-relaxed flex items-start text-justify">
-                    <i class="fas fa-exclamation-triangle mt-0.5 mr-2 text-amber-500"></i>
+                <div class="text-xs text-amber-800 font-bold leading-relaxed flex items-start text-justify mb-1.5">
+                    <i class="fas fa-exclamation-triangle mt-0.5 mr-2 text-amber-500 shrink-0"></i>
                     <span>請自主辨識農產標章或依企業認定是否符合ESG評鑑的商品或 <span class="text-green-600 font-bold">SROI (✓)</span> 價值活動商品。</span>
-                </p>
+                </div>
+                <div class="text-[11px] text-amber-700/90 font-bold leading-relaxed flex items-start text-justify pt-1.5 border-t border-amber-200/60">
+                    <i class="fas fa-th-tack mt-0.5 mr-1.5 opacity-70 shrink-0"></i>
+                    <span>📌 本區記錄之消費金額，可作為企業範疇三 (類別四) 購買之商品及服務，或 CSR 社會參與實績之佐證。</span>
+                </div>
             </div>
 
             <div class="flex mb-4 bg-gray-100 p-1 rounded-lg">
@@ -981,6 +992,7 @@
             <div class="bg-red-50 p-5 rounded-xl border border-red-100 mb-6 text-sm text-gray-700 leading-relaxed text-justify shadow-inner">
                 <p>您選的交通方式為獨自駕駛交通工具進行旅遊。</p>
                 <p class="mt-2">其他共乘方式或是大眾交通工具的減碳量皆以此為<span class="font-bold text-red-600 px-1">基準</span>進行計算，因此選擇本項，減碳量將計算為 <span class="font-bold text-red-600 text-lg px-1">0</span>。</p>
+                <p class="mt-3 pt-3 border-t border-red-200/60 text-[12px] font-bold text-red-800 tracking-wide"><i class="fas fa-bullseye mr-1 text-red-500"></i>📌 邊界界定減碳基準線 (Baseline) 設定為『單人駕駛燃油小客車』。</p>
             </div>
             <div class="flex flex-col gap-3"><button id="drive-alone-confirm-btn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-md transition flex justify-center items-center tracking-wide"><i class="fas fa-check mr-2"></i>我確認以此方式進行旅遊</button></div>
         </div>
@@ -1041,7 +1053,7 @@
         </div>
     </div>
 
-    <!-- 10.5 活動快速報名 Modal (終極升級：FB & LINE 雙軌大頭貼授權版) -->
+    <!-- 10.5 活動快速報名 Modal (終極升級：LINE 單軌大頭貼授權版) -->
     <div id="event-registration-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-600 relative text-center">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10" onclick="window.closeModal('event-registration-modal'); window.openModal('event-schedule-modal');"><i class="fas fa-times text-xl"></i></button>
@@ -1049,18 +1061,15 @@
             <h3 class="text-xl font-bold text-gray-800 mb-2">社群一鍵報名</h3>
             <p id="reg-event-name" class="text-sm font-bold text-blue-700 mb-5 bg-blue-50/50 p-2 rounded-lg border border-blue-100"></p>
             
-            <!-- 步驟一：雙軌授權按鈕 -->
+            <!-- 步驟一：單軌授權按鈕 -->
             <div id="social-auth-step" class="mb-6">
                 <p class="text-[13px] text-gray-600 font-bold mb-3 text-left"><i class="fas fa-shield-alt text-blue-400 mr-1"></i>1. 授權取得社群身分 (免填寫)</p>
                 <div class="flex flex-col gap-3">
                     <button id="line-login-btn" class="w-full py-3.5 bg-[#06C755] text-white rounded-xl font-bold shadow-md hover:bg-[#05B34C] transition flex justify-center items-center">
-                        <i class="fab fa-line text-2xl mr-2"></i> 以 LINE 登入並帶入資料
-                    </button>
-                    <button id="fb-login-btn" class="w-full py-3.5 bg-[#1877F2] text-white rounded-xl font-bold shadow-md hover:bg-[#166FE5] transition flex justify-center items-center">
-                        <i class="fab fa-facebook text-xl mr-2"></i> 以 Facebook 登入
+                        <i class="fab fa-line text-2xl mr-2"></i> 使用LINE ID立即報名
                     </button>
                 </div>
-                <p class="text-[10px] text-gray-400 mt-3 leading-relaxed"><i class="fas fa-lock mr-1 text-gray-300"></i>我們僅會取得您的公開大頭貼與姓名作為報名憑證。</p>
+                <p class="text-[15px] text-gray-500 mt-3 leading-relaxed font-medium"><i class="fas fa-lock mr-1 text-gray-400"></i>我們僅會取得您的公開大頭貼與姓名作為報名憑證。</p>
             </div>
 
             <!-- 步驟二：大頭貼預覽與送出 (預設隱藏，授權後顯示) -->
@@ -1076,6 +1085,13 @@
                 <button id="final-submit-reg-btn" class="w-full py-3.5 bg-green-500 text-white rounded-xl font-bold shadow-md hover:bg-green-600 transition flex justify-center items-center">
                     <i class="fas fa-paper-plane mr-2"></i> 確認報名並聯絡主辦方
                 </button>
+            </div>
+
+            <!-- 新增：臨時群組邀請按鈕 -->
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <a href="https://line.me/R/ti/g/6Hcvx4VKCe" target="_blank" class="w-full py-3 bg-white border-2 border-[#06C755]/80 text-[#06C755] rounded-xl font-bold shadow-sm hover:bg-[#06C755] hover:text-white transition-all duration-300 flex justify-center items-center text-[14px] group">
+                    <i class="fab fa-line text-xl mr-2 group-hover:animate-bounce"></i> 請加入臨時群組以便確認
+                </a>
             </div>
         </div>
     </div>
@@ -1229,7 +1245,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, increment, serverTimestamp, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        // 終極修復：將 addDoc 補入 import 清單中，打通寫入雲端的神經！
+        import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, increment, serverTimestamp, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
         // ==========================================
@@ -1330,6 +1347,7 @@
         let globalAbsolute = { carbon: 0, green: 0, visitor_count: 0 }; 
         let summaryState = { entMode: false, entSelected: new Set(), govMode: false, govSelected: new Set() };
         let globalEventRegistrations = {}; // 新增：全域報名名單儲存庫
+        window.expandedRegEvents = new Set(); // 新增：追蹤目前展開報名名單的活動
 
         // 新增：解耦後的獨立渲染引擎，負責組合活動卡片與報名者大頭貼
         window.renderEventsListUI = function() {
@@ -1397,36 +1415,94 @@
                             } catch(e) {}
                         }
                         
-                        // 獨立的微型立體卡片結構
-                        return `<div class="flex flex-col items-center shrink-0 w-[76px] bg-white p-2 rounded-xl border border-gray-200 shadow-sm relative group mt-2.5 hover:border-blue-300 transition-colors" title="社群名稱: ${r.socialName || '匿名'}&#10;識別碼: ${displayId}">
-                            <span class="absolute -top-2.5 bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm border border-green-200 whitespace-nowrap z-10">${timeStr}</span>
-                            <img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full border-2 ${borderColor} shadow-sm object-cover mb-1.5 relative z-0">
-                            <span class="text-[11px] text-gray-800 truncate w-full text-center font-bold mb-0.5">${r.socialName || '匿名'}</span>
-                            <span class="text-[9px] text-gray-500 font-mono tracking-tighter bg-gray-50 border border-gray-200 px-1 py-px rounded w-full text-center truncate">${displayId}</span>
+                        // 終極升級：客製化狀態與智慧色彩引擎 (Smart Color Engine)
+                        let customTag = '';
+                        let nameStyle = 'text-gray-800';
+                        let avatarStyle = '';
+
+                        if (r.status && r.status.trim() !== '') {
+                            const st = r.status.trim();
+                            let bgC = 'bg-blue-50', textC = 'text-blue-600', borderC = 'border-blue-100', dotC = 'bg-blue-500';
+                            
+                            // 關鍵字智慧判定顏色
+                            if (st.includes('取消') || st.includes('放棄')) {
+                                bgC = 'bg-red-50'; textC = 'text-red-600'; borderC = 'border-red-100'; dotC = 'bg-red-500';
+                                nameStyle = 'text-gray-500'; avatarStyle = 'opacity-80';
+                            } else if (st.includes('繳費') || st.includes('確認') || st.includes('完成') || st.includes('成功')) {
+                                bgC = 'bg-green-50'; textC = 'text-green-700'; borderC = 'border-green-200'; dotC = 'bg-green-500';
+                            } else if (st.includes('候補') || st.includes('等待')) {
+                                bgC = 'bg-amber-50'; textC = 'text-amber-700'; borderC = 'border-amber-200'; dotC = 'bg-amber-500';
+                            }
+                            
+                            customTag = `<span class="flex items-center text-[10px] ${bgC} ${textC} font-bold px-1.5 py-0.5 rounded border ${borderC} shadow-sm whitespace-nowrap"><span class="w-1.5 h-1.5 rounded-full ${dotC} mr-1 animate-pulse"></span>${st}</span>`;
+                        }
+
+                        // 升級為橫式資訊列結構 (Horizontal Pill UI)：徹底解決字數截斷問題
+                        return `<div class="flex items-center shrink-0 bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm gap-3 hover:border-blue-300 transition-all duration-300 group">
+                            <img src="${r.socialPicture || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full border-2 ${borderColor} shadow-sm object-cover flex-shrink-0 ${avatarStyle}">
+                            <div class="flex flex-col items-start min-w-[120px]">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-[13px] ${nameStyle} font-bold tracking-wide">${r.socialName || '匿名'}</span>
+                                    <span class="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm border border-green-200 whitespace-nowrap">${timeStr}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-gray-500 font-mono tracking-tighter bg-gray-50 border border-gray-200 px-1.5 py-px rounded w-fit shadow-sm">${displayId}</span>
+                                    ${customTag}
+                                </div>
+                            </div>
                         </div>`;
                     }).join('');
                     
-                    // 獨立顯眼的榮譽榜區塊底板
-                    regsHtml = `<div class="mb-4 pt-4 border-t-2 border-dashed border-blue-100 bg-blue-50/40 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-1"><p class="text-[13px] font-black text-blue-900 mb-1 flex items-center"><i class="fas fa-users text-blue-500 mr-2 text-lg"></i>最新報名名單 (${regs.length}人)</p><div class="flex gap-2.5 overflow-x-auto custom-scrollbar pb-3 pt-1 pr-2">${avatarsHtml}</div></div>`;
+                    // 終極升級：延遲渲染 (Lazy Rendering) 與折疊 UI
+                    const isExpanded = window.expandedRegEvents.has(ev.name);
+                    const toggleBtnText = isExpanded ? '<i class="fas fa-chevron-up mr-1.5"></i>隱藏名單' : '<i class="fas fa-chevron-down mr-1.5"></i>查看報名清單';
+                    const toggleBtnClass = isExpanded ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-white text-blue-600 border border-blue-200 hover:bg-blue-50';
+
+                    regsHtml = `
+                    <div class="mb-4 pt-4 border-t-2 border-dashed border-blue-100 bg-blue-50/40 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-2 transition-all duration-300">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-3">
+                            <p class="text-[14px] font-black text-blue-900 flex items-center m-0 tracking-wide">
+                                <i class="fas fa-users text-blue-500 mr-2 text-lg"></i>目前報名：<span class="text-blue-600 ml-1 text-lg">${regs.length}</span> 人
+                            </p>
+                            <button onclick="window.toggleRegList('${ev.name}')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center w-full sm:w-auto ${toggleBtnClass}">
+                                ${toggleBtnText}
+                            </button>
+                        </div>
+                        ${isExpanded ? `<div class="flex gap-2.5 overflow-x-auto custom-scrollbar pb-3 pt-2 pr-2 animate-fade-in-down border-t border-blue-100 mt-2">${avatarsHtml}</div>` : ''}
+                    </div>`;
                 } else {
-                    // 新增防呆：即使沒人報名，也會顯示空的底板，證明區塊有在運作 (稍微加深底色以利辨識)
-                    regsHtml = `<div class="mb-4 pt-4 border-t-2 border-dashed border-gray-200 bg-gray-100/80 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-3"><p class="text-[13px] font-black text-gray-500 mb-1 flex items-center"><i class="fas fa-users text-gray-400 mr-2 text-lg"></i>最新報名名單 (0人)</p><p class="text-[11px] text-gray-500 font-bold">目前尚無人報名，快來搶先成為第一位！</p></div>`;
+                    // 移除冗餘推廣文字，保持版面簡潔，僅顯示權責範圍聲明，並微調底部間距 (pb-2)
+                    regsHtml = `<div class="mb-4 pt-4 border-t-2 border-dashed border-gray-200 bg-gray-100/80 -mx-5 px-5 sm:-mx-6 sm:px-6 shadow-inner pb-3"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5"><p class="text-[13px] font-black text-gray-500 flex items-center m-0"><i class="fas fa-users text-gray-400 mr-2 text-lg"></i>報名人數：0 人</p><p class="text-[10px] text-gray-400 font-bold m-0"><i class="fas fa-shield-alt mr-1 opacity-70"></i>由本站辦理之活動才適用快速報名</p></div></div>`;
                 }
                 // ---------------------------------------------
 
                 if(isExpired) {
                     return `<div class="bg-gray-50 p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 opacity-90 transition-all"><div class="absolute top-0 right-0 bg-gray-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl z-10 flex items-center shadow-sm"><i class="fas fa-flag-checkered mr-1.5"></i>活動已圓滿結束</div><h4 class="text-xl font-bold text-gray-600 mb-3 pr-24 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold border border-gray-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-500 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-400 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-200"><i class="fas fa-sticky-note mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">備註:</span> <span class="leading-relaxed text-gray-500">${ev.remark}</span></p>` : ''}</div>${regsHtml}<button onclick="window.closeModal('event-schedule-modal'); window.openModal('gov-modal');" class="w-full py-3 bg-blue-50/80 text-blue-500 border border-blue-100 rounded-xl hover:bg-blue-100 hover:text-blue-600 transition text-sm font-bold shadow-sm flex items-center justify-center mt-2"><i class="fas fa-chart-pie mr-1.5 text-lg"></i> 前往儀錶板查詢活動成效</button></div>`;
                 } else {
-                    let regMethodHtml = '';
-                    if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) { regMethodHtml = `<a href="${ev.regMethod}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-all font-medium hover:bg-blue-100 transition underline text-center sm:text-left shadow-sm">點擊前往報名網頁</a>`; } 
-                    else { regMethodHtml = `<div class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-100 flex-grow break-words whitespace-normal font-medium shadow-sm">${ev.regMethod || '請洽主辦單位'}</div>`; }
+                    const isRegOpen = ev.isRegistrationOpen !== false; // 預設為開啟
                     
-                    const isRegOpen = ev.isRegistrationOpen !== false; 
+                    let regMethodHtml = '';
+                    if (isRegOpen) {
+                        // 狀態一：開放報名中 (顯示藍色提示框與固定文字)
+                        regMethodHtml = `<div class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-100 flex-grow font-bold shadow-sm text-[13px]"><i class="fas fa-broadcast-tower mr-1.5 animate-pulse"></i>報名中...依報名先後或主辦單位通知錄取</div>`;
+                    } else {
+                        // 狀態二：已關閉站內報名 (顯示控制器輸入的文字或外部網址)
+                        if(ev.regMethod && (ev.regMethod.startsWith('http') || ev.regMethod.startsWith('www'))) { 
+                            let url = ev.regMethod.startsWith('www') ? 'https://' + ev.regMethod : ev.regMethod;
+                            regMethodHtml = `<a href="${url}" target="_blank" class="bg-gray-50 text-gray-600 px-4 py-2 rounded-lg border border-gray-200 flex-grow break-all font-bold hover:bg-gray-100 transition underline text-center sm:text-left shadow-sm text-[13px]"><i class="fas fa-external-link-alt mr-1.5"></i>點擊前往外部報名網頁</a>`; 
+                        } else if (ev.regMethod) { 
+                            regMethodHtml = `<div class="bg-gray-50 text-gray-600 px-4 py-2 rounded-lg border border-gray-200 flex-grow break-words whitespace-normal font-bold shadow-sm text-[13px]"><i class="fas fa-info-circle mr-1.5"></i>${ev.regMethod}</div>`; 
+                        } else {
+                            regMethodHtml = `<div class="bg-gray-50 text-gray-400 px-4 py-2 rounded-lg border border-gray-200 flex-grow font-bold shadow-sm text-[13px]"><i class="fas fa-ban mr-1.5"></i>已停止站內報名，詳情請洽主辦單位</div>`;
+                        }
+                    }
+                    
+                    // 按鈕狀態連動
                     const quickRegBtnHtml = isRegOpen 
                         ? `<button onclick="window.openRegistrationModal('${ev.name}')" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-bolt mr-1.5 text-yellow-300"></i>快速報名</button>`
-                        : `<button disabled class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gray-100 border border-gray-200 text-gray-400 rounded-lg cursor-not-allowed text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-lock mr-1.5 opacity-50"></i>報名未開放</button>`;
+                        : `<button disabled class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-gray-100 border border-gray-200 text-gray-400 rounded-lg cursor-not-allowed text-xs font-bold shadow-sm flex items-center justify-center"><i class="fas fa-lock mr-1.5 opacity-50"></i>：請參照左側報名</button>`;
 
-                    return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div>${regsHtml}<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center text-xs w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><div class="flex gap-2 w-full sm:w-auto">${quickRegBtnHtml}<button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 行事曆</button></div></div></div>`;
+                    return `<div class="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 hover:shadow-md transition-all"><h4 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-600 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-500 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-100"><i class="fas fa-info-circle mr-2.5 mt-0.5 text-blue-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0 text-blue-600">備註:</span> <span class="leading-relaxed text-blue-600 font-medium">${ev.remark}</span></p>` : ''}</div>${regsHtml}<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 gap-4"><div class="flex items-center w-full sm:w-auto flex-grow"><i class="fas fa-info-circle text-blue-500 mr-2 mt-0.5 shrink-0 text-base"></i><span class="font-bold text-gray-600 mr-2 shrink-0 text-[13px]">報名:</span>${regMethodHtml}</div><div class="flex gap-2 w-full sm:w-auto">${quickRegBtnHtml}<button onclick="${calendarUrl !== '#' ? `window.open('${calendarUrl}', '_blank')` : `window.showToast('活動日期格式異常，無法產生行事曆連結')`}" class="shrink-0 w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition text-xs font-bold shadow-sm flex items-center justify-center"><i class="far fa-calendar-plus mr-1.5 text-blue-500 text-sm"></i> 行事曆</button></div></div></div>`;
                 }
             }).join('');
             
@@ -1446,6 +1522,16 @@
         window.triggerGovSearch = function() {
             if(typeof renderGovDashboard === 'function') renderGovDashboard();
             if(typeof updateProjectDropdown === 'function') updateProjectDropdown();
+        };
+        
+        // 新增：全域報名名單展開切換器
+        window.toggleRegList = function(eventName) {
+            if (window.expandedRegEvents.has(eventName)) {
+                window.expandedRegEvents.delete(eventName);
+            } else {
+                window.expandedRegEvents.add(eventName);
+            }
+            if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
         };
 
         window.toastTimer = null;
@@ -2366,32 +2452,58 @@
                 }
             });
 
-            // 處理最終確認送出資料到 Firebase
+            // 處理最終確認送出資料到 Firebase (修復重複宣告造成的 SyntaxError 語法錯誤)
             document.getElementById('final-submit-reg-btn')?.addEventListener('click', async (e) => {
                 if (!currentSocialData) return;
 
                 const originalHtml = e.currentTarget.innerHTML;
                 e.currentTarget.disabled = true;
-                e.currentTarget.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>資料寫入中...';
+                // 辨識標記 1：按鈕文字改變
+                e.currentTarget.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>連線至雲端中...';
 
                 try {
-                    if (!isOfflineMode && db && typeof addDoc === 'function') {
-                        await addDoc(collection(db, 'event_registrations'), {
-                            eventName: window.currentRegEvent,
-                            platform: currentSocialData.platform,
-                            socialId: currentSocialData.id,        // 保持 socialId 相容 Python 匯出
-                            socialName: currentSocialData.name,    // 真實姓名
-                            socialPicture: currentSocialData.picture, // 大頭貼
-                            userId: document.getElementById('player-code')?.textContent || 'anonymous',
-                            timestamp: serverTimestamp()
-                        });
+                    // 強化防呆：如果 db 不存在或 addDoc 沒載入，直接拋出錯誤
+                    if (!db || typeof addDoc !== 'function') {
+                        throw new Error("資料庫連線模組尚未準備就緒 (addDoc 遺失)");
                     }
-                    window.showToast('✅ 報名成功！感謝您的參與。');
+
+                    const regData = {
+                        eventName: window.currentRegEvent,
+                        platform: currentSocialData.platform,
+                        socialId: currentSocialData.id,
+                        socialName: currentSocialData.name,
+                        socialPicture: currentSocialData.picture,
+                        userId: document.getElementById('player-code')?.textContent || 'anonymous',
+                        timestamp: serverTimestamp()
+                    };
+
+                    // 【樂觀渲染引擎】暫時給予本地時間
+                    if (!globalEventRegistrations[window.currentRegEvent]) {
+                        globalEventRegistrations[window.currentRegEvent] = [];
+                    }
+                    globalEventRegistrations[window.currentRegEvent].unshift({
+                        ...regData,
+                        timestamp: { seconds: Math.floor(Date.now() / 1000) }
+                    });
+                    
+                    // 新增：報名成功後，自動展開該活動的報名名單，讓使用者看見自己上榜！
+                    window.expandedRegEvents.add(window.currentRegEvent);
+                    
+                    if(typeof window.renderEventsListUI === 'function') window.renderEventsListUI();
+
+                    // 正式寫入真實資料庫
+                    await addDoc(collection(db, 'event_registrations'), regData);
+                    
+                    window.showToast('✅ 報名成功！大頭貼已即時上榜。');
 
                     window.closeModal('event-registration-modal');
                     window.openModal('event-schedule-modal');
                 } catch (err) {
-                    window.showToast('❌ 報名失敗，請檢查網路連線。');
+                    console.error("寫入報名失敗:", err);
+                    // 辨識標記 2：全新的錯誤提示與彈窗
+                    const errMsg = err.code || err.message || '未知錯誤';
+                    window.showToast(`🚨 雲端連線被拒: ${errMsg}`);
+                    alert(`【系統連線診斷報告】\n\n錯誤代碼：${errMsg}\n\n👉 看到此畫面代表您已成功更新至最新版程式碼！\n\n1. 請確認您是在 github.io 網址測試，而非右側預覽視窗（會被沙盒阻擋）。\n2. 請確認您的 firebaseConfig 參數是否正確填寫。`);
                 } finally {
                     e.currentTarget.disabled = false;
                     e.currentTarget.innerHTML = originalHtml;
@@ -2980,6 +3092,7 @@
                                 <div class="bg-yellow-50/70 p-5 rounded-xl border border-yellow-200 shadow-inner"><h4 class="font-bold text-yellow-800 text-[13px] mb-4 border-b-2 border-yellow-200 pb-2"><i class="fas fa-trophy mr-2 text-yellow-600"></i>歸戶結算紀錄</h4><div class="space-y-1">${checkoutsHtml}</div></div>
                             </div>
                             <div class="mt-4 pt-4 border-t-2 border-dashed border-gray-200 text-center">
+                                <p class="text-[10px] text-gray-500 font-bold tracking-wide mb-2.5 leading-relaxed max-w-2xl mx-auto"><i class="fas fa-info-circle text-gray-400 mr-1"></i>備註：本數據基準依循環境部/交通部碳排係數概算，邊界涵蓋旅客之綠色運輸轉移與在地綠色採購，可作為溫室氣體盤查範疇三之參考佐證。</p>
                                 <p class="text-xs text-gray-500 font-bold tracking-widest"><i class="fas fa-leaf text-mori-sage mr-1"></i>探探里山 永續旅遊行動倡議</p>
                                 <p class="text-[10px] text-gray-400 mt-1 font-mono tracking-tighter">${new Date().toISOString()}</p>
                             </div>
@@ -3075,7 +3188,7 @@
                         projectsListHtml = `<div class="mt-3 bg-white p-3 rounded-xl border border-yellow-200 shadow-sm"><div class="flex justify-between items-center mb-2 pb-1.5 border-b border-yellow-100"><span class="text-xs font-bold text-yellow-700"><i class="fas fa-tasks mr-1.5"></i>已整併活動清單 (${includedProjectsList.length})</span></div><div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar">${listItems}</div></div>`;
                     }
 
-                    const cardHtml = `<div class="relative h-full wrapper-to-export"><div class="bg-gradient-to-br from-white to-yellow-50/50 p-5 rounded-2xl shadow-lg border-2 border-yellow-500 relative flex flex-col h-full"><div class="absolute top-0 left-0 gold-shine text-[11px] font-black px-4 py-1.5 rounded-tl-xl rounded-br-xl shadow-md z-20"><i class="fas fa-crown mr-1"></i>企業專案總結承報</div><div class="flex-grow mt-6 mb-2"><h4 class="text-[18px] font-black text-yellow-900 mb-1.5 leading-snug tracking-wide">${combined.orgName}</h4><p class="text-sm font-bold text-yellow-600 flex items-start mb-2"><i class="fas fa-layer-group mr-1.5 mt-0.5"></i>${combined.event}</p></div><div class="mb-3 bg-white p-3 rounded-xl border border-yellow-200 shadow-sm"><div class="flex justify-between items-end mb-1.5"><span class="text-[13px] font-black text-gray-700 flex items-center"><i class="fas fa-clipboard-check text-yellow-500 mr-1.5 text-base"></i>綜合 ESG 滿意度 (${ec}人)</span><span class="text-sm font-black text-yellow-600">${avgOverall} <span class="text-[10px] text-gray-400 font-normal">/ 5.0</span></span></div><div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2.5"><div class="bg-yellow-400 h-1.5 rounded-full" style="width: ${avgOverallPercent}%"></div></div><div class="grid grid-cols-3 gap-2"><div class="bg-green-50 rounded-lg p-1.5 text-center border border-green-100"><p class="text-[9px] text-green-700 font-bold mb-0.5">E 環境</p><p class="text-[13px] font-black text-green-600">${avgE}</p></div><div class="bg-blue-50 rounded-lg p-1.5 text-center border border-blue-100"><p class="text-[9px] text-blue-700 font-bold mb-0.5">S 社會</p><p class="text-[13px] font-black text-blue-600">${avgS}</p></div><div class="bg-amber-50 rounded-lg p-1.5 text-center border border-amber-100"><p class="text-[9px] text-amber-700 font-bold mb-0.5">G 治理</p><p class="text-[13px] font-black text-amber-600">${avgG}</p></div></div></div><div class="grid grid-cols-2 gap-3 mt-2"><div class="bg-white p-3.5 rounded-xl border border-green-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-mori-forest"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計減碳</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${combined.carbon.toLocaleString()} <span class="text-[10px] text-gray-400 font-normal">g/CO2e</span></p></div><div class="bg-white p-3.5 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計綠消</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal">$</span>${combined.green.toLocaleString()}</p></div></div>${projectsListHtml}${sroiHtml}${feedbackHtml}</div></div>`;
+                    const cardHtml = `<div class="relative h-full wrapper-to-export"><div class="bg-gradient-to-br from-white to-yellow-50/50 p-5 rounded-2xl shadow-lg border-2 border-yellow-500 relative flex flex-col h-full"><div class="absolute top-0 left-0 gold-shine text-[11px] font-black px-4 py-1.5 rounded-tl-xl rounded-br-xl shadow-md z-20"><i class="fas fa-crown mr-1"></i>企業專案總結承報</div><div class="flex-grow mt-6 mb-2"><h4 class="text-[18px] font-black text-yellow-900 mb-1.5 leading-snug tracking-wide">${combined.orgName}</h4><p class="text-sm font-bold text-yellow-600 flex items-start mb-2"><i class="fas fa-layer-group mr-1.5 mt-0.5"></i>${combined.event}</p></div><div class="mb-3 bg-white p-3 rounded-xl border border-yellow-200 shadow-sm"><div class="flex justify-between items-end mb-1.5"><span class="text-[13px] font-black text-gray-700 flex items-center"><i class="fas fa-clipboard-check text-yellow-500 mr-1.5 text-base"></i>綜合 ESG 滿意度 (${ec}人)</span><span class="text-sm font-black text-yellow-600">${avgOverall} <span class="text-[10px] text-gray-400 font-normal">/ 5.0</span></span></div><div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2.5"><div class="bg-yellow-400 h-1.5 rounded-full" style="width: ${avgOverallPercent}%"></div></div><div class="grid grid-cols-3 gap-2"><div class="bg-green-50 rounded-lg p-1.5 text-center border border-green-100"><p class="text-[9px] text-green-700 font-bold mb-0.5">E 環境</p><p class="text-[13px] font-black text-green-600">${avgE}</p></div><div class="bg-blue-50 rounded-lg p-1.5 text-center border border-blue-100"><p class="text-[9px] text-blue-700 font-bold mb-0.5">S 社會</p><p class="text-[13px] font-black text-blue-600">${avgS}</p></div><div class="bg-amber-50 rounded-lg p-1.5 text-center border border-amber-100"><p class="text-[9px] text-amber-700 font-bold mb-0.5">G 治理</p><p class="text-[13px] font-black text-amber-600">${avgG}</p></div></div></div><div class="grid grid-cols-2 gap-3 mt-2"><div class="bg-white p-3.5 rounded-xl border border-green-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-mori-forest"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計減碳</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${combined.carbon.toLocaleString()} <span class="text-[10px] text-gray-400 font-normal">g/CO2e</span></p></div><div class="bg-white p-3.5 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計綠消</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal">$</span>${combined.green.toLocaleString()}</p></div></div>${projectsListHtml}${sroiHtml}${feedbackHtml}<div class="mt-4 pt-3 border-t border-yellow-200/60 text-[10px] text-yellow-800/70 font-bold leading-relaxed text-justify"><i class="fas fa-info-circle mr-1"></i>備註：本數據基準依循環境部/交通部碳排係數概算，邊界涵蓋旅客之綠色運輸轉移與在地綠色採購，可作為溫室氣體盤查範疇三之參考佐證。</div></div></div>`;
                     const container = document.getElementById('summary-card-container'); container.innerHTML = cardHtml;
                     const dlBtn = document.getElementById('download-summary-btn'); dlBtn.onclick = () => window.exportDashboardCard(container.querySelector('.wrapper-to-export'), `探探里山_企業總承報表.png`);
                     summaryState.entMode = false; summaryState.entSelected.clear(); document.getElementById('ent-summary-action-bar')?.classList.add('hidden'); renderEntProjectsDashboard();
@@ -3142,7 +3255,7 @@
                         projectsListHtml = `<div class="mt-3 bg-white p-3 rounded-xl border border-blue-200 shadow-sm"><div class="flex justify-between items-center mb-2 pb-1.5 border-b border-blue-100"><span class="text-xs font-bold text-blue-800"><i class="fas fa-tasks mr-1.5"></i>已整併計畫清單 (${includedProjectsList.length})</span></div><div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar">${listItems}</div></div>`;
                     }
 
-                    const cardHtml = `<div class="relative h-full wrapper-to-export"><div class="bg-gradient-to-br from-white to-blue-50/50 p-5 rounded-2xl shadow-lg border-2 border-yellow-500 relative flex flex-col h-full"><div class="absolute top-0 left-0 gold-shine text-[11px] font-black px-4 py-1.5 rounded-tl-xl rounded-br-xl shadow-md z-20"><i class="fas fa-crown mr-1"></i>政府計畫總結承報</div><div class="flex-grow mt-6 mb-2"><h4 class="text-[18px] font-black text-blue-900 mb-1.5 leading-snug tracking-wide">${combined.name}</h4><p class="text-sm font-bold text-blue-600 flex items-start mb-2"><i class="fas fa-layer-group mr-1.5 mt-0.5"></i>${combined.event}</p></div><div class="mb-3 bg-white p-3 rounded-xl border border-blue-200 shadow-sm"><div class="flex justify-between items-end mb-1.5"><span class="text-[13px] font-black text-gray-700 flex items-center"><i class="fas fa-star text-yellow-500 mr-1.5 text-base"></i>綜合活動滿意度 (${ec}人)</span><span class="text-sm font-black text-yellow-600">${avg} <span class="text-[10px] text-gray-400 font-normal">/ 5.0</span></span></div><div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="bg-yellow-400 h-1.5 rounded-full" style="width: ${avgPercent}%"></div></div></div><div class="grid grid-cols-2 gap-3 mt-2"><div class="bg-white p-3.5 rounded-xl border border-green-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計減碳</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${combined.carbon.toLocaleString()} <span class="text-[10px] text-gray-400 font-normal">g/CO2e</span></p></div><div class="bg-white p-3.5 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計綠消</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal">$</span>${combined.green.toLocaleString()}</p></div></div>${projectsListHtml}${sroiHtml}${feedbackHtml}</div></div>`;
+                    const cardHtml = `<div class="relative h-full wrapper-to-export"><div class="bg-gradient-to-br from-white to-blue-50/50 p-5 rounded-2xl shadow-lg border-2 border-yellow-500 relative flex flex-col h-full"><div class="absolute top-0 left-0 gold-shine text-[11px] font-black px-4 py-1.5 rounded-tl-xl rounded-br-xl shadow-md z-20"><i class="fas fa-crown mr-1"></i>政府計畫總結承報</div><div class="flex-grow mt-6 mb-2"><h4 class="text-[18px] font-black text-blue-900 mb-1.5 leading-snug tracking-wide">${combined.name}</h4><p class="text-sm font-bold text-blue-600 flex items-start mb-2"><i class="fas fa-layer-group mr-1.5 mt-0.5"></i>${combined.event}</p></div><div class="mb-3 bg-white p-3 rounded-xl border border-blue-200 shadow-sm"><div class="flex justify-between items-end mb-1.5"><span class="text-[13px] font-black text-gray-700 flex items-center"><i class="fas fa-star text-yellow-500 mr-1.5 text-base"></i>綜合活動滿意度 (${ec}人)</span><span class="text-sm font-black text-yellow-600">${avg} <span class="text-[10px] text-gray-400 font-normal">/ 5.0</span></span></div><div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="bg-yellow-400 h-1.5 rounded-full" style="width: ${avgPercent}%"></div></div></div><div class="grid grid-cols-2 gap-3 mt-2"><div class="bg-white p-3.5 rounded-xl border border-green-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計減碳</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${combined.carbon.toLocaleString()} <span class="text-[10px] text-gray-400 font-normal">g/CO2e</span></p></div><div class="bg-white p-3.5 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black">總計綠消</p></div><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal">$</span>${combined.green.toLocaleString()}</p></div></div>${projectsListHtml}${sroiHtml}${feedbackHtml}<div class="mt-4 pt-3 border-t border-blue-200/60 text-[10px] text-blue-800/70 font-bold leading-relaxed text-justify"><i class="fas fa-info-circle mr-1"></i>備註：本數據基準依循環境部/交通部碳排係數概算，邊界涵蓋旅客之綠色運輸轉移與在地綠色採購，可作為溫室氣體盤查範疇三之參考佐證。</div></div></div>`;
                     const container = document.getElementById('summary-card-container'); container.innerHTML = cardHtml;
                     const dlBtn = document.getElementById('download-summary-btn'); dlBtn.onclick = () => window.exportDashboardCard(container.querySelector('.wrapper-to-export'), `探探里山_計畫總承報表.png`);
                     summaryState.govMode = false; summaryState.govSelected.clear(); document.getElementById('gov-summary-action-bar')?.classList.add('hidden'); renderGovDashboard();
