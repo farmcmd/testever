@@ -1393,7 +1393,10 @@
                 const regs = globalEventRegistrations[ev.name] || [];
                 let regsHtml = '';
                 
-                if(true) { 
+                // ✨ 顧問優化：將判定往上提。只有當開放「站內快速報名」時，才顯示報名人數與名單區塊
+                const isRegOpen = ev.isRegistrationOpen !== false; 
+                
+                if(isRegOpen) { 
                     regs.sort((a, b) => {
                         const timeA = a.timestamp ? (typeof a.timestamp.toMillis === 'function' ? a.timestamp.toMillis() : (a.timestamp.seconds * 1000)) : Date.now();
                         const timeB = b.timestamp ? (typeof b.timestamp.toMillis === 'function' ? b.timestamp.toMillis() : (b.timestamp.seconds * 1000)) : Date.now();
@@ -1497,7 +1500,8 @@
                     // 已過期卡片：按鈕放在 top-10 避開右上角的「已圓滿結束」紅色布條
                     return `<div data-event-name="${safeEventName}" class="bg-gray-50 p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden mb-4 opacity-90 transition-all"><div class="absolute top-0 right-0 bg-gray-400 text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl z-10 flex items-center shadow-sm"><i class="fas fa-flag-checkered mr-1.5"></i>活動已圓滿結束</div><button onclick="window.shareSpecificEvent('${safeEventName}')" class="absolute top-10 right-4 z-20 flex items-center gap-1.5 px-3 py-1.5 bg-blue-50/80 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg text-[11px] font-bold shadow-sm transition-all"><i class="fas fa-share-alt"></i> 分享此活動</button><h4 class="text-xl font-bold text-gray-600 mb-3 pr-28 leading-snug">${ev.name}</h4><div class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold border border-gray-200 mb-4 shadow-sm"><i class="fas fa-clock mr-1.5"></i> ${ev.date}</div><div class="space-y-2 text-[13px] text-gray-500 mb-5"><p class="flex items-start"><i class="fas fa-sitemap mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">執行單位:</span> <span class="leading-relaxed">${ev.executor || '里山團隊'}</span></p><p class="flex items-start"><i class="fas fa-map-marker-alt mr-2.5 mt-0.5 text-red-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">活動地點:</span> <span class="leading-relaxed">${ev.location || '水里里山基地'}</span></p><p class="flex items-start"><i class="fas fa-hourglass-half mr-2.5 mt-0.5 text-orange-300 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">報名截止:</span> <span class="text-red-400 font-bold">${ev.deadline || '請見詳情'}</span></p>${(ev.remark && ev.remark.trim() !== '') ? `<p class="flex items-start mt-2 pt-2 border-t border-gray-200"><i class="fas fa-sticky-note mr-2.5 mt-0.5 text-gray-400 w-3 text-center shrink-0"></i> <span class="font-bold mr-1 shrink-0">備註:</span> <span class="leading-relaxed text-gray-500">${ev.remark}</span></p>` : ''}</div>${regsHtml}<button onclick="window.closeModal('event-schedule-modal'); window.openModal('gov-modal');" class="w-full py-3 bg-blue-50/80 text-blue-500 border border-blue-100 rounded-xl hover:bg-blue-100 hover:text-blue-600 transition text-sm font-bold shadow-sm flex items-center justify-center mt-2"><i class="fas fa-chart-pie mr-1.5 text-lg"></i> 前往儀錶板查詢活動成效</button></div>`;
                 } else {
-                    const isRegOpen = ev.isRegistrationOpen !== false; 
+                    // ✨ 顧問優化：這行已移至上方，這裡將其移除避免重複宣告
+                    // const isRegOpen = ev.isRegistrationOpen !== false; 
                     
                     let regMethodHtml = '';
                     if (isRegOpen) {
