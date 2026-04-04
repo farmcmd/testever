@@ -1161,7 +1161,7 @@
                     <div class="eval-section ${idx !== 0 ? 'mt-6' : ''}">
                         <h4 class="font-black text-mori-forest mb-4 flex items-center text-[18px] md:text-[20px] tracking-wide border-b-2 border-mori-light pb-2">${sec.title}</h4>
                         <div class="space-y-5">
-                            ${sec.qs.map(q => `<div class="ent-eval-q" data-qid="ent-q${qIndex++}"><p class="text-[17px] text-gray-900 mb-3 font-black tracking-wide leading-relaxed">${q}</p><div class="number-rating flex gap-2 justify-center mt-2"></div></div>`).join('')}
+                            ${sec.qs.map(q => `<div class="ent-eval-q" data-qid="ent-q${qIndex++}"><p class="text-[17px] text-gray-900 mb-3 font-black tracking-wide leading-relaxed">${q}</p><div class="number-rating flex gap-2 justify-center mt-2">${[1,2,3,4,5].map(i => `<i class="fas fa-star text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors" data-val="${i}"></i>`).join('')}</div></div>`).join('')}
                         </div>
                     </div>
                 `).join('');
@@ -1179,11 +1179,28 @@
                     <div class="eval-section ${idx !== 0 ? 'mt-6' : ''}">
                         <h4 class="font-black text-blue-900 mb-4 flex items-center text-[18px] md:text-[20px] tracking-wide border-b-2 border-blue-200 pb-2">${sec.title}</h4>
                         <div class="space-y-5">
-                            ${sec.qs.map(q => `<div class="gov-eval-q" data-qid="gov-q${qIndex++}"><p class="text-[17px] text-gray-900 mb-3 font-black tracking-wide leading-relaxed">${q}</p><div class="number-rating flex gap-2 justify-center mt-2"></div></div>`).join('')}
+                            ${sec.qs.map(q => `<div class="gov-eval-q" data-qid="gov-q${qIndex++}"><p class="text-[17px] text-gray-900 mb-3 font-black tracking-wide leading-relaxed">${q}</p><div class="number-rating flex gap-2 justify-center mt-2">${[1,2,3,4,5].map(i => `<i class="fas fa-star text-3xl cursor-pointer text-gray-300 hover:text-yellow-400 transition-colors" data-val="${i}"></i>`).join('')}</div></div>`).join('')}
                         </div>
                     </div>
                 `).join('');
             }
+            
+            // 🚀 綁定星星點擊事件
+            document.querySelectorAll('.number-rating i').forEach(star => {
+                star.addEventListener('click', (e) => {
+                    const val = parseInt(e.currentTarget.dataset.val);
+                    const parent = e.currentTarget.parentNode;
+                    Array.from(parent.children).forEach((s, idx) => {
+                        if (idx < val) {
+                            s.classList.remove('text-gray-300');
+                            s.classList.add('text-yellow-400');
+                        } else {
+                            s.classList.remove('text-yellow-400');
+                            s.classList.add('text-gray-300');
+                        }
+                    });
+                });
+            });
         }
 
         // ==========================================
@@ -1968,6 +1985,14 @@
                     window.closeModal('enterprise-modal'); window.openModal('ent-eval-modal');
                 } else { window.showToast('請先選擇要歸戶的企業'); }
             });
+
+            // 🚀 綁定企業問卷「快速填滿 5 分」按鈕
+            document.getElementById('quick-fill-ent-stars-btn')?.addEventListener('click', () => {
+                document.querySelectorAll('.ent-eval-q .number-rating i').forEach(i => {
+                    i.classList.remove('text-gray-300');
+                    i.classList.add('text-yellow-400');
+                });
+            });
             
             document.getElementById('create-ent-proj-btn')?.addEventListener('click', async () => {
                 const org = document.getElementById('ent-create-org').value.trim();
@@ -2064,6 +2089,14 @@
                     
                     window.closeModal('gov-modal'); window.openModal('gov-eval-modal');
                 } else { window.showToast('請先選擇要歸戶的計畫'); }
+            });
+
+            // 🚀 綁定政府計畫問卷「快速填滿 5 分」按鈕
+            document.getElementById('quick-fill-gov-stars-btn')?.addEventListener('click', () => {
+                document.querySelectorAll('.gov-eval-q .number-rating i').forEach(i => {
+                    i.classList.remove('text-gray-300');
+                    i.classList.add('text-yellow-400');
+                });
             });
             
             document.getElementById('create-proj-btn')?.addEventListener('click', async () => {
