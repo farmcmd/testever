@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>探探里山 - 永續任務與地圖</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mori: { base: '#F7F4EF', light: '#E8EFE6', sage: '#8B9D77', forest: '#4A6741', wood: '#D2B48C', dark: '#2C3E28' }
+                    },
+                    fontFamily: { sans: ['Noto Sans TC', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #F7F4EF; color: #2C3E28; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .modal-overlay { backdrop-filter: blur(4px); transition: opacity 0.3s ease; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-content { background: white; width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 1.5rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .hidden { display: none !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        
+        #custom-toast {
+            position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%) translateY(20px);
+            background-color: rgba(31, 41, 55, 0.95); color: white; padding: 0.8rem 1.5rem; border-radius: 9999px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); z-index: 2147483647; font-weight: bold; font-size: 0.9rem;
+            opacity: 0; pointer-events: none; text-align: center; white-space: nowrap; backdrop-filter: blur(4px);
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        #custom-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <div id="custom-toast"></div>
+
+    <header class="bg-gradient-to-b from-mori-forest to-mori-sage text-white text-center shadow-md relative py-4">
+        <h1 class="text-2xl md:text-3xl font-bold tracking-wide drop-shadow-md">探探里山 - 永續任務</h1>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 relative z-20">
+        <!-- 浮動控制群組 (固定於左下角) -->
+        <div class="fixed bottom-6 left-6 md:bottom-8 md:left-8 z-[90] flex flex-col items-start gap-2">
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-full shadow-[0_8px_25px_rgba(250,204,21,0.5)] border-2 border-yellow-300 hover:bg-yellow-500 hover:shadow-yellow-500/50 hover:-translate-y-1 text-sm md:text-base font-black transition-all duration-300 flex items-center group w-fit tracking-wide">
+                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>返回首頁
+            </button>
+            <div id="current-transport-display-mission" class="px-3 py-1.5 bg-mori-forest text-white rounded-full shadow-lg border-2 border-mori-sage text-xs md:text-sm font-bold w-fit flex items-center tracking-wide">
+                <i class="fas fa-spinner fa-spin mr-1.5 opacity-80"></i>讀取中...
+            </div>
+        </div>
+        
+        <!-- 頂部操作區 -->
+        <div class="flex justify-between items-center mb-4 md:mb-6">
+            <div class="text-mori-dark font-bold flex items-center bg-white/60 px-3 py-1.5 rounded-lg shadow-sm border border-mori-light">
+                <i class="fas fa-user-circle text-mori-sage mr-2 text-lg"></i>
+                <span id="display-player-name" class="mr-2">旅者</span>
+                <span id="display-player-code" class="font-mono text-mori-wood bg-mori-base px-2 py-0.5 rounded text-sm border border-mori-light">...</span>
+            </div>
+            <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-white text-mori-forest rounded-full hover:bg-mori-light font-bold text-xs transition shadow-sm border border-mori-sage/30 flex items-center">
+                <i class="fas fa-exchange-alt mr-1.5"></i>更換交通
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full pb-20">
+            <!-- 地圖與計算核心區塊 -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+                <div class="relative bg-white p-2 rounded-xl shadow-md border border-gray-200">
+                     <div id="map" class="w-full h-[60vh] lg:h-[500px] rounded-lg bg-gray-200"></div>
+                     <div id="map-overlay" class="absolute inset-0 bg-gray-100 flex flex-col justify-center items-center z-10 transition-opacity duration-500 rounded-lg">
+                        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-mori-forest mb-4"></div>
+                        <p class="text-mori-dark font-bold text-sm" id="map-loading-text">地圖準備中...</p>
+                    </div>
+                </div>
+                 <!-- 計算足跡與按鈕區塊 -->
+                 <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-mori-sage sticky bottom-0 z-50">
+                     <div class="flex justify-between items-start">
+                         <div>
+                             <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Current Trip</p>
+                             <p id="selected-points-display" class="text-sm font-bold text-mori-dark mt-1">請選擇起點與終點</p>
+                         </div>
+                         <div class="flex flex-col gap-2">
+                             <button id="preview-trip-button" class="hidden px-6 py-2 bg-mori-forest text-white rounded-lg shadow font-bold text-sm hover:bg-mori-dark transition">預覽路線</button>
+                             <button id="confirm-trip-button" class="hidden px-6 py-2 bg-yellow-500 text-white rounded-lg shadow font-bold text-sm animate-bounce">確認並獲取積分</button>
+                         </div>
+                     </div>
+                     <p id="trip-calculation-status" class="mt-2 text-xs font-bold text-mori-wood min-h-[1.5em]"></p>
+                 </div>
+            </div>
+
+            <!-- 側邊欄 (Accordion 佈局) -->
+            <div class="lg:col-span-1 flex flex-col gap-3 overflow-y-auto max-h-[80vh] no-scrollbar pb-24">
+                
+                <!-- 在地景點列表 (預設展開) -->
+                <div class="accordion-item shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none bg-gray-50 hover:bg-gray-100 transition">
+                        <span class="text-[15px]"><i class="fas fa-map-marker-alt mr-2 text-mori-forest"></i>在地景點列表</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300 transform rotate-180"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 block">
+                        <div id="poi-list-container" class="space-y-4 max-h-[45vh] overflow-y-auto pr-2 custom-scrollbar"></div>
+                        <div class="mt-4 pt-3 border-t border-dashed border-gray-200">
+                            <p class="text-xs font-bold text-mori-forest mb-1.5"><i class="fas fa-search-location mr-1"></i> 景點不夠嗎？</p>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">在地圖中找尋 <span class="text-green-600 font-bold"><i class="fas fa-map-marker-alt"></i> 綠色/藍色座標</span> 或許會有驚喜！</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🚀 找回原味：旅者數據與帳號管理 (原生 Accordion) -->
+                <div class="accordion-item shrink-0 bg-yellow-50/50 rounded-xl shadow-sm border border-yellow-100 overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-yellow-800 flex justify-between items-center text-left focus:outline-none hover:bg-yellow-100/50 transition">
+                        <span class="text-[15px]"><i class="fas fa-id-badge mr-2"></i>數據歸戶與帳號管理</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 hidden">
+                        <!-- 數據看板 -->
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="bg-white p-2 rounded-lg border border-yellow-200 text-center shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-yellow-400"></div>
+                                <p class="text-[10px] text-yellow-800 font-bold mb-1">總積分</p>
+                                <p class="text-lg font-black text-yellow-600" id="dash-score">0</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-green-200 text-center shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
+                                <p class="text-[10px] text-green-800 font-bold mb-1">減碳(g)</p>
+                                <p class="text-lg font-black text-green-600" id="dash-carbon">0</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-blue-200 text-center shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+                                <p class="text-[10px] text-blue-800 font-bold mb-1">里程(km)</p>
+                                <p class="text-lg font-black text-blue-600" id="dash-mileage">0.0</p>
+                            </div>
+                        </div>
+                        <!-- 帳號管理 -->
+                        <div class="space-y-3 border-t border-yellow-200/50 pt-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">旅者暱稱 / 顯示名稱</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="edit-player-name" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-mori-forest transition" placeholder="輸入名稱">
+                                    <button id="save-profile-btn" class="px-4 py-2 bg-mori-sage text-white rounded-lg font-bold text-sm shadow hover:bg-mori-forest transition whitespace-nowrap"><i class="fas fa-save mr-1"></i>儲存</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-500 mb-1">專屬認證代碼</label>
+                                <div class="p-2 bg-white border border-gray-200 rounded-lg text-sm font-mono text-mori-wood tracking-widest text-center shadow-inner font-black" id="dash-player-code">...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🚀 找回原味：歷史任務紀錄 (原生 Accordion) -->
+                <div class="accordion-item shrink-0 bg-gray-50 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none hover:bg-gray-100 transition">
+                        <span class="text-[15px]"><i class="fas fa-history mr-2"></i>歷史任務紀錄</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 hidden">
+                        <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-inner max-h-48 overflow-y-auto custom-scrollbar" id="dash-logs">
+                            <!-- 動態插入 Logs -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 跨縣市往返設定 -->
+                <div class="accordion-item shrink-0 bg-blue-50/50 rounded-xl shadow-sm border border-blue-100 overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-blue-800 flex justify-between items-center text-left focus:outline-none hover:bg-blue-100/50 transition">
+                        <span class="text-[15px]"><i class="fas fa-map-marked-alt mr-2"></i>跨縣市往返設定</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 hidden">
+                        <div class="flex flex-col gap-2">
+                            <select id="city-select" class="w-full p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-400"></select>
+                            <div class="flex gap-2 mt-1">
+                                <button id="set-city-start-btn" class="flex-1 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm transition hover:bg-blue-200">設為起點</button>
+                                <button id="set-city-end-btn" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm transition hover:bg-blue-700">設為終點</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 市區短距移動 -->
+                <div class="accordion-item shrink-0 bg-emerald-50/50 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-emerald-800 flex justify-between items-center text-left focus:outline-none hover:bg-emerald-100/50 transition">
+                        <span class="text-[15px]"><i class="fas fa-route mr-2"></i>市區短距移動</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 hidden">
+                        <div class="grid grid-cols-4 gap-2 mb-3">
+                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="3">3KM</button>
+                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="5">5KM</button>
+                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="10">10KM</button>
+                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="15">15KM</button>
+                        </div>
+                        <div id="short-dist-result" class="text-xs font-bold text-mori-wood mb-2 text-center min-h-[1.5em]"></div>
+                        <button id="confirm-short-dist-btn" class="hidden w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-sm shadow animate-bounce">確認並獲取積分</button>
+                    </div>
+                </div>
+                
+                <!-- 實體任務與驗證 -->
+                <div class="accordion-item shrink-0 bg-purple-50/50 rounded-xl shadow-sm border border-purple-100 overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-purple-800 flex justify-between items-center text-left focus:outline-none hover:bg-purple-100/50 transition">
+                        <span class="text-[15px]"><i class="fas fa-flag-checkered mr-2"></i>實體任務與驗證</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 hidden">
+                        <div class="flex gap-2">
+                            <input type="text" id="verification-code-input" class="w-full p-2 border border-purple-200 rounded-lg text-sm outline-none bg-white focus:border-purple-400" placeholder="輸入通關代碼 (6碼)">
+                            <button id="submit-activity-log" class="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm shadow-sm whitespace-nowrap hover:bg-purple-700 transition">驗證</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 永續行動心得 -->
+                <div class="accordion-item shrink-0 bg-[#F0F7F4] rounded-xl shadow-sm border border-mori-light overflow-hidden">
+                    <button class="accordion-header w-full p-4 font-bold text-mori-forest flex justify-between items-center text-left focus:outline-none hover:bg-[#E8EFE6] transition">
+                        <span class="text-[15px]"><i class="fas fa-edit mr-2 text-mori-sage"></i>永續行動心得</span>
+                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                    </button>
+                    <div class="accordion-content p-4 pt-2 hidden">
+                        <textarea id="sustainable-action-log" class="w-full p-3 border border-mori-light rounded-lg text-sm outline-none bg-white focus:border-mori-sage" rows="2" placeholder="記錄您的永續心得..."></textarea>
+                        <button id="log-action-button" class="w-full mt-2 py-2 bg-mori-sage text-white rounded-lg hover:bg-mori-forest font-bold transition shadow-sm"><i class="fas fa-edit mr-1"></i> 記錄心得</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- POI Modal -->
+    <div id="poi-modal" class="modal-overlay hidden">
+        <div class="modal-content bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full"><i class="fas fa-times text-lg"></i></button>
+            <div class="p-6">
+                <div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100">
+                    <div class="flex gap-2 mt-4">
+                        <button id="set-as-start-button" class="flex-1 py-2 bg-mori-light text-mori-dark rounded-lg hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm">設為起點</button>
+                        <button id="set-as-end-button" class="flex-1 py-2 bg-mori-forest text-white rounded-lg hover:bg-mori-dark font-bold text-sm transition shadow-sm">設為終點</button>
+                    </div>
+                    <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2"></div>
+                </div>
+                <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3>
+                <div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
+                <div id="poi-modal-fb-container" class="hidden mb-2 w-full flex justify-center overflow-hidden rounded-lg border border-gray-100">
+                    <iframe id="poi-modal-fb-iframe" width="340" height="400" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+                </div>
+                <div id="poi-modal-website-container" class="hidden mb-2 w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner h-[400px]">
+                    <iframe id="poi-modal-website-iframe" width="100%" height="100%" style="border:none;" title="官方網站"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 獎勵驗證 Modal -->
+    <div id="reward-verification-modal" class="modal-overlay hidden">
+        <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-mori-forest relative text-center">
+            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times text-xl"></i></button>
+            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-shield-alt text-2xl text-mori-forest"></i></div></div>
+            <h3 class="text-xl font-bold text-mori-dark mb-2">旅程獎勵驗證</h3>
+            <p class="text-[12px] text-gray-700 mb-5 leading-relaxed text-justify bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
+                請在目的地向工作人員索取密碼，輸入後可獲得 <span class="font-bold text-mori-forest text-[14px]">100%</span> 的減碳獎勵。若無密碼，則會直接結算，獲得 <span class="font-bold text-gray-800">1/10</span> 的數據。
+            </p>
+            <input type="text" id="reward-verify-code" maxlength="7" class="w-full p-3 border-2 border-gray-200 rounded-xl text-center text-lg font-mono tracking-widest focus:outline-none focus:border-mori-forest transition-all mb-5 bg-gray-50" placeholder="輸入7碼數字">
+            <div class="flex flex-col gap-3">
+                <button id="reward-verify-full-btn" class="w-full py-3 bg-mori-forest text-white rounded-xl font-bold shadow-md hover:bg-mori-dark transition flex justify-center items-center"><i class="fas fa-check-circle mr-2"></i>輸入密碼獲取完整獎勵</button>
+                <button id="reward-verify-tenth-btn" class="w-full py-3 bg-gray-100 text-gray-600 border border-gray-200 rounded-xl font-bold shadow-sm hover:bg-gray-200 transition flex justify-center items-center"><i class="fas fa-forward mr-2"></i>無密碼，直接結算 (1/10)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 核心 JS 模組 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getFirestore, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyCEH65YbNirj_IRmtsIJZS-HNEbsRBBsSQ", authDomain: "sustainable-tourism-65025.firebaseapp.com", projectId: "sustainable-tourism-65025" };
+        const LOCAL_STORAGE_KEY = 'shuilMoriData_v3.0';
+
+        // 靜態資料移植
+        const poiCategories = [
+            { id: 4, title: '1. 水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。' }, 
+            { id: 1, title: '2. 里山餐桌團隊', desc: '核心規劃團隊，提供生態旅遊與 ESG 專案規劃。' }, 
+            { id: 5, title: '3. 南投青農', desc: '結合優質青農，提供高品質特色食農體驗。' },
+            { id: 3, title: '4. 水里觀光商圈', desc: '提供在地特色美食與優質採購，支持商圈創生。' }, 
+            { id: 2, title: '5. 低碳食宿', desc: '精選本地觀光食宿，倡議節水節電與永續觀光。' }
+        ];
+
+        const pois = [
+            { categoryId: 4, id: 'poi1', name: '水里溪畔驛站', coords: { lat: 23.809799, lng: 120.849286 }, icon: '🌲', description: '營業時間上午8:00~17:00。<br>位於水里圖書館內的小憩咖啡座。', esgEligible: true, fbUrl: "https://www.facebook.com/profile.php?id=100076220760859" },
+            { categoryId: 4, id: 'poi25', name: '國立臺灣大學實驗林-水里營林區', coords: { lat: 23.814313, lng: 120.853435 }, icon: '🏛️', description: '推動里山倡議及大學社會責任等活動。', fbUrl: "https://www.facebook.com/xitou.nature.education?locale=zh_TW" },
+            { categoryId: 1, id: 'poi12', name: '湧健酪梨園/梅園 SROI (✓)', coords: { lat: 23.725349, lng: 120.846123 }, icon: '🥑', description: '生產: 酪梨、青梅<br>預約活動: 食農教育、生態導覽', esgEligible: true, fbUrl: "https://www.facebook.com/profile.php?id=100085673588742&locale=zh_TW" },
+            { categoryId: 1, id: 'poi11', name: '阿爾喜莊園 SROI (✓)', coords: { lat: 23.803119, lng: 120.926340 }, icon: '🍋', description: '生產: 檸檬、國蘭<br>預約活動: 食農教育、生態導覽、循環經濟教學', esgEligible: true, fbUrl: "https://www.facebook.com/AHEIemon?locale=zh_TW" },
+            { categoryId: 1, id: 'poi10', name: '雨社山下 SROI (✓)', coords: { lat: 23.790644, lng: 120.896569 }, icon: '🥒', description: '生產: 絲瓜、石虎蓮霧<br>預約活動: 食農教育、生態導覽', esgEligible: true, fbUrl: "https://www.facebook.com/YusheLand?locale=zh_TW" },
+            { categoryId: 1, id: 'poi8', name: '明揚養蜂 SROI (✓)', coords: { lat: 23.803787, lng: 120.862401 }, icon: '🐝', description: '生產: 國產蜂蜜、酪梨<br>預約活動: 食農教育、生態導覽', esgEligible: true, fbUrl: "https://www.facebook.com/MingYangBee?locale=zh_TW" },
+            { categoryId: 1, id: 'poi7', name: '指令教育農場 SROI (✓)', coords: { lat: 23.802776, lng: 120.864715 }, icon: '👆', description: '生產: 短期蔬菜<br>預約活動: 食農教育、生態導覽', esgEligible: true, fbUrl: "https://www.facebook.com/FarmCMD?locale=zh_TW" },
+            { categoryId: 1, id: 'poi19', name: '小茶米農場 SROI (✓)', coords: { lat: 23.839892, lng: 120.632519 }, icon: '🍵', description: '預約活動: 食農教育', esgEligible: true, fbUrl: "https://www.facebook.com/p/%E5%B0%8F%E8%8C%B6%E7%B1%B3%E8%BE%B2%E5%A0%B4-100057082105603/?locale=zh_TW" },
+            { categoryId: 1, id: 'poi3', name: '鑫鮮菇園', coords: { lat: 23.794049, lng: 120.859407 }, icon: '🍄', description: '香菇園區導覽', esgEligible: true },
+            { categoryId: 1, id: 'poi26', name: '饕農園', coords: { lat: 23.788395, lng: 120.733095 }, icon: '🧑‍🌾', description: '業務活動: 食農教育 市集 手做農產', websiteUrl: "https://www.taofarm.tw/", esgEligible: true },
+            { categoryId: 1, id: 'poi27', name: 'Hó-lah! 星澍柢家', coords: { lat: 24.102351, lng: 120.666805 }, icon: '🌱', description: '預約活動: 食農教育 生態導覽', esgEligible: true },
+            { categoryId: 5, id: 'poi30', name: '墨梵農場香草莊園', coords: { lat: 23.722627, lng: 120.850277 }, icon: '🪴', description: '預約活動: 食農教育DIY', fbUrl: "https://www.facebook.com/profile.php?id=61572070106402" },
+            { categoryId: 5, id: 'poi20', name: '集元果觀光工廠', coords: { lat: 23.825288, lng: 120.814236 }, icon: '🍌', description: '山蕉生態導覽', fbUrl: "https://www.facebook.com/jijibanana?locale=zh_TW" },
+            { categoryId: 5, id: 'poi21', name: '山水裡愛玉園', coords: { lat: 23.827702, lng: 120.814354 }, icon: '🌿', description: '預約活動: 手洗愛玉DIY', fbUrl: "https://www.facebook.com/SunShuiLi?locale=zh_TW" },
+            { categoryId: 5, id: 'poi28', name: '新豐農場(冷泉米)', coords: { lat: 24.065240, lng: 120.937692 }, icon: '🌾', description: '預約活動: 客家文化活動', fbUrl: "https://www.facebook.com/Sinfeng50?locale=zh_TW" },
+            { categoryId: 5, id: 'poi29', name: '逸和園檸檬宿', coords: { lat: 24.049875, lng: 120.861594 }, icon: '🍋', description: '預約活動: 有機農業導覽', fbUrl: "https://www.facebook.com/angelwing0521?locale=zh_TW" },
+            { categoryId: 2, id: 'poi16', name: '水里里山村(低碳旅店)', coords: { lat: 23.813514, lng: 120.853722 }, icon: '🏡', description: '牛轀轆森林社區導覽', esgEligible: true, fbUrl: "https://www.facebook.com/TGSatoyamaHotel?locale=zh_TW" },
+            { categoryId: 2, id: 'poi14', name: '機車貓聯盟(食店)', coords: { lat: 23.810883, lng: 120.855798 }, icon: '🍚', description: '在地特色餐盒', fbUrl: "https://www.facebook.com/changehsi/?locale=zh_TW" },
+            { categoryId: 3, id: 'poi23', name: '車程林班道', coords: { lat: 23.833913, lng: 120.866191 }, icon: '🚂', description: '導覽預約及場館活動', websiteUrl: "https://www.facebook.com/" },
+            { categoryId: 3, id: 'poi24', name: '車埕木業展示館', coords: { lat: 23.833549, lng: 120.865796 }, icon: '🪵', description: '導覽預約', fbUrl: "https://www.facebook.com/" },
+            { categoryId: 3, id: 'poi18', name: '森音 Morinooto', coords: { lat: 23.742587, lng: 120.866954 }, icon: '🎶', description: '食農教育、森態導覽', fbUrl: "https://www.facebook.com/morinooto111?locale=zh_TW" },
+            { categoryId: 3, id: 'poi9', name: '蛇窯文化園區', coords: { lat: 23.801177, lng: 120.864479 }, icon: '🏺', description: '手拉坯｜手捏陶', fbUrl: "https://www.facebook.com/sskshop/?locale=zh_TW" },
+            { categoryId: 'map_only', id: 'poi15', name: '二坪大觀冰店', coords: { lat: 23.813627, lng: 120.859651 }, icon: '🍦', description: '老牌電廠老店', fbUrl: "https://www.facebook.com/takuanice?locale=zh_TW" },
+            { categoryId: 3, id: 'poi17', name: '水里星光市集(周六市集)', coords: { lat: 23.813636, lng: 120.850816 }, icon: '💡', description: '星光市集詳細辦理日期請查詢粉專發布。', fbUrl: "https://www.facebook.com/" },
+            { categoryId: 'map_only', id: 'poi22', name: '水里槑休閒農業區', coords: { lat: 23.734616, lng: 120.856968 }, icon: '🌸', description: '賞梅導覽預約', fbUrl: "https://www.facebook.com/" },
+            { categoryId: 'map_only', id: 'poi31', name: '老五冒煙饅頭', coords: { lat: 23.741302, lng: 120.857310 }, icon: '♨️', description: '手工饅頭DIY', fbUrl: "https://www.facebook.com/" },
+            { categoryId: 'map_only_blue', id: 'poi32', name: '台中農改場', coords: { lat: 24.001265, lng: 120.533769 }, icon: '🏛️', description: '每年辦理開放日活動，活動詳情請上官網查詢。' },
+            { categoryId: 'map_only_blue', id: 'poi33', name: '南投縣青農快閃市集', coords: { lat: 23.900079, lng: 120.711333 }, icon: '⛺', description: '不定期辦理，活動請上南投縣農會FB查詢。' },
+            { categoryId: 'map_only_blue', id: 'poi34', name: '水里鄉農會', coords: { lat: 23.817368, lng: 120.854835 }, icon: '🏢', description: '不定期辦理研習活動，請上官網查詢。' },
+            { categoryId: 'map_only', id: 'poi35', name: '溪頭自然教育園區', coords: { lat: 23.674709405116875, lng: 120.79777184853681 }, icon: '🌲', description: '不定期辦理特定季節活動市集。' }
+        ];
+
+        const transportData = {
+            walk_bike: { name: '步行/單車', icon: '🚶🚲', reduction: 950, mode: 'WALKING' },
+            bus_train: { name: '共乘巴士', icon: '🚌', reduction: 400, mode: 'TRANSIT' },
+            carpool_2_moto: { name: '機車/2人', icon: '🛵', reduction: 150, mode: 'DRIVING' },
+            carpool_3: { name: '3人共乘', icon: '🚗', reduction: 350, mode: 'DRIVING' },
+            carpool_4: { name: '4人共乘', icon: '🚗', reduction: 400, mode: 'DRIVING' },
+            carpool_5: { name: '5人共乘', icon: '🚐', reduction: 450, mode: 'DRIVING' },
+            thsr: { name: '搭乘高鐵', icon: '🚆', reduction: 650, mode: 'TRANSIT' },
+            drive_alone: { name: '單人自駕', icon: '🚘', reduction: 0, mode: 'DRIVING' },
+            taxi: { name: '預約導覽車', icon: '🚕', reduction: 0, mode: 'DRIVING' }
+        };
+
+        const taiwanCities = [
+            { name: '基隆市', lat: 25.1276, lng: 121.7392 }, { name: '臺北市', lat: 25.0330, lng: 121.5654 }, { name: '新北市', lat: 25.0110, lng: 121.4653 },
+            { name: '桃園市', lat: 24.9936, lng: 121.3010 }, { name: '新竹市', lat: 24.8138, lng: 120.9675 }, { name: '新竹縣', lat: 24.8383, lng: 121.0177 },
+            { name: '苗栗縣', lat: 24.5602, lng: 120.8214 }, { name: '臺中市', lat: 24.1477, lng: 120.6736 }, { name: '彰化縣', lat: 24.0518, lng: 120.5393 },
+            { name: '南投縣', lat: 23.9037, lng: 120.6839 }, { name: '雲林縣', lat: 23.7092, lng: 120.4313 }, { name: '嘉義市', lat: 23.4801, lng: 120.4491 },
+            { name: '嘉義縣', lat: 23.4518, lng: 120.2555 }, { name: '臺南市', lat: 22.9997, lng: 120.2270 }, { name: '高雄市', lat: 22.6273, lng: 120.3014 },
+            { name: '屏東縣', lat: 22.6710, lng: 120.4862 }, { name: '宜蘭縣', lat: 24.7308, lng: 121.7628 }, { name: '花蓮縣', lat: 23.9872, lng: 121.6016 }, { name: '臺東縣', lat: 22.7583, lng: 121.1444 }
+        ];
+
+        let state = {};
+        let db = null, auth = null, isOfflineMode = false;
+        let selectedStart = null, selectedEnd = null, currentModalPoi = null, pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false };
+        let mapInitialized = false;
+
+        // 工具函數
+        window.toastTimer = null;
+        window.showToast = function(msg) {
+            let toast = document.getElementById('custom-toast');
+            if(toast) { 
+                toast.textContent = msg; 
+                toast.classList.add('show'); 
+                if(window.toastTimer) clearTimeout(window.toastTimer);
+                window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); 
+            }
+        };
+
+        window.openModal = function(modalId) { document.getElementById(modalId)?.classList.remove('hidden'); };
+        window.closeModal = function(modalId) { document.getElementById(modalId)?.classList.add('hidden'); };
+        window.getFormattedTime = function() { const d = new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+        window.getTodayKey = function() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+
+        window.addLog = function(text) {
+            const time = getFormattedTime();
+            if(!state.activityLogs) state.activityLogs = [];
+            state.activityLogs.unshift({ time, text });
+            if(state.activityLogs.length > 50) state.activityLogs.pop();
+            saveData();
+            renderDashboard(); // 🚀 同步刷新儀表板資料
+        };
+
+        function saveData() { try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {} }
+
+        // 🚀 渲染原生面板邏輯
+        function renderDashboard() {
+            document.getElementById('display-player-name').textContent = state.playerName || '匿名旅者';
+            document.getElementById('display-player-code').textContent = state.playerCode || '...';
+            document.getElementById('edit-player-name').value = state.playerName || '';
+            document.getElementById('dash-player-code').textContent = state.playerCode || '...';
+            
+            document.getElementById('dash-score').textContent = state.totalScore || 0;
+            document.getElementById('dash-carbon').textContent = state.totalCarbon || 0;
+            document.getElementById('dash-mileage').textContent = ((state.totalMileage || 0) / 1000).toFixed(1);
+            
+            const logsContainer = document.getElementById('dash-logs');
+            if (logsContainer) {
+                if (state.activityLogs && state.activityLogs.length > 0) {
+                    logsContainer.innerHTML = state.activityLogs.map(log => `
+                        <div class="text-xs mb-2 pb-2 border-b border-gray-100 border-dashed last:border-0 last:mb-0 last:pb-0">
+                            <span class="text-gray-400 font-mono mr-2 inline-block">${log.time}</span>
+                            <span class="text-gray-700 font-bold leading-relaxed">${log.text}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    logsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4"><i class="fas fa-seedling text-2xl mb-2 text-gray-300 block"></i>尚無歷史紀錄，去完成第一項任務吧！</p>';
+                }
+            }
+        }
+
+        function loadLocalData() {
+            try { const raw = localStorage.getItem(LOCAL_STORAGE_KEY); if(raw) { state = JSON.parse(raw); } } catch(e) { }
+            state.totalMileage = state.totalMileage || 0; state.totalCarbon = state.totalCarbon || 0; state.totalScore = state.totalScore || 0;
+            
+            // 確保代碼存在
+            if (!state.playerCode) { state.playerCode = Math.random().toString(36).substring(2, 8).toUpperCase(); saveData(); }
+            
+            renderDashboard();
+        }
+
+        async function addToGlobalTotal(carbonDelta, greenDelta) {
+            const todayStr = getTodayKey();
+            if (!isOfflineMode && db) { 
+                try { 
+                    await setDoc(doc(db, 'system_stats', 'global_absolute'), { carbon: increment(carbonDelta), green: increment(greenDelta), [`daily_${todayStr}_carbon`]: increment(carbonDelta) }, { merge: true }); 
+                } catch(e) {} 
+            }
+        }
+
+        // 任務結算與折返核心
+        function processTripCompletion(distKm, carbon) {
+            state.totalMileage += (distKm * 1000); 
+            state.totalCarbon += carbon;
+            state.totalScore += Math.round(carbon / 10);
+            
+            addToGlobalTotal(carbon, 0); // 非同步寫入雲端
+            window.addLog(`完成旅程: ${distKm.toFixed(1)}km, 獲得減碳 ${carbon}g`);
+            saveData(); // 立即儲存本機進度
+            
+            window.showToast('✅ 積分與減碳量已記錄！正在返回首頁結算...');
+            // 無縫折返回首頁
+            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+        }
+
+        // UI 渲染
+        function renderCityOptions() {
+            const select = document.getElementById('city-select');
+            if(select) select.innerHTML = '<option value="">-- 選擇縣市 --</option>' + taiwanCities.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        }
+
+        function renderPoiList() {
+            const container = document.getElementById('poi-list-container'); if(!container) return;
+            let html = '';
+            poiCategories.forEach(cat => {
+                const catPois = pois.filter(p => p.categoryId === cat.id);
+                if(catPois.length > 0) {
+                    html += `
+                    <div class="mb-4 last:mb-0">
+                        <div class="bg-mori-light/40 border-l-4 border-mori-sage px-3 py-2 rounded-r-lg mb-2 shadow-sm">
+                            <h4 class="font-bold text-mori-dark text-[13px] tracking-wide">${cat.title}</h4>
+                        </div>
+                        <div class="space-y-2 pl-1">
+                            ${catPois.map(poi => `
+                            <div class="p-2.5 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-mori-sage transition cursor-pointer flex items-center justify-between group" onclick="window.openPoiModal('${poi.id}')">
+                                <div class="flex items-center">
+                                    <span class="text-xl mr-2.5 group-hover:scale-110 transition-transform">${poi.icon}</span>
+                                    <div><h5 class="text-[13px] font-bold text-gray-800 leading-tight">${poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>')}</h5></div>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-200 text-[10px] group-hover:text-mori-sage transition-colors"></i>
+                            </div>`).join('')}
+                        </div>
+                    </div>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        window.openPoi = function(poi) {
+            currentModalPoi = poi; 
+            document.getElementById('poi-modal-title').innerHTML = poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>');
+            document.getElementById('poi-modal-description').innerHTML = poi.description || '';
+            
+            const fbContainer = document.getElementById('poi-modal-fb-container'), fbIframe = document.getElementById('poi-modal-fb-iframe');
+            if (poi.fbUrl) { 
+                fbIframe.src = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(poi.fbUrl)}&tabs=timeline&width=340&height=300&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false`; 
+                fbContainer.classList.remove('hidden'); 
+            } else { 
+                fbIframe.removeAttribute('src'); 
+                fbContainer.classList.add('hidden'); 
+            }
+            
+            const webContainer = document.getElementById('poi-modal-website-container'), webIframe = document.getElementById('poi-modal-website-iframe');
+            if (poi.websiteUrl) { 
+                webIframe.src = poi.websiteUrl; 
+                webContainer.classList.remove('hidden'); 
+            } else { 
+                webIframe.removeAttribute('src'); 
+                webContainer.classList.add('hidden'); 
+            }
+            
+            const dynamicBtns = document.getElementById('poi-modal-dynamic-buttons'); let btnsHtml = '';
+            let targetUrl = poi.websiteUrl || poi.fbUrl;
+            
+            if (poi.categoryId === 1) targetUrl = 'https://farmcmd.github.io/testever/';
+
+            if (targetUrl) btnsHtml += `<a href="${targetUrl}" target="_blank" class="block w-full py-2 bg-gray-50 border border-gray-200 text-mori-forest text-center font-bold rounded-lg text-sm shadow-sm transition hover:bg-mori-light hover:text-mori-dark"><i class="fas fa-external-link-alt mr-2"></i>前往官方連結 / 報名活動</a>`; 
+            if (poi.esgEligible) btnsHtml += `<div class="p-3 bg-green-50 rounded-lg border border-green-200"><p class="text-[11px] text-green-800 mb-2 leading-relaxed font-medium"><i class="fas fa-leaf mr-1 text-mori-forest"></i>本店為認證之綠消合作店家，完成任務後可於首頁進行綠消折抵計算。</p></div>`; 
+            
+            dynamicBtns.innerHTML = btnsHtml;
+            window.openModal('poi-modal');
+        };
+        window.openPoiModal = function(id) { const poi = pois.find(p => p.id === id); if(poi) window.openPoi(poi); };
+
+        function updateTripDisplay() {
+            const d = document.getElementById('selected-points-display'); if(!d) return;
+            if (selectedStart && selectedEnd) d.innerHTML = `<span class="text-green-700">${selectedStart.name}</span> <i class="fas fa-arrow-right text-gray-400 mx-2"></i> <span class="text-green-700">${selectedEnd.name}</span>`;
+            else if (selectedStart) d.innerHTML = `<span class="text-green-700">${selectedStart.name}</span> <i class="fas fa-arrow-right text-gray-400 mx-2"></i> <span class="text-gray-400">請選擇終點</span>`;
+            else if (selectedEnd) d.innerHTML = `<span class="text-gray-400">請選擇起點</span> <i class="fas fa-arrow-right text-gray-400 mx-2"></i> <span class="text-green-700">${selectedEnd.name}</span>`;
+            else d.textContent = "請選擇起點與終點";
+
+            document.getElementById('trip-calculation-status').textContent = '';
+            document.getElementById('confirm-trip-button').classList.add('hidden');
+            if(window.directionsRenderer) window.directionsRenderer.setMap(null);
+            if(window.fallbackPolyline) window.fallbackPolyline.setMap(null);
+
+            if (selectedStart && selectedEnd && state.currentTransport) document.getElementById('preview-trip-button')?.classList.remove('hidden');
+        }
+
+        // 事件綁定
+        function bindAccordions() {
+            const accordions = document.querySelectorAll('.accordion-header');
+            accordions.forEach(header => {
+                header.addEventListener('click', () => {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.fa-chevron-down');
+                    const isCurrentlyHidden = content ? content.classList.contains('hidden') : false;
+
+                    accordions.forEach(otherHeader => {
+                        const otherContent = otherHeader.nextElementSibling;
+                        const otherIcon = otherHeader.querySelector('.fa-chevron-down');
+                        if (otherContent && otherContent !== content) {
+                            otherContent.classList.add('hidden');
+                            if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+                        }
+                    });
+
+                    if (content) {
+                        if (isCurrentlyHidden) { content.classList.remove('hidden'); if (icon) icon.style.transform = 'rotate(180deg)'; } 
+                        else { content.classList.add('hidden'); if (icon) icon.style.transform = 'rotate(0deg)'; }
+                    }
+                });
+            });
+        }
+
+        function bindEvents() {
+            document.querySelectorAll('.close-button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const modal = e.currentTarget.closest('.modal-overlay');
+                    if (modal) window.closeModal(modal.id);
+                });
+            });
+
+            // 🚀 綁定儲存暱稱事件 (寫入 localStorage 並同步畫面)
+            document.getElementById('save-profile-btn')?.addEventListener('click', () => {
+                const newName = document.getElementById('edit-player-name').value.trim();
+                if (newName) {
+                    state.playerName = newName;
+                    saveData();
+                    renderDashboard(); // 同步刷新顯示
+                    window.showToast('✅ 帳號名稱已更新！');
+                } else {
+                    window.showToast('暱稱不能為空');
+                }
+            });
+
+            document.getElementById('set-as-start-button')?.addEventListener('click', () => {
+                if(currentModalPoi) { selectedStart = currentModalPoi; window.closeModal('poi-modal'); window.showToast('已設為起點'); updateTripDisplay(); }
+            });
+            document.getElementById('set-as-end-button')?.addEventListener('click', () => {
+                if(currentModalPoi) { selectedEnd = currentModalPoi; window.closeModal('poi-modal'); window.showToast('已設為終點'); updateTripDisplay(); }
+            });
+
+            document.getElementById('set-city-start-btn')?.addEventListener('click', () => {
+                const select = document.getElementById('city-select');
+                if (!select || !select.value) return window.showToast('請先選擇縣市');
+                const city = taiwanCities.find(c => c.name === select.value);
+                if (city) { selectedStart = { coords: { lat: city.lat, lng: city.lng }, name: city.name }; window.showToast(`已將 ${city.name} 設為起點`); updateTripDisplay(); }
+            });
+
+            document.getElementById('set-city-end-btn')?.addEventListener('click', () => {
+                const select = document.getElementById('city-select');
+                if (!select || !select.value) return window.showToast('請先選擇縣市');
+                const city = taiwanCities.find(c => c.name === select.value);
+                if (city) { selectedEnd = { coords: { lat: city.lat, lng: city.lng }, name: city.name }; window.showToast(`已將 ${city.name} 設為終點`); updateTripDisplay(); }
+            });
+
+            document.getElementById('submit-activity-log')?.addEventListener('click', () => {
+                const code = document.getElementById('verification-code-input')?.value;
+                if (!code) return window.showToast('請輸入通關代碼');
+                window.addLog(`完成實體任務驗證 (代碼: ${code})`);
+                state.totalScore += 50; saveData();
+                window.showToast('✅ 驗證成功！獲得 50 積分，即將返回首頁...');
+                document.getElementById('verification-code-input').value = '';
+                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+            });
+
+            document.getElementById('log-action-button')?.addEventListener('click', () => {
+                const logInput = document.getElementById('sustainable-action-log');
+                if (!logInput || !logInput.value.trim()) return window.showToast('請輸入心得內容');
+                window.addLog(`記錄心得: ${logInput.value.substring(0, 15)}...`);
+                state.totalScore += 10; saveData();
+                window.showToast('✅ 心得已記錄！獲得 10 積分，即將返回首頁...');
+                logInput.value = '';
+                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+            });
+
+            document.querySelectorAll('.short-dist-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const km = parseFloat(e.target.dataset.km);
+                    const reduction = Math.round(km * (transportData[state.currentTransport].reduction || 0));
+                    document.getElementById('short-dist-result').textContent = `預估減碳: ${reduction}g`;
+                    pendingTrip = { distKm: km, reduction: reduction, isValid: true };
+                    document.getElementById('confirm-short-dist-btn').classList.remove('hidden');
+                });
+            });
+
+            document.getElementById('confirm-short-dist-btn')?.addEventListener('click', () => {
+                if(pendingTrip.isValid) { 
+                    const codeInput = document.getElementById('reward-verify-code');
+                    if (codeInput) codeInput.value = '';
+                    window.openModal('reward-verification-modal'); 
+                    document.getElementById('confirm-short-dist-btn').classList.add('hidden'); 
+                    document.getElementById('short-dist-result').textContent = ''; 
+                }
+            });
+
+            document.getElementById('confirm-trip-button')?.addEventListener('click', () => {
+                if(pendingTrip.isValid) { window.openModal('reward-verification-modal'); document.getElementById('confirm-trip-button').classList.add('hidden'); }
+            });
+            document.getElementById('reward-verify-full-btn')?.addEventListener('click', () => {
+                const code = document.getElementById('reward-verify-code').value;
+                if(code.length > 0) { window.closeModal('reward-verification-modal'); processTripCompletion(pendingTrip.distKm, pendingTrip.reduction); } 
+                else { window.showToast('請輸入密碼'); }
+            });
+            document.getElementById('reward-verify-tenth-btn')?.addEventListener('click', () => {
+                window.closeModal('reward-verification-modal'); processTripCompletion(pendingTrip.distKm, Math.round(pendingTrip.reduction / 10)); 
+            });
+
+            // Directions API 真實道路計算與預覽
+            document.getElementById('preview-trip-button')?.addEventListener('click', () => {
+                const status = document.getElementById('trip-calculation-status'), confirmBtn = document.getElementById('confirm-trip-button');
+                if(confirmBtn) confirmBtn.classList.add('hidden'); pendingTrip.isValid = false;
+                if(!selectedStart || !selectedEnd) return window.showToast('請選擇起點與終點');
+                if(!selectedStart.coords || !selectedEnd.coords) return window.showToast('所選地點缺乏座標資訊，無法計算');
+                if(!window.directionsService) { if(status) status.textContent = "地圖 API 載入中，請稍後..."; return; }
+                if(status) status.textContent = "計算中..."; const tData = transportData[state.currentTransport];
+                if(window.fallbackPolyline) window.fallbackPolyline.setMap(null); window.directionsRenderer.setMap(window.mapInstance);
+
+                window.directionsService.route({ origin: selectedStart.coords, destination: selectedEnd.coords, travelMode: google.maps.TravelMode[tData.mode] || 'DRIVING' }, (result, stat) => {
+                    if(stat === 'OK') {
+                        window.directionsRenderer.setDirections(result); let distMeters = result.routes[0].legs[0].distance.value;
+                        const distKm = distMeters / 1000; const reduction = Math.round(distKm * (tData.reduction / 10)); 
+                        pendingTrip = { distMeters, distKm, reduction, isValid: true };
+                        if(status) status.innerHTML = `路網距離 ${distKm.toFixed(1)}km | 預估減碳: <span class="text-mori-forest">${reduction}g</span>`;
+                        if(confirmBtn) confirmBtn.classList.remove('hidden'); document.getElementById('preview-trip-button')?.classList.add('hidden');
+                    } else {
+                        window.directionsRenderer.setMap(null); const p1 = new google.maps.LatLng(selectedStart.coords.lat, selectedStart.coords.lng); const p2 = new google.maps.LatLng(selectedEnd.coords.lat, selectedEnd.coords.lng);
+                        const distMeters = google.maps.geometry.spherical.computeDistanceBetween(p1, p2); const distKm = distMeters / 1000; const reduction = Math.round(distKm * (tData.reduction / 10)); 
+                        window.fallbackPolyline = new google.maps.Polyline({ path: [p1, p2], geodesic: true, strokeColor: '#4A6741', strokeOpacity: 0.8, strokeWeight: 4, map: window.mapInstance });
+                        const bounds = new google.maps.LatLngBounds(); bounds.extend(p1); bounds.extend(p2); window.mapInstance.fitBounds(bounds);
+                        pendingTrip = { distMeters, distKm, reduction, isValid: true };
+                        if(status) status.innerHTML = `<i class="fas fa-magic text-yellow-500 mr-1"></i>(直線估算) ${distKm.toFixed(1)}km | 減碳 <span class="text-mori-forest">${reduction}g</span>`;
+                        if(confirmBtn) confirmBtn.classList.remove('hidden'); document.getElementById('preview-trip-button')?.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // 地圖渲染
+        function renderMap() {
+            if (!window.google || mapInitialized) return;
+            const mapEl = document.getElementById('map');
+            if(!mapEl || mapEl.offsetWidth === 0) { setTimeout(renderMap, 100); return; }
+            try {
+                window.mapInstance = new google.maps.Map(mapEl, { center: { lat: 23.810, lng: 120.850 }, zoom: 13, mapTypeControl: false, streetViewControl: false });
+                window.directionsService = new google.maps.DirectionsService(); 
+                window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapInstance });
+                
+                pois.forEach(poi => {
+                    let markerOpts = { position: poi.coords, map: window.mapInstance, title: poi.name, label: { text: poi.icon, fontSize: '20px' } };
+                    if (poi.categoryId === 'map_only') { markerOpts.icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; delete markerOpts.label; } 
+                    else if (poi.categoryId === 'map_only_blue') { markerOpts.icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'; delete markerOpts.label; }
+                    const marker = new google.maps.Marker(markerOpts); marker.addListener('click', () => window.openPoi(poi));
+                });
+                document.getElementById('map-overlay')?.classList.add('hidden'); mapInitialized = true;
+            } catch(e) { console.error("地圖錯誤:", e); document.getElementById('map-loading-text').textContent = "地圖載入失敗，請重整網頁"; }
+        }
+
+        const loadGoogleMaps = () => {
+            if(document.querySelector('script[src*="maps.googleapis.com"]')) return;
+            const script = document.createElement('script'); 
+            const encodedKey = 'QUl6YVN5QWpOdjQ5QlBhX1gyU1N3aHR5SFR1eWZqTUFieEVHVS04';
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${atob(encodedKey)}&libraries=geometry,routes&callback=initMap`; 
+            script.async = true; script.defer = true; 
+            script.onerror = () => { document.getElementById('map-loading-text').textContent = '地圖服務連線異常，請檢查網路'; }; 
+            document.head.appendChild(script);
+        };
+        window.initMap = function() { window.mapsApiReady = true; renderMap(); };
+
+        // 系統啟動
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            
+            if (!state.currentTransport || !transportData[state.currentTransport]) {
+                window.showToast('尚未選擇交通方式，預設為「單人自駕」以供瀏覽。');
+                state.currentTransport = 'drive_alone'; 
+                saveData(); 
+            }
+            
+            const tData = transportData[state.currentTransport];
+            const transportDisplay = document.getElementById('current-transport-display-mission');
+            if(transportDisplay) {
+                transportDisplay.innerHTML = `<i class="fas fa-info-circle mr-1.5 opacity-80"></i>交通方式: ${tData.name}`;
+            }
+
+            renderPoiList();
+            renderCityOptions();
+            bindAccordions();
+            bindEvents();
+            loadGoogleMaps();
+
+            try {
+                const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app);
+                signInAnonymously(auth).catch(() => { isOfflineMode = true; });
+                onAuthStateChanged(auth, user => { if(!user) isOfflineMode = true; });
+            } catch (e) { isOfflineMode = true; }
+        });
+    </script>
+</body>
+</html>
