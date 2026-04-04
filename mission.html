@@ -57,7 +57,6 @@
     </header>
 
     <main class="container mx-auto p-4 md:p-8 relative z-20">
-        <!-- 浮動控制群組 (固定於左下角) -->
         <div class="fixed bottom-6 left-6 md:bottom-8 md:left-8 z-[90] flex flex-col items-start gap-2">
             <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-full shadow-[0_8px_25px_rgba(250,204,21,0.5)] border-2 border-yellow-300 hover:bg-yellow-500 hover:shadow-yellow-500/50 hover:-translate-y-1 text-sm md:text-base font-black transition-all duration-300 flex items-center group w-fit tracking-wide">
                 <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i>返回首頁
@@ -67,7 +66,6 @@
             </div>
         </div>
         
-        <!-- 頂部操作區 -->
         <div class="flex justify-between items-center mb-4 md:mb-6">
             <div class="text-mori-dark font-bold flex items-center bg-white/60 px-3 py-1.5 rounded-lg shadow-sm border border-mori-light">
                 <i class="fas fa-user-circle text-mori-sage mr-2 text-lg"></i>
@@ -80,7 +78,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full pb-20">
-            <!-- 地圖與計算核心區塊 -->
             <div class="lg:col-span-2 flex flex-col gap-4">
                 <div class="relative bg-white p-2 rounded-xl shadow-md border border-gray-200">
                      <div id="map" class="w-full h-[60vh] lg:h-[500px] rounded-lg bg-gray-200"></div>
@@ -89,7 +86,6 @@
                         <p class="text-mori-dark font-bold text-sm" id="map-loading-text">地圖準備中...</p>
                     </div>
                 </div>
-                 <!-- 計算足跡與按鈕區塊 -->
                  <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-mori-sage sticky bottom-0 z-50">
                      <div class="flex justify-between items-start">
                          <div>
@@ -105,32 +101,23 @@
                  </div>
             </div>
 
-            <!-- 側邊欄 (Accordion 佈局) -->
             <div class="lg:col-span-1 flex flex-col gap-3 overflow-y-auto max-h-[80vh] no-scrollbar pb-24">
-                
-                <!-- 在地景點列表 (預設展開) -->
                 <div class="accordion-item shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none bg-gray-50 hover:bg-gray-100 transition">
+                    <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left bg-gray-50 hover:bg-gray-100 transition">
                         <span class="text-[15px]"><i class="fas fa-map-marker-alt mr-2 text-mori-forest"></i>在地景點列表</span>
                         <i class="fas fa-chevron-down transition-transform duration-300 transform rotate-180"></i>
                     </button>
                     <div class="accordion-content p-4 pt-2 block">
                         <div id="poi-list-container" class="space-y-4 max-h-[45vh] overflow-y-auto pr-2 custom-scrollbar"></div>
-                        <div class="mt-4 pt-3 border-t border-dashed border-gray-200">
-                            <p class="text-xs font-bold text-mori-forest mb-1.5"><i class="fas fa-search-location mr-1"></i> 景點不夠嗎？</p>
-                            <p class="text-[11px] text-gray-500 leading-relaxed">在地圖中找尋 <span class="text-green-600 font-bold"><i class="fas fa-map-marker-alt"></i> 綠色/藍色座標</span> 或許會有驚喜！</p>
-                        </div>
                     </div>
                 </div>
 
-                <!-- 🚀 找回原味：旅者數據與帳號管理 (原生 Accordion) -->
                 <div class="accordion-item shrink-0 bg-yellow-50/50 rounded-xl shadow-sm border border-yellow-100 overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-yellow-800 flex justify-between items-center text-left focus:outline-none hover:bg-yellow-100/50 transition">
+                    <button class="accordion-header w-full p-4 font-bold text-yellow-800 flex justify-between items-center text-left hover:bg-yellow-100/50 transition">
                         <span class="text-[15px]"><i class="fas fa-id-badge mr-2"></i>數據歸戶與帳號管理</span>
                         <i class="fas fa-chevron-down transition-transform duration-300"></i>
                     </button>
                     <div class="accordion-content p-4 pt-2 hidden">
-                        <!-- 數據看板 -->
                         <div class="grid grid-cols-3 gap-2 mb-4">
                             <div class="bg-white p-2 rounded-lg border border-yellow-200 text-center shadow-sm relative overflow-hidden">
                                 <div class="absolute top-0 left-0 w-full h-1 bg-yellow-400"></div>
@@ -148,120 +135,62 @@
                                 <p class="text-lg font-black text-blue-600" id="dash-mileage">0.0</p>
                             </div>
                         </div>
-                        <!-- 帳號管理 -->
                         <div class="space-y-3 border-t border-yellow-200/50 pt-3">
-                            <div>
-                                <label class="block text-[11px] font-bold text-gray-500 mb-1">旅者暱稱 / 顯示名稱</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="edit-player-name" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-mori-forest transition" placeholder="輸入名稱">
-                                    <button id="save-profile-btn" class="px-4 py-2 bg-mori-sage text-white rounded-lg font-bold text-sm shadow hover:bg-mori-forest transition whitespace-nowrap"><i class="fas fa-save mr-1"></i>儲存</button>
-                                </div>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">旅者暱稱</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="edit-player-name" class="flex-1 p-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-mori-forest transition" placeholder="輸入名稱">
+                                <button id="save-profile-btn" class="px-4 py-2 bg-mori-sage text-white rounded-lg font-bold text-sm shadow hover:bg-mori-forest transition whitespace-nowrap"><i class="fas fa-save mr-1"></i>儲存</button>
                             </div>
-                            <div>
-                                <label class="block text-[11px] font-bold text-gray-500 mb-1">專屬認證代碼</label>
-                                <div class="p-2 bg-white border border-gray-200 rounded-lg text-sm font-mono text-mori-wood tracking-widest text-center shadow-inner font-black" id="dash-player-code">...</div>
-                            </div>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">認證代碼</label>
+                            <div id="dash-player-code" class="p-2 bg-white border border-gray-200 rounded-lg text-sm font-mono text-mori-wood text-center tracking-widest font-black shadow-inner">...</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 🚀 找回原味：歷史任務紀錄 (原生 Accordion) -->
                 <div class="accordion-item shrink-0 bg-gray-50 rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none hover:bg-gray-100 transition">
+                    <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left hover:bg-gray-100 transition">
                         <span class="text-[15px]"><i class="fas fa-history mr-2"></i>歷史任務紀錄</span>
                         <i class="fas fa-chevron-down transition-transform duration-300"></i>
                     </button>
                     <div class="accordion-content p-4 pt-2 hidden">
-                        <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-inner max-h-48 overflow-y-auto custom-scrollbar" id="dash-logs">
-                            <!-- 動態插入 Logs -->
-                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-inner max-h-48 overflow-y-auto custom-scrollbar" id="dash-logs"></div>
                     </div>
                 </div>
 
-                <!-- 跨縣市往返設定 -->
                 <div class="accordion-item shrink-0 bg-blue-50/50 rounded-xl shadow-sm border border-blue-100 overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-blue-800 flex justify-between items-center text-left focus:outline-none hover:bg-blue-100/50 transition">
-                        <span class="text-[15px]"><i class="fas fa-map-marked-alt mr-2"></i>跨縣市往返設定</span>
+                    <button class="accordion-header w-full p-4 font-bold text-blue-800 flex justify-between items-center text-left hover:bg-blue-100/50 transition">
+                        <span class="text-[15px]"><i class="fas fa-map-marked-alt mr-2"></i>移動設定</span>
                         <i class="fas fa-chevron-down transition-transform duration-300"></i>
                     </button>
                     <div class="accordion-content p-4 pt-2 hidden">
-                        <div class="flex flex-col gap-2">
-                            <select id="city-select" class="w-full p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-400"></select>
-                            <div class="flex gap-2 mt-1">
-                                <button id="set-city-start-btn" class="flex-1 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm transition hover:bg-blue-200">設為起點</button>
-                                <button id="set-city-end-btn" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm transition hover:bg-blue-700">設為終點</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 市區短距移動 -->
-                <div class="accordion-item shrink-0 bg-emerald-50/50 rounded-xl shadow-sm border border-emerald-100 overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-emerald-800 flex justify-between items-center text-left focus:outline-none hover:bg-emerald-100/50 transition">
-                        <span class="text-[15px]"><i class="fas fa-route mr-2"></i>市區短距移動</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="accordion-content p-4 pt-2 hidden">
-                        <div class="grid grid-cols-4 gap-2 mb-3">
-                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="3">3KM</button>
-                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="5">5KM</button>
-                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="10">10KM</button>
-                            <button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="15">15KM</button>
-                        </div>
-                        <div id="short-dist-result" class="text-xs font-bold text-mori-wood mb-2 text-center min-h-[1.5em]"></div>
-                        <button id="confirm-short-dist-btn" class="hidden w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-sm shadow animate-bounce">確認並獲取積分</button>
-                    </div>
-                </div>
-                
-                <!-- 實體任務與驗證 -->
-                <div class="accordion-item shrink-0 bg-purple-50/50 rounded-xl shadow-sm border border-purple-100 overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-purple-800 flex justify-between items-center text-left focus:outline-none hover:bg-purple-100/50 transition">
-                        <span class="text-[15px]"><i class="fas fa-flag-checkered mr-2"></i>實體任務與驗證</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="accordion-content p-4 pt-2 hidden">
+                        <select id="city-select" class="w-full p-2 border border-blue-200 rounded-lg text-sm bg-white mb-2"></select>
                         <div class="flex gap-2">
-                            <input type="text" id="verification-code-input" class="w-full p-2 border border-purple-200 rounded-lg text-sm outline-none bg-white focus:border-purple-400" placeholder="輸入通關代碼 (6碼)">
-                            <button id="submit-activity-log" class="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm shadow-sm whitespace-nowrap hover:bg-purple-700 transition">驗證</button>
+                            <button id="set-city-start-btn" class="flex-1 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm">設為起點</button>
+                            <button id="set-city-end-btn" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm">設為終點</button>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 永續行動心得 -->
-                <div class="accordion-item shrink-0 bg-[#F0F7F4] rounded-xl shadow-sm border border-mori-light overflow-hidden">
-                    <button class="accordion-header w-full p-4 font-bold text-mori-forest flex justify-between items-center text-left focus:outline-none hover:bg-[#E8EFE6] transition">
-                        <span class="text-[15px]"><i class="fas fa-edit mr-2 text-mori-sage"></i>永續行動心得</span>
-                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
-                    </button>
-                    <div class="accordion-content p-4 pt-2 hidden">
-                        <textarea id="sustainable-action-log" class="w-full p-3 border border-mori-light rounded-lg text-sm outline-none bg-white focus:border-mori-sage" rows="2" placeholder="記錄您的永續心得..."></textarea>
-                        <button id="log-action-button" class="w-full mt-2 py-2 bg-mori-sage text-white rounded-lg hover:bg-mori-forest font-bold transition shadow-sm"><i class="fas fa-edit mr-1"></i> 記錄心得</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- POI Modal -->
     <div id="poi-modal" class="modal-overlay hidden">
-        <div class="modal-content bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div class="modal-content bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto p-6">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full"><i class="fas fa-times text-lg"></i></button>
-            <div class="p-6">
-                <div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100">
-                    <div class="flex gap-2 mt-4">
-                        <button id="set-as-start-button" class="flex-1 py-2 bg-mori-light text-mori-dark rounded-lg hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm">設為起點</button>
-                        <button id="set-as-end-button" class="flex-1 py-2 bg-mori-forest text-white rounded-lg hover:bg-mori-dark font-bold text-sm transition shadow-sm">設為終點</button>
-                    </div>
-                    <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2"></div>
+            <div class="flex flex-col gap-3 mb-5 mt-4 pb-5 border-b border-gray-100">
+                <div class="flex gap-2">
+                    <button id="set-as-start-button" class="flex-1 py-2 bg-mori-light text-mori-dark rounded-lg font-bold text-sm transition shadow-sm">設為起點</button>
+                    <button id="set-as-end-button" class="flex-1 py-2 bg-mori-forest text-white rounded-lg font-bold text-sm transition shadow-sm">設為終點</button>
                 </div>
-                <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3>
-                <div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
-                <div id="poi-modal-fb-container" class="hidden mb-2 w-full flex justify-center overflow-hidden rounded-lg border border-gray-100">
-                    <iframe id="poi-modal-fb-iframe" width="340" height="400" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
-                </div>
-                <div id="poi-modal-website-container" class="hidden mb-2 w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner h-[400px]">
-                    <iframe id="poi-modal-website-iframe" width="100%" height="100%" style="border:none;" title="官方網站"></iframe>
-                </div>
+                <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2"></div>
+            </div>
+            <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3>
+            <div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
+            <div id="poi-modal-fb-container" class="hidden mb-2 w-full flex justify-center overflow-hidden rounded-lg border border-gray-100">
+                <iframe id="poi-modal-fb-iframe" width="340" height="400" style="border:none;overflow:hidden" scrolling="no" frameborder="0"></iframe>
+            </div>
+            <div id="poi-modal-website-container" class="hidden mb-2 w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner h-[400px]">
+                <iframe id="poi-modal-website-iframe" width="100%" height="100%" style="border:none;" title="官方網站"></iframe>
             </div>
         </div>
     </div>
@@ -283,16 +212,19 @@
         </div>
     </div>
 
-    <!-- 核心 JS 模組 -->
+    <!-- 腳本區塊 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
         import { getFirestore, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-
+        
         const firebaseConfig = { apiKey: "AIzaSyCEH65YbNirj_IRmtsIJZS-HNEbsRBBsSQ", authDomain: "sustainable-tourism-65025.firebaseapp.com", projectId: "sustainable-tourism-65025" };
         const LOCAL_STORAGE_KEY = 'shuilMoriData_v3.0';
+        let state = {};
+        let db = null, auth = null, isOfflineMode = false;
+        let selectedStart = null, selectedEnd = null, currentModalPoi = null, pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false };
+        let mapInitialized = false;
 
-        // 靜態資料移植
         const poiCategories = [
             { id: 4, title: '1. 水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。' }, 
             { id: 1, title: '2. 里山餐桌團隊', desc: '核心規劃團隊，提供生態旅遊與 ESG 專案規劃。' }, 
@@ -355,50 +287,38 @@
             { name: '屏東縣', lat: 22.6710, lng: 120.4862 }, { name: '宜蘭縣', lat: 24.7308, lng: 121.7628 }, { name: '花蓮縣', lat: 23.9872, lng: 121.6016 }, { name: '臺東縣', lat: 22.7583, lng: 121.1444 }
         ];
 
-        let state = {};
-        let db = null, auth = null, isOfflineMode = false;
-        let selectedStart = null, selectedEnd = null, currentModalPoi = null, pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false };
-        let mapInitialized = false;
-
-        // 工具函數
-        window.toastTimer = null;
-        window.showToast = function(msg) {
-            let toast = document.getElementById('custom-toast');
-            if(toast) { 
-                toast.textContent = msg; 
-                toast.classList.add('show'); 
-                if(window.toastTimer) clearTimeout(window.toastTimer);
-                window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); 
-            }
-        };
-
-        window.openModal = function(modalId) { document.getElementById(modalId)?.classList.remove('hidden'); };
-        window.closeModal = function(modalId) { document.getElementById(modalId)?.classList.add('hidden'); };
+        // 輔助函數
         window.getFormattedTime = function() { const d = new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
         window.getTodayKey = function() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
         window.addLog = function(text) {
-            const time = getFormattedTime();
+            const time = window.getFormattedTime();
             if(!state.activityLogs) state.activityLogs = [];
             state.activityLogs.unshift({ time, text });
             if(state.activityLogs.length > 50) state.activityLogs.pop();
             saveData();
-            renderDashboard(); // 🚀 同步刷新儀表板資料
+            renderDashboard(); 
         };
 
-        function saveData() { try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {} }
-
-        // 🚀 渲染原生面板邏輯
+        // 防禦性渲染函數
         function renderDashboard() {
-            document.getElementById('display-player-name').textContent = state.playerName || '匿名旅者';
-            document.getElementById('display-player-code').textContent = state.playerCode || '...';
-            document.getElementById('edit-player-name').value = state.playerName || '';
-            document.getElementById('dash-player-code').textContent = state.playerCode || '...';
-            
-            document.getElementById('dash-score').textContent = state.totalScore || 0;
-            document.getElementById('dash-carbon').textContent = state.totalCarbon || 0;
-            document.getElementById('dash-mileage').textContent = ((state.totalMileage || 0) / 1000).toFixed(1);
-            
+            const safeSetText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            };
+            const safeSetValue = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val;
+            };
+
+            safeSetText('dash-score', state.totalScore || 0);
+            safeSetText('dash-carbon', state.totalCarbon || 0);
+            safeSetText('dash-mileage', ((state.totalMileage || 0) / 1000).toFixed(1));
+            safeSetText('display-player-name', state.playerName || '旅者');
+            safeSetText('display-player-code', state.playerCode || '...');
+            safeSetText('dash-player-code', state.playerCode || '...');
+            safeSetValue('edit-player-name', state.playerName || '');
+
             const logsContainer = document.getElementById('dash-logs');
             if (logsContainer) {
                 if (state.activityLogs && state.activityLogs.length > 0) {
@@ -409,46 +329,44 @@
                         </div>
                     `).join('');
                 } else {
-                    logsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4"><i class="fas fa-seedling text-2xl mb-2 text-gray-300 block"></i>尚無歷史紀錄，去完成第一項任務吧！</p>';
+                    logsContainer.innerHTML = '<p class="text-xs text-gray-400 text-center py-4">尚無歷史紀錄</p>';
                 }
             }
         }
 
         function loadLocalData() {
-            try { const raw = localStorage.getItem(LOCAL_STORAGE_KEY); if(raw) { state = JSON.parse(raw); } } catch(e) { }
-            state.totalMileage = state.totalMileage || 0; state.totalCarbon = state.totalCarbon || 0; state.totalScore = state.totalScore || 0;
+            try { 
+                const raw = localStorage.getItem(LOCAL_STORAGE_KEY); 
+                state = raw ? JSON.parse(raw) : {};
+            } catch(e) { state = {}; }
             
-            // 確保代碼存在
-            if (!state.playerCode) { state.playerCode = Math.random().toString(36).substring(2, 8).toUpperCase(); saveData(); }
-            
+            state.totalMileage = state.totalMileage || 0;
+            state.totalCarbon = state.totalCarbon || 0;
+            state.totalScore = state.totalScore || 0;
+            if (!state.playerCode) {
+                state.playerCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                saveData();
+            }
             renderDashboard();
         }
 
-        async function addToGlobalTotal(carbonDelta, greenDelta) {
-            const todayStr = getTodayKey();
-            if (!isOfflineMode && db) { 
-                try { 
-                    await setDoc(doc(db, 'system_stats', 'global_absolute'), { carbon: increment(carbonDelta), green: increment(greenDelta), [`daily_${todayStr}_carbon`]: increment(carbonDelta) }, { merge: true }); 
-                } catch(e) {} 
+        function saveData() { 
+            try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {} 
+        }
+
+        window.showToast = function(msg) {
+            const toast = document.getElementById('custom-toast');
+            if(toast) { 
+                toast.textContent = msg; 
+                toast.classList.add('show'); 
+                setTimeout(() => toast.classList.remove('show'), 3000); 
             }
-        }
+        };
 
-        // 任務結算與折返核心
-        function processTripCompletion(distKm, carbon) {
-            state.totalMileage += (distKm * 1000); 
-            state.totalCarbon += carbon;
-            state.totalScore += Math.round(carbon / 10);
-            
-            addToGlobalTotal(carbon, 0); // 非同步寫入雲端
-            window.addLog(`完成旅程: ${distKm.toFixed(1)}km, 獲得減碳 ${carbon}g`);
-            saveData(); // 立即儲存本機進度
-            
-            window.showToast('✅ 積分與減碳量已記錄！正在返回首頁結算...');
-            // 無縫折返回首頁
-            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-        }
+        window.openModal = function(id) { document.getElementById(id)?.classList.remove('hidden'); };
+        window.closeModal = function(id) { document.getElementById(id)?.classList.add('hidden'); };
 
-        // UI 渲染
+        // 地圖渲染與事件綁定
         function renderCityOptions() {
             const select = document.getElementById('city-select');
             if(select) select.innerHTML = '<option value="">-- 選擇縣市 --</option>' + taiwanCities.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
@@ -468,11 +386,14 @@
                         <div class="space-y-2 pl-1">
                             ${catPois.map(poi => `
                             <div class="p-2.5 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-mori-sage transition cursor-pointer flex items-center justify-between group" onclick="window.openPoiModal('${poi.id}')">
-                                <div class="flex items-center">
-                                    <span class="text-xl mr-2.5 group-hover:scale-110 transition-transform">${poi.icon}</span>
-                                    <div><h5 class="text-[13px] font-bold text-gray-800 leading-tight">${poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>')}</h5></div>
+                                <div class="flex items-start w-full pr-2">
+                                    <span class="text-xl mr-2.5 mt-0.5 group-hover:scale-110 transition-transform shrink-0">${poi.icon}</span>
+                                    <div class="flex-1 min-w-0">
+                                        <h5 class="text-[13px] font-bold text-gray-800 leading-tight">${poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>')}</h5>
+                                        ${poi.description ? `<p class="text-[11px] text-gray-500 mt-1 line-clamp-1 leading-snug">${poi.description.replace(/<br\s*\/?>/gi, ' ')}</p>` : ''}
+                                    </div>
                                 </div>
-                                <i class="fas fa-chevron-right text-gray-200 text-[10px] group-hover:text-mori-sage transition-colors"></i>
+                                <i class="fas fa-chevron-right text-gray-200 text-[10px] group-hover:text-mori-sage transition-colors shrink-0 mt-1"></i>
                             </div>`).join('')}
                         </div>
                     </div>`;
@@ -481,41 +402,62 @@
             container.innerHTML = html;
         }
 
-        window.openPoi = function(poi) {
-            currentModalPoi = poi; 
-            document.getElementById('poi-modal-title').innerHTML = poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>');
-            document.getElementById('poi-modal-description').innerHTML = poi.description || '';
-            
-            const fbContainer = document.getElementById('poi-modal-fb-container'), fbIframe = document.getElementById('poi-modal-fb-iframe');
-            if (poi.fbUrl) { 
-                fbIframe.src = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(poi.fbUrl)}&tabs=timeline&width=340&height=300&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false`; 
-                fbContainer.classList.remove('hidden'); 
-            } else { 
-                fbIframe.removeAttribute('src'); 
-                fbContainer.classList.add('hidden'); 
-            }
-            
-            const webContainer = document.getElementById('poi-modal-website-container'), webIframe = document.getElementById('poi-modal-website-iframe');
-            if (poi.websiteUrl) { 
-                webIframe.src = poi.websiteUrl; 
-                webContainer.classList.remove('hidden'); 
-            } else { 
-                webIframe.removeAttribute('src'); 
-                webContainer.classList.add('hidden'); 
-            }
-            
-            const dynamicBtns = document.getElementById('poi-modal-dynamic-buttons'); let btnsHtml = '';
-            let targetUrl = poi.websiteUrl || poi.fbUrl;
-            
-            if (poi.categoryId === 1) targetUrl = 'https://farmcmd.github.io/testever/';
+        window.openPoiModal = function(id) {
+            const poi = pois.find(p => p.id === id);
+            if(poi) {
+                currentModalPoi = poi;
+                document.getElementById('poi-modal-title').innerHTML = poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>');
+                document.getElementById('poi-modal-description').innerHTML = poi.description || '';
+                
+                const fbContainer = document.getElementById('poi-modal-fb-container'), fbIframe = document.getElementById('poi-modal-fb-iframe');
+                if (poi.fbUrl) { 
+                    fbIframe.src = `https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(poi.fbUrl)}&tabs=timeline&width=340&height=300&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false`; 
+                    fbContainer.classList.remove('hidden'); 
+                } else { 
+                    fbIframe.removeAttribute('src'); 
+                    fbContainer.classList.add('hidden'); 
+                }
+                
+                const webContainer = document.getElementById('poi-modal-website-container'), webIframe = document.getElementById('poi-modal-website-iframe');
+                if (poi.websiteUrl) { 
+                    webIframe.src = poi.websiteUrl; 
+                    webContainer.classList.remove('hidden'); 
+                } else { 
+                    webIframe.removeAttribute('src'); 
+                    webContainer.classList.add('hidden'); 
+                }
 
-            if (targetUrl) btnsHtml += `<a href="${targetUrl}" target="_blank" class="block w-full py-2 bg-gray-50 border border-gray-200 text-mori-forest text-center font-bold rounded-lg text-sm shadow-sm transition hover:bg-mori-light hover:text-mori-dark"><i class="fas fa-external-link-alt mr-2"></i>前往官方連結 / 報名活動</a>`; 
-            if (poi.esgEligible) btnsHtml += `<div class="p-3 bg-green-50 rounded-lg border border-green-200"><p class="text-[11px] text-green-800 mb-2 leading-relaxed font-medium"><i class="fas fa-leaf mr-1 text-mori-forest"></i>本店為認證之綠消合作店家，完成任務後可於首頁進行綠消折抵計算。</p></div>`; 
-            
-            dynamicBtns.innerHTML = btnsHtml;
-            window.openModal('poi-modal');
+                const dynamicBtns = document.getElementById('poi-modal-dynamic-buttons');
+                
+                let targetUrl = poi.websiteUrl || poi.fbUrl;
+                let btnText = '前往官方連結 / 報名活動';
+                
+                if (poi.categoryId === 1) {
+                    targetUrl = 'https://farmcmd.github.io/testever/mission.html';
+                    // 🚀 文案優化：修改為「團體報班活動」
+                    btnText = '團體報班活動';
+                }
+
+                // 🚀 找回原味：整合所有動態按鈕 (包含官方連結與綠消計算機)
+                let btnsHtml = targetUrl ? `<a href="${targetUrl}" target="_blank" class="block w-full py-2 bg-gray-50 text-mori-forest text-center font-bold rounded-lg text-sm border border-gray-200 shadow-sm hover:bg-mori-light transition"><i class="fas fa-external-link-alt mr-2"></i>${btnText}</a>` : '';
+                
+                // 🚀 核心修復：找回 ESG 綠色消費計算機的行動呼籲按鈕
+                if (poi.esgEligible) {
+                    btnsHtml += `
+                    <div class="p-3 bg-green-50 rounded-lg border border-green-200 mt-2 shadow-sm">
+                        <p class="text-[11px] text-green-800 mb-2.5 leading-relaxed font-medium tracking-wide">
+                            <i class="fas fa-leaf mr-1 text-mori-forest"></i>本店為認證之綠消合作店家，請點擊下方按鈕進行折抵計算。
+                        </p>
+                        <button onclick="window.showToast('即將前往首頁開啟綠消計算機...'); setTimeout(() => { window.location.href='index.html'; }, 1000);" class="w-full py-2 bg-green-600 text-white font-bold rounded-lg text-sm shadow-md hover:bg-green-700 hover:-translate-y-0.5 transition-all flex justify-center items-center">
+                            <i class="fas fa-calculator mr-2"></i>開啟綠色消費計算機
+                        </button>
+                    </div>`;
+                }
+
+                dynamicBtns.innerHTML = btnsHtml;
+                window.openModal('poi-modal');
+            }
         };
-        window.openPoiModal = function(id) { const poi = pois.find(p => p.id === id); if(poi) window.openPoi(poi); };
 
         function updateTripDisplay() {
             const d = document.getElementById('selected-points-display'); if(!d) return;
@@ -532,51 +474,106 @@
             if (selectedStart && selectedEnd && state.currentTransport) document.getElementById('preview-trip-button')?.classList.remove('hidden');
         }
 
-        // 事件綁定
-        function bindAccordions() {
-            const accordions = document.querySelectorAll('.accordion-header');
-            accordions.forEach(header => {
+        async function addToGlobalTotal(carbonDelta, greenDelta) {
+            const todayStr = window.getTodayKey();
+            if (!isOfflineMode && db) { 
+                try { 
+                    await setDoc(doc(db, 'system_stats', 'global_absolute'), { carbon: increment(carbonDelta), green: increment(greenDelta), [`daily_${todayStr}_carbon`]: increment(carbonDelta) }, { merge: true }); 
+                } catch(e) {} 
+            }
+        }
+
+        function processTripCompletion(distKm, carbon) {
+            state.totalMileage += (distKm * 1000); 
+            state.totalCarbon += carbon;
+            state.totalScore += Math.round(carbon / 10);
+            
+            addToGlobalTotal(carbon, 0); 
+            window.addLog(`完成旅程: ${distKm.toFixed(1)}km, 獲得減碳 ${carbon}g`);
+            saveData(); 
+            
+            window.showToast('✅ 積分與減碳量已記錄！正在返回首頁結算...');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+        }
+
+        // 地圖渲染核心
+        function renderMap() {
+            if (!window.google || mapInitialized) return;
+            const mapEl = document.getElementById('map');
+            if(!mapEl || mapEl.offsetWidth === 0) { setTimeout(renderMap, 100); return; }
+            try {
+                window.mapInstance = new google.maps.Map(mapEl, { center: { lat: 23.810, lng: 120.850 }, zoom: 13, mapTypeControl: false, streetViewControl: false });
+                window.directionsService = new google.maps.DirectionsService(); 
+                window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapInstance });
+                
+                pois.forEach(poi => {
+                    let markerOpts = { position: poi.coords, map: window.mapInstance, title: poi.name, label: { text: poi.icon, fontSize: '20px' } };
+                    if (poi.categoryId === 'map_only') { markerOpts.icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; delete markerOpts.label; } 
+                    else if (poi.categoryId === 'map_only_blue') { markerOpts.icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'; delete markerOpts.label; }
+                    const marker = new google.maps.Marker(markerOpts); marker.addListener('click', () => window.openPoiModal(poi.id));
+                });
+                document.getElementById('map-overlay')?.classList.add('hidden'); mapInitialized = true;
+            } catch(e) { console.error("地圖錯誤:", e); document.getElementById('map-loading-text').textContent = "地圖載入失敗，請重整網頁"; }
+        }
+
+        const loadGoogleMaps = () => {
+            if(document.querySelector('script[src*="maps.googleapis.com"]')) return;
+            const script = document.createElement('script'); 
+            const encodedKey = 'QUl6YVN5QWpOdjQ5QlBhX1gyU1N3aHR5SFR1eWZqTUFieEVHVS04';
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${atob(encodedKey)}&libraries=geometry,routes&callback=initMap`; 
+            script.async = true; script.defer = true; 
+            script.onerror = () => { document.getElementById('map-loading-text').textContent = '地圖服務連線異常，請檢查網路'; }; 
+            document.head.appendChild(script);
+        };
+        window.initMap = function() { window.mapsApiReady = true; renderMap(); };
+
+        // 綁定所有事件
+        document.addEventListener('DOMContentLoaded', () => {
+            loadLocalData();
+            
+            if (!state.currentTransport || !transportData[state.currentTransport]) {
+                window.showToast('尚未選擇交通方式，預設為「單人自駕」以供瀏覽。');
+                state.currentTransport = 'drive_alone'; 
+                saveData(); 
+            }
+            
+            const tData = transportData[state.currentTransport];
+            const transportDisplay = document.getElementById('current-transport-display-mission');
+            if(transportDisplay) {
+                transportDisplay.innerHTML = `<i class="fas fa-info-circle mr-1.5 opacity-80"></i>交通方式: ${tData.name}`;
+            }
+
+            renderPoiList();
+            renderCityOptions();
+            loadGoogleMaps();
+
+            document.querySelectorAll('.accordion-header').forEach(header => {
                 header.addEventListener('click', () => {
                     const content = header.nextElementSibling;
                     const icon = header.querySelector('.fa-chevron-down');
-                    const isCurrentlyHidden = content ? content.classList.contains('hidden') : false;
-
-                    accordions.forEach(otherHeader => {
-                        const otherContent = otherHeader.nextElementSibling;
-                        const otherIcon = otherHeader.querySelector('.fa-chevron-down');
-                        if (otherContent && otherContent !== content) {
-                            otherContent.classList.add('hidden');
-                            if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
-                        }
-                    });
-
                     if (content) {
-                        if (isCurrentlyHidden) { content.classList.remove('hidden'); if (icon) icon.style.transform = 'rotate(180deg)'; } 
-                        else { content.classList.add('hidden'); if (icon) icon.style.transform = 'rotate(0deg)'; }
+                        const isHidden = content.classList.contains('hidden');
+                        content.classList.toggle('hidden');
+                        if (icon) icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
                     }
                 });
             });
-        }
 
-        function bindEvents() {
-            document.querySelectorAll('.close-button').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const modal = e.currentTarget.closest('.modal-overlay');
-                    if (modal) window.closeModal(modal.id);
-                });
-            });
-
-            // 🚀 綁定儲存暱稱事件 (寫入 localStorage 並同步畫面)
             document.getElementById('save-profile-btn')?.addEventListener('click', () => {
-                const newName = document.getElementById('edit-player-name').value.trim();
+                const newName = document.getElementById('edit-player-name')?.value.trim();
                 if (newName) {
                     state.playerName = newName;
                     saveData();
-                    renderDashboard(); // 同步刷新顯示
-                    window.showToast('✅ 帳號名稱已更新！');
-                } else {
-                    window.showToast('暱稱不能為空');
+                    renderDashboard();
+                    window.showToast('✅ 名稱更新成功');
                 }
+            });
+
+            document.querySelectorAll('.close-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modal = btn.closest('.modal-overlay');
+                    if (modal) modal.classList.add('hidden');
+                });
             });
 
             document.getElementById('set-as-start-button')?.addEventListener('click', () => {
@@ -600,44 +597,76 @@
                 if (city) { selectedEnd = { coords: { lat: city.lat, lng: city.lng }, name: city.name }; window.showToast(`已將 ${city.name} 設為終點`); updateTripDisplay(); }
             });
 
-            document.getElementById('submit-activity-log')?.addEventListener('click', () => {
-                const code = document.getElementById('verification-code-input')?.value;
-                if (!code) return window.showToast('請輸入通關代碼');
-                window.addLog(`完成實體任務驗證 (代碼: ${code})`);
-                state.totalScore += 50; saveData();
-                window.showToast('✅ 驗證成功！獲得 50 積分，即將返回首頁...');
-                document.getElementById('verification-code-input').value = '';
-                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-            });
+            // 降級重試路徑演算演算法 + 權限錯誤友善提示
+            document.getElementById('preview-trip-button')?.addEventListener('click', () => {
+                const status = document.getElementById('trip-calculation-status');
+                const confirmBtn = document.getElementById('confirm-trip-button');
+                
+                if(confirmBtn) confirmBtn.classList.add('hidden'); 
+                pendingTrip.isValid = false;
+                
+                if(!selectedStart || !selectedEnd) return window.showToast('請選擇起點與終點');
+                if(!selectedStart.coords || !selectedEnd.coords) return window.showToast('所選地點缺乏座標資訊，無法計算');
+                if(!window.directionsService) { if(status) status.textContent = "地圖 API 載入中，請稍後..."; return; }
+                
+                if(status) status.textContent = "路線計算中，請稍候..."; 
+                if(window.fallbackPolyline) window.fallbackPolyline.setMap(null); 
+                window.directionsRenderer.setMap(window.mapInstance);
 
-            document.getElementById('log-action-button')?.addEventListener('click', () => {
-                const logInput = document.getElementById('sustainable-action-log');
-                if (!logInput || !logInput.value.trim()) return window.showToast('請輸入心得內容');
-                window.addLog(`記錄心得: ${logInput.value.substring(0, 15)}...`);
-                state.totalScore += 10; saveData();
-                window.showToast('✅ 心得已記錄！獲得 10 積分，即將返回首頁...');
-                logInput.value = '';
-                setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-            });
+                const executeRouting = (targetMode) => {
+                    window.directionsService.route({ 
+                        origin: selectedStart.coords, 
+                        destination: selectedEnd.coords, 
+                        travelMode: google.maps.TravelMode[targetMode] || 'DRIVING' 
+                    }, (result, stat) => {
+                        if (stat === 'OK') {
+                            window.directionsRenderer.setDirections(result); 
+                            let distMeters = result.routes[0].legs[0].distance.value;
+                            const distKm = distMeters / 1000; 
+                            const reduction = Math.round(distKm * (tData.reduction / 10)); 
+                            pendingTrip = { distMeters, distKm, reduction, isValid: true };
+                            
+                            let modeIcon = targetMode === 'DRIVING' && tData.mode !== 'DRIVING' ? '<i class="fas fa-car text-gray-400 mr-1" title="因無大眾運輸路徑，降級為道路網計算"></i>' : '';
+                            if(status) status.innerHTML = `${modeIcon}路網距離 ${distKm.toFixed(1)}km | 預估減碳: <span class="text-mori-forest">${reduction}g</span>`;
+                            
+                            if(confirmBtn) confirmBtn.classList.remove('hidden'); 
+                            document.getElementById('preview-trip-button')?.classList.add('hidden');
+                            
+                        } else if (stat === 'REQUEST_DENIED') {
+                            console.warn(`[API 權限錯誤] Directions API 未啟用或 API Key 遭限制。`);
+                            window.showToast('⚠️ 系統提示：地圖路徑 API 未授權，已自動切換為直線測距。');
+                            fallbackToStraightLine();
+                        } else if (targetMode !== 'DRIVING') {
+                            console.log(`[路由重試] ${targetMode} 失敗 (${stat})，自動降級為 DRIVING 重新計算...`);
+                            if(status) status.textContent = "切換道路網重新計算中...";
+                            executeRouting('DRIVING');
+                            
+                        } else {
+                            console.log(`[路由失敗] DRIVING 失敗 (${stat})，啟動直線備案。`);
+                            fallbackToStraightLine();
+                        }
+                    });
+                };
 
-            document.querySelectorAll('.short-dist-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const km = parseFloat(e.target.dataset.km);
-                    const reduction = Math.round(km * (transportData[state.currentTransport].reduction || 0));
-                    document.getElementById('short-dist-result').textContent = `預估減碳: ${reduction}g`;
-                    pendingTrip = { distKm: km, reduction: reduction, isValid: true };
-                    document.getElementById('confirm-short-dist-btn').classList.remove('hidden');
-                });
-            });
+                const fallbackToStraightLine = () => {
+                    window.directionsRenderer.setMap(null); 
+                            
+                    const p1 = new google.maps.LatLng(selectedStart.coords.lat, selectedStart.coords.lng); 
+                    const p2 = new google.maps.LatLng(selectedEnd.coords.lat, selectedEnd.coords.lng);
+                    const distMeters = google.maps.geometry.spherical.computeDistanceBetween(p1, p2); 
+                    const distKm = distMeters / 1000; 
+                    const reduction = Math.round(distKm * (tData.reduction / 10)); 
+                    
+                    window.fallbackPolyline = new google.maps.Polyline({ path: [p1, p2], geodesic: true, strokeColor: '#4A6741', strokeOpacity: 0.8, strokeWeight: 4, map: window.mapInstance });
+                    const bounds = new google.maps.LatLngBounds(); bounds.extend(p1); bounds.extend(p2); window.mapInstance.fitBounds(bounds);
+                    
+                    pendingTrip = { distMeters, distKm, reduction, isValid: true };
+                    if(status) status.innerHTML = `<i class="fas fa-magic text-yellow-500 mr-1"></i>(直線估算) ${distKm.toFixed(1)}km | 減碳 <span class="text-mori-forest">${reduction}g</span>`;
+                    if(confirmBtn) confirmBtn.classList.remove('hidden'); 
+                    document.getElementById('preview-trip-button')?.classList.add('hidden');
+                };
 
-            document.getElementById('confirm-short-dist-btn')?.addEventListener('click', () => {
-                if(pendingTrip.isValid) { 
-                    const codeInput = document.getElementById('reward-verify-code');
-                    if (codeInput) codeInput.value = '';
-                    window.openModal('reward-verification-modal'); 
-                    document.getElementById('confirm-short-dist-btn').classList.add('hidden'); 
-                    document.getElementById('short-dist-result').textContent = ''; 
-                }
+                executeRouting(tData.mode);
             });
 
             document.getElementById('confirm-trip-button')?.addEventListener('click', () => {
@@ -651,89 +680,6 @@
             document.getElementById('reward-verify-tenth-btn')?.addEventListener('click', () => {
                 window.closeModal('reward-verification-modal'); processTripCompletion(pendingTrip.distKm, Math.round(pendingTrip.reduction / 10)); 
             });
-
-            // Directions API 真實道路計算與預覽
-            document.getElementById('preview-trip-button')?.addEventListener('click', () => {
-                const status = document.getElementById('trip-calculation-status'), confirmBtn = document.getElementById('confirm-trip-button');
-                if(confirmBtn) confirmBtn.classList.add('hidden'); pendingTrip.isValid = false;
-                if(!selectedStart || !selectedEnd) return window.showToast('請選擇起點與終點');
-                if(!selectedStart.coords || !selectedEnd.coords) return window.showToast('所選地點缺乏座標資訊，無法計算');
-                if(!window.directionsService) { if(status) status.textContent = "地圖 API 載入中，請稍後..."; return; }
-                if(status) status.textContent = "計算中..."; const tData = transportData[state.currentTransport];
-                if(window.fallbackPolyline) window.fallbackPolyline.setMap(null); window.directionsRenderer.setMap(window.mapInstance);
-
-                window.directionsService.route({ origin: selectedStart.coords, destination: selectedEnd.coords, travelMode: google.maps.TravelMode[tData.mode] || 'DRIVING' }, (result, stat) => {
-                    if(stat === 'OK') {
-                        window.directionsRenderer.setDirections(result); let distMeters = result.routes[0].legs[0].distance.value;
-                        const distKm = distMeters / 1000; const reduction = Math.round(distKm * (tData.reduction / 10)); 
-                        pendingTrip = { distMeters, distKm, reduction, isValid: true };
-                        if(status) status.innerHTML = `路網距離 ${distKm.toFixed(1)}km | 預估減碳: <span class="text-mori-forest">${reduction}g</span>`;
-                        if(confirmBtn) confirmBtn.classList.remove('hidden'); document.getElementById('preview-trip-button')?.classList.add('hidden');
-                    } else {
-                        window.directionsRenderer.setMap(null); const p1 = new google.maps.LatLng(selectedStart.coords.lat, selectedStart.coords.lng); const p2 = new google.maps.LatLng(selectedEnd.coords.lat, selectedEnd.coords.lng);
-                        const distMeters = google.maps.geometry.spherical.computeDistanceBetween(p1, p2); const distKm = distMeters / 1000; const reduction = Math.round(distKm * (tData.reduction / 10)); 
-                        window.fallbackPolyline = new google.maps.Polyline({ path: [p1, p2], geodesic: true, strokeColor: '#4A6741', strokeOpacity: 0.8, strokeWeight: 4, map: window.mapInstance });
-                        const bounds = new google.maps.LatLngBounds(); bounds.extend(p1); bounds.extend(p2); window.mapInstance.fitBounds(bounds);
-                        pendingTrip = { distMeters, distKm, reduction, isValid: true };
-                        if(status) status.innerHTML = `<i class="fas fa-magic text-yellow-500 mr-1"></i>(直線估算) ${distKm.toFixed(1)}km | 減碳 <span class="text-mori-forest">${reduction}g</span>`;
-                        if(confirmBtn) confirmBtn.classList.remove('hidden'); document.getElementById('preview-trip-button')?.classList.add('hidden');
-                    }
-                });
-            });
-        }
-
-        // 地圖渲染
-        function renderMap() {
-            if (!window.google || mapInitialized) return;
-            const mapEl = document.getElementById('map');
-            if(!mapEl || mapEl.offsetWidth === 0) { setTimeout(renderMap, 100); return; }
-            try {
-                window.mapInstance = new google.maps.Map(mapEl, { center: { lat: 23.810, lng: 120.850 }, zoom: 13, mapTypeControl: false, streetViewControl: false });
-                window.directionsService = new google.maps.DirectionsService(); 
-                window.directionsRenderer = new google.maps.DirectionsRenderer({ map: window.mapInstance });
-                
-                pois.forEach(poi => {
-                    let markerOpts = { position: poi.coords, map: window.mapInstance, title: poi.name, label: { text: poi.icon, fontSize: '20px' } };
-                    if (poi.categoryId === 'map_only') { markerOpts.icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; delete markerOpts.label; } 
-                    else if (poi.categoryId === 'map_only_blue') { markerOpts.icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'; delete markerOpts.label; }
-                    const marker = new google.maps.Marker(markerOpts); marker.addListener('click', () => window.openPoi(poi));
-                });
-                document.getElementById('map-overlay')?.classList.add('hidden'); mapInitialized = true;
-            } catch(e) { console.error("地圖錯誤:", e); document.getElementById('map-loading-text').textContent = "地圖載入失敗，請重整網頁"; }
-        }
-
-        const loadGoogleMaps = () => {
-            if(document.querySelector('script[src*="maps.googleapis.com"]')) return;
-            const script = document.createElement('script'); 
-            const encodedKey = 'QUl6YVN5QWpOdjQ5QlBhX1gyU1N3aHR5SFR1eWZqTUFieEVHVS04';
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${atob(encodedKey)}&libraries=geometry,routes&callback=initMap`; 
-            script.async = true; script.defer = true; 
-            script.onerror = () => { document.getElementById('map-loading-text').textContent = '地圖服務連線異常，請檢查網路'; }; 
-            document.head.appendChild(script);
-        };
-        window.initMap = function() { window.mapsApiReady = true; renderMap(); };
-
-        // 系統啟動
-        document.addEventListener('DOMContentLoaded', () => {
-            loadLocalData();
-            
-            if (!state.currentTransport || !transportData[state.currentTransport]) {
-                window.showToast('尚未選擇交通方式，預設為「單人自駕」以供瀏覽。');
-                state.currentTransport = 'drive_alone'; 
-                saveData(); 
-            }
-            
-            const tData = transportData[state.currentTransport];
-            const transportDisplay = document.getElementById('current-transport-display-mission');
-            if(transportDisplay) {
-                transportDisplay.innerHTML = `<i class="fas fa-info-circle mr-1.5 opacity-80"></i>交通方式: ${tData.name}`;
-            }
-
-            renderPoiList();
-            renderCityOptions();
-            bindAccordions();
-            bindEvents();
-            loadGoogleMaps();
 
             try {
                 const app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app);
