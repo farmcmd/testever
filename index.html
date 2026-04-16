@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>探探里山 - 永續旅遊 ESG 平台</title>
     
-    <!-- 新增：企業級效能優化 (Preconnect 加速通道) -->
-    <!-- 預先打通 Google Fonts、Firebase 與 Google 翻譯的底層連線，減少載入延遲 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://translate.google.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 
-    <!-- 外部資源載入 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 🚀 UI/UX 修復：補回遺失的探探里山專屬色彩與字型設定 -->
     <script>
         tailwind.config = {
             theme: {
@@ -32,8 +28,6 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- PDF 與長圖匯出工具 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -53,7 +47,6 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .hidden { display: none !important; }
         
-        /* 新增：名單展開漸顯動畫 */
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-down { animation: fadeInDown 0.3s ease-out forwards; }
         
@@ -64,7 +57,6 @@
         .rating-btn.active { background-color: #4A6741; color: white; border-color: #4A6741; }
         .rating-btn-gov.active { background-color: #2563EB; color: white; border-color: #2563EB; }
 
-        /* 浮動提示 Toast */
         #custom-toast {
             position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%) translateY(20px);
             background-color: rgba(31, 41, 55, 0.95); color: white; padding: 0.8rem 1.5rem; border-radius: 9999px;
@@ -74,13 +66,11 @@
         }
         #custom-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* 隱藏 Google 預設翻譯小工具與頂部橫幅 */
         .goog-te-banner-frame.skiptranslate, #google_translate_element { display: none !important; }
         body { top: 0px !important; }
         .goog-logo-link { display: none !important; }
         .goog-te-gadget { color: transparent !important; font-size: 0 !important; }
 
-        /* 區域滾動條美化 */
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
@@ -89,10 +79,8 @@
 </head>
 <body class="font-sans antialiased">
 
-    <!-- 防呆提示 Toast -->
     <div id="custom-toast"></div>
 
-    <!-- 系統即時廣播列 -->
     <div id="system-broadcast-bar" class="hidden w-full bg-yellow-500 text-white px-4 py-2.5 text-sm font-bold flex items-center justify-center shadow-md relative z-[100]">
         <i class="fas fa-bullhorn mr-2 animate-bounce"></i>
         <span id="system-broadcast-text" class="tracking-wide">載入中...</span>
@@ -100,7 +88,6 @@
     </div>
 
     <header class="bg-gradient-to-b from-mori-forest to-mori-sage text-white text-center shadow-lg relative min-h-[300px] flex flex-col">
-        <!-- 頂部工具列 -->
         <div class="w-full flex justify-end items-center gap-2 px-3 pt-3 md:px-5 md:pt-4 relative z-[100]">
             <button id="install-pwa-btn" class="flex items-center gap-1.5 bg-black/30 hover:bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-sm transition-all group">
                 <i class="fas fa-plus-square text-white/90 text-sm group-hover:scale-110 transition-transform"></i>
@@ -128,7 +115,6 @@
                     <option value="es">Español</option>
                 </select>
             </div>
-            <!-- 終極修復：1px 離屏渲染魔術，保證 Google 引擎判定在畫面內而順利產出選單，且不破壞版面 -->
             <div id="google_translate_element" style="position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; z-index: -1;"></div>
         </div>
 
@@ -140,7 +126,6 @@
                 <p class="mt-2 text-[10px] md:text-xs font-light tracking-wider opacity-90">~探索里山的生活方式，學習低碳永續~享受簡單、自然、美好</p>
             </div>
 
-            <!-- 旅者身分輸入區塊 -->
             <div class="mt-4 mb-2 flex justify-center items-center gap-2 text-sm md:text-base text-white bg-black/20 py-2.5 px-6 rounded-full backdrop-blur-md inline-flex shadow-inner border border-white/10 transition-all hover:bg-black/30">
                 <i class="fas fa-user-circle text-white/80 mr-1 text-lg"></i>
                 <span class="font-medium tracking-wide">旅者: </span>
@@ -150,7 +135,6 @@
                 <span id="player-code" class="font-mono font-bold text-yellow-300 tracking-widest text-lg drop-shadow-sm">...</span>
             </div>
 
-            <!-- 最新活動訊息及報名平台入口 -->
             <div class="mt-4 animate-fade-in-down" style="animation-delay: 0.1s;">
                 <a href="https://farmcmd.github.io/ESGT/events.html" target="_blank" class="px-6 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all text-sm flex items-center group animate-pulse inline-flex">
                     <i class="fas fa-ticket-alt mr-2 group-hover:scale-110 transition-transform"></i> 前往最新活動與報名資訊
@@ -160,9 +144,7 @@
     </header>
 
     <main class="container mx-auto p-4 md:p-8 -mt-8 relative z-20">
-        <!-- 首頁區塊 -->
         <section id="homepage" class="page-section block">
-            
             <!-- 全網減碳區塊 -->
             <div class="bg-blue-50/50 p-6 rounded-2xl shadow-sm mb-8 border border-blue-100 text-center">
                  <h3 class="text-lg font-semibold text-blue-800 mb-3">探探里山旅者共同累積減碳量</h3>
@@ -172,7 +154,6 @@
                          <span id="network-unit" class="absolute left-full ml-2 text-lg md:text-xl font-bold text-black tracking-normal bottom-[2px] md:bottom-1 whitespace-nowrap">g/CO2e</span>
                      </div>
                  </div>
-                 
                  <div class="mt-6 flex flex-col items-center justify-center animate-pulse">
                      <div class="flex flex-row items-center justify-center gap-4">
                          <span class="text-4xl md:text-5xl filter drop-shadow-md">🌳</span>
@@ -188,7 +169,7 @@
                  </div>
             </div>
 
-            <!-- 歸戶提示與入口按鈕區塊 -->
+            <!-- 歸戶提示與入口 -->
             <div class="mb-8 w-full max-w-4xl mx-auto bg-yellow-50/90 p-5 md:p-6 rounded-2xl border-2 border-yellow-300 shadow-md">
                 <div class="text-center mb-5 px-2">
                     <p class="text-sm md:text-base text-gray-800 font-bold tracking-wide flex items-start md:items-center justify-center leading-relaxed text-left md:text-center">
@@ -196,7 +177,6 @@
                         <span>將旅遊獲得的永續數據，貢獻到所屬公司儀表板或參加的計畫活動儀表板內，歸戶完成，<span class="text-mori-forest font-black">系統會自動為您下載永續旅遊證書。</span></span>
                     </p>
                 </div>
-
                 <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
                     <div class="relative inline-block w-full sm:w-auto">
                         <span id="badge-enterprise" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[12px] font-black px-2 py-0.5 rounded-full shadow-sm border border-white z-10 text-center animate-bounce tracking-wider">NEW</span>
@@ -218,9 +198,7 @@
                 <div class="text-center mb-6">
                     <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-mori-forest flex flex-wrap items-center justify-center gap-2 mb-3">
                         <span><i class="fas fa-hand-point-down mr-2 text-yellow-500 animate-bounce"></i> 請選擇一種交通方式，前往永續任務頁面</span>
-                        <button onclick="document.getElementById('transport-info-text').classList.toggle('hidden')" class="w-7 h-7 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600 hover:scale-110 transition-all duration-300 flex items-center justify-center text-sm shadow-md outline-none relative -top-0.5 animate-pulse">
-                            <i class="fas fa-question font-black"></i>
-                        </button>
+                        <button onclick="document.getElementById('transport-info-text').classList.toggle('hidden')" class="w-7 h-7 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600 hover:scale-110 transition-all duration-300 flex items-center justify-center text-sm shadow-md outline-none relative -top-0.5 animate-pulse"><i class="fas fa-question font-black"></i></button>
                     </h2>
                     
                     <div id="transport-info-text" class="hidden max-w-3xl mx-auto bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner text-sm text-gray-600 leading-relaxed text-left md:text-center mt-2 relative transition-all">
@@ -229,7 +207,6 @@
                             <p><i class="fas fa-info-circle text-mori-sage mr-1"></i> 此處碳里程計算以「學習體驗」為目的，用概算的方法讓使用者瞭解低碳交通方式。期能讓使用者學習後直覺應用於日常生活。</p>
                             <p class="text-[12px] bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-600 text-left"><span class="font-black text-mori-forest"><i class="fas fa-bullseye mr-1"></i>📌 邊界界定：</span>本系統減碳基準線 (Baseline) 設定為『單人駕駛燃油小客車』，計算結果供民眾學習與企業範疇三 (員工通勤/差旅) 減碳成效參考。</p>
                         </div>
-
                         <div class="bg-emerald-50/80 p-3 md:p-4 rounded-xl border border-emerald-200 shadow-sm transition-all text-left mt-2">
                             <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
                                 <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -257,58 +234,34 @@
 
             <!-- 我的永續成就 -->
             <div class="bg-white p-5 md:p-6 rounded-2xl shadow-md mb-8 border border-mori-light">
-                <div class="text-center mb-4">
-                    <h3 class="text-xl md:text-2xl font-semibold text-mori-forest">我的探探里山永續成就</h3>
-                </div>
+                <div class="text-center mb-4"><h3 class="text-xl md:text-2xl font-semibold text-mori-forest">我的探探里山永續成就</h3></div>
                 <div class="flex justify-center gap-6 md:gap-12 mb-5">
                     <div class="flex flex-col items-center">
                         <div class="relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
-                            <svg viewBox="0 0 36 36" class="absolute inset-0 circular-chart text-mori-sage w-full h-full">
-                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="circle" id="circle-mileage" stroke-dasharray="0, 100" stroke="#8B9D77" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div class="relative z-10 flex flex-col items-center mt-1">
-                                <span class="text-xl md:text-2xl font-bold text-mori-forest leading-none" id="display-mileage">0</span>
-                                <span class="text-[10px] md:text-xs text-mori-sage font-bold mt-0.5">km</span>
-                            </div>
+                            <svg viewBox="0 0 36 36" class="absolute inset-0 circular-chart text-mori-sage w-full h-full"><path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><path class="circle" id="circle-mileage" stroke-dasharray="0, 100" stroke="#8B9D77" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /></svg>
+                            <div class="relative z-10 flex flex-col items-center mt-1"><span class="text-xl md:text-2xl font-bold text-mori-forest leading-none" id="display-mileage">0</span><span class="text-[10px] md:text-xs text-mori-sage font-bold mt-0.5">km</span></div>
                         </div>
                         <p class="mt-2 text-xs md:text-sm font-medium text-gray-600">累計里程</p>
                     </div>
                     <div class="flex flex-col items-center">
                         <div class="relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
-                            <svg viewBox="0 0 36 36" class="absolute inset-0 circular-chart text-mori-forest w-full h-full">
-                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="circle" id="circle-carbon" stroke-dasharray="0, 100" stroke="#4A6741" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div class="relative z-10 flex flex-col items-center mt-1">
-                                <span class="text-xl md:text-2xl font-bold text-mori-forest leading-none" id="display-carbon">0</span>
-                                <span class="text-[10px] md:text-xs text-mori-sage font-bold mt-0.5">g</span>
-                            </div>
+                            <svg viewBox="0 0 36 36" class="absolute inset-0 circular-chart text-mori-forest w-full h-full"><path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><path class="circle" id="circle-carbon" stroke-dasharray="0, 100" stroke="#4A6741" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /></svg>
+                            <div class="relative z-10 flex flex-col items-center mt-1"><span class="text-xl md:text-2xl font-bold text-mori-forest leading-none" id="display-carbon">0</span><span class="text-[10px] md:text-xs text-mori-sage font-bold mt-0.5">g</span></div>
                         </div>
                         <p class="mt-2 text-xs md:text-sm font-medium text-gray-600">減碳總量</p>
                     </div>
                     <div class="flex flex-col items-center">
                         <div class="relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
-                            <svg viewBox="0 0 36 36" class="absolute inset-0 circular-chart text-mori-wood w-full h-full">
-                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path class="circle" id="circle-score" stroke-dasharray="0, 100" stroke="#D2B48C" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div class="relative z-10 flex flex-col items-center mt-1">
-                                <span class="text-xl md:text-2xl font-bold text-mori-wood leading-none" id="display-score">0</span>
-                                <span class="text-[10px] md:text-xs text-mori-wood font-bold mt-0.5">pts</span>
-                            </div>
+                            <svg viewBox="0 0 36 36" class="absolute inset-0 circular-chart text-mori-wood w-full h-full"><path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /><path class="circle" id="circle-score" stroke-dasharray="0, 100" stroke="#D2B48C" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /></svg>
+                            <div class="relative z-10 flex flex-col items-center mt-1"><span class="text-xl md:text-2xl font-bold text-mori-wood leading-none" id="display-score">0</span><span class="text-[10px] md:text-xs text-mori-wood font-bold mt-0.5">pts</span></div>
                         </div>
                         <p class="mt-2 text-xs md:text-sm font-medium text-gray-600">永續積分</p>
                     </div>
                 </div>
                 <div class="mt-2 text-center flex flex-col items-center justify-center gap-2">
                     <div class="flex flex-wrap justify-center gap-3">
-                        <button id="download-cert-btn" class="px-5 py-2 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-full shadow hover:shadow-lg transition text-sm font-bold flex items-center justify-center">
-                            <i class="fas fa-award mr-2"></i> 下載永續旅遊證書
-                        </button>
-                        <button onclick="window.showToast('🎁 目前尚無進行中的活動，敬請期待！')" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded-full shadow transition duration-300 inline-flex items-center justify-center group">
-                            <i class="fas fa-gift mr-2 text-yellow-200 group-hover:animate-bounce"></i> 不定期競賽/獎勵活動
-                        </button>
+                        <button id="download-cert-btn" class="px-5 py-2 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-full shadow hover:shadow-lg transition text-sm font-bold flex items-center justify-center"><i class="fas fa-award mr-2"></i> 下載永續旅遊證書</button>
+                        <button onclick="window.showToast('🎁 目前尚無進行中的活動，敬請期待！')" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded-full shadow transition duration-300 inline-flex items-center justify-center group"><i class="fas fa-gift mr-2 text-yellow-200 group-hover:animate-bounce"></i> 不定期競賽/獎勵活動</button>
                     </div>
                 </div>
             </div>
@@ -317,50 +270,25 @@
             <div class="bg-[#F0F7F4] p-6 rounded-2xl shadow-inner mb-8 border border-mori-light relative overflow-hidden">
                 <div class="absolute -right-10 -top-10 text-[150px] text-mori-sage opacity-10 pointer-events-none"><i class="fas fa-leaf"></i></div>
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 relative z-10 gap-3">
-                     <h3 class="text-xl font-bold text-mori-dark flex items-center gap-2">
-                         <span><i class="fas fa-shopping-basket text-mori-forest"></i> 綠色消費評鑑</span>
-                         <button onclick="document.getElementById('green-info-text').classList.toggle('hidden')" class="w-6 h-6 rounded-full bg-mori-sage border-2 border-white text-white hover:bg-mori-forest hover:scale-110 transition-all duration-300 flex items-center justify-center text-xs shadow-sm outline-none">
-                             <i class="fas fa-question font-black"></i>
-                         </button>
-                     </h3>
-                     <button onclick="window.openModal('green-consumption-modal')" class="w-full md:w-auto px-6 py-2 bg-mori-forest text-white text-sm font-bold rounded-full shadow hover:bg-mori-dark transition">
-                        <i class="fas fa-calculator mr-2"></i>開啟評鑑計算機
-                     </button>
+                     <h3 class="text-xl font-bold text-mori-dark flex items-center gap-2"><span><i class="fas fa-shopping-basket text-mori-forest"></i> 綠色消費評鑑</span><button onclick="document.getElementById('green-info-text').classList.toggle('hidden')" class="w-6 h-6 rounded-full bg-mori-sage border-2 border-white text-white hover:bg-mori-forest hover:scale-110 transition-all duration-300 flex items-center justify-center text-xs shadow-sm outline-none"><i class="fas fa-question font-black"></i></button></h3>
+                     <button onclick="window.openModal('green-consumption-modal')" class="w-full md:w-auto px-6 py-2 bg-mori-forest text-white text-sm font-bold rounded-full shadow hover:bg-mori-dark transition"><i class="fas fa-calculator mr-2"></i>開啟評鑑計算機</button>
                 </div>
-                
                 <div id="green-info-text" class="hidden bg-white/90 border border-mori-sage p-4 rounded-xl mb-6 relative z-10 shadow-inner transition-all">
                     <button onclick="document.getElementById('green-info-text').classList.add('hidden')" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-lg w-6 h-6 flex items-center justify-center"><i class="fas fa-times"></i></button>
-                    <p class="text-[12px] md:text-sm text-mori-dark leading-relaxed font-bold pr-6">
-                        <i class="fas fa-info-circle text-mori-sage mr-1"></i>
-                        經農業部、環境部或金融監督管理委員會認定ESG評鑑指標行動之農產及商品；或 <span class="text-green-600 font-black">SROI (✓)</span> 具社會責任價值計算之責任農場消費；紀錄經單位認定可歸戶於永續儀表版，提供自評與利用。
-                    </p>
+                    <p class="text-[12px] md:text-sm text-mori-dark leading-relaxed font-bold pr-6"><i class="fas fa-info-circle text-mori-sage mr-1"></i>經農業部、環境部或金融監督管理委員會認定ESG評鑑指標行動之農產及商品；或 <span class="text-green-600 font-black">SROI (✓)</span> 具社會責任價值計算之責任農場消費；紀錄經單位認定可歸戶於永續儀表版，提供自評與利用。</p>
                 </div>
-                
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10">
-                    <div class="p-4 bg-white rounded-xl shadow-sm border border-mori-light text-center">
-                        <p class="text-[15px] font-black text-gray-700 tracking-wide mb-1">個人綠色採購</p>
-                        <p id="display-green-procurement" class="text-xl font-black text-mori-forest">$0</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-xl shadow-sm border border-mori-light text-center">
-                        <p class="text-[15px] font-black text-gray-700 tracking-wide mb-1">SROI 社會價值</p>
-                        <p id="display-sroi-procurement" class="text-xl font-black text-mori-wood">$0</p>
-                    </div>
-                    <div class="p-4 bg-gradient-to-br from-mori-sage to-mori-forest rounded-xl shadow-md text-white text-center flex flex-col justify-center">
-                        <p class="text-[14px] font-black tracking-wide leading-tight opacity-95 mb-1">探探里山旅者累計<br>綠色消費總額</p>
-                        <p id="display-grand-total-green" class="text-2xl font-black mt-0.5">...</p>
-                    </div>
+                    <div class="p-4 bg-white rounded-xl shadow-sm border border-mori-light text-center"><p class="text-[15px] font-black text-gray-700 tracking-wide mb-1">個人綠色採購</p><p id="display-green-procurement" class="text-xl font-black text-mori-forest">$0</p></div>
+                    <div class="p-4 bg-white rounded-xl shadow-sm border border-mori-light text-center"><p class="text-[15px] font-black text-gray-700 tracking-wide mb-1">SROI 社會價值</p><p id="display-sroi-procurement" class="text-xl font-black text-mori-wood">$0</p></div>
+                    <div class="p-4 bg-gradient-to-br from-mori-sage to-mori-forest rounded-xl shadow-md text-white text-center flex flex-col justify-center"><p class="text-[14px] font-black tracking-wide leading-tight opacity-95 mb-1">探探里山旅者累計<br>綠色消費總額</p><p id="display-grand-total-green" class="text-2xl font-black mt-0.5">...</p></div>
                 </div>
             </div>
 
              <!-- 底部資訊 & 匯出匯入 -->
              <div class="mt-8 mb-24 bg-gray-50 rounded-2xl p-6 text-center shadow-inner">
                  <div class="flex flex-wrap justify-center gap-3 mb-6">
-                     <button id="export-data-button" class="px-6 py-3 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-lg hover:shadow-lg transition text-sm font-bold shadow flex items-center">
-                         <i class="fas fa-file-export mr-2"></i> 匯出個人進度檔
-                     </button>
-                     <button id="import-data-btn-trigger" class="px-6 py-3 bg-white border-2 border-mori-sage text-mori-forest rounded-lg hover:bg-mori-light transition text-sm font-bold shadow flex items-center">
-                         <i class="fas fa-file-import mr-2"></i> 匯入進度檔
-                     </button>
+                     <button id="export-data-button" class="px-6 py-3 bg-gradient-to-r from-mori-sage to-mori-forest text-white rounded-lg hover:shadow-lg transition text-sm font-bold shadow flex items-center"><i class="fas fa-file-export mr-2"></i> 匯出個人進度檔</button>
+                     <button id="import-data-btn-trigger" class="px-6 py-3 bg-white border-2 border-mori-sage text-mori-forest rounded-lg hover:bg-mori-light transition text-sm font-bold shadow flex items-center"><i class="fas fa-file-import mr-2"></i> 匯入進度檔</button>
                      <input type="file" id="import-data-input" accept=".json" class="hidden">
                  </div>
                  <div class="text-sm text-gray-600 space-y-6 text-left md:text-center max-w-4xl mx-auto">
@@ -372,9 +300,7 @@
                                  <li>社團法人南投縣青年農民永續發展協會</li>
                                  <li>水里里山基地 <span class="text-mori-sage font-bold ml-1">#里山餐桌團隊</span></li>
                              </ul>
-                             <button onclick="window.openModal('training-cert-modal')" class="inline-flex items-center px-4 py-2 bg-white border border-mori-sage text-mori-forest text-xs font-bold rounded-lg shadow-sm hover:bg-mori-sage hover:text-white transition-all group">
-                                 <i class="fas fa-user-shield mr-1.5 text-blue-500 group-hover:scale-110 transition-transform"></i> 網站操作員認證 及 儀表板管理
-                             </button>
+                             <button onclick="window.openModal('training-cert-modal')" class="inline-flex items-center px-4 py-2 bg-white border border-mori-sage text-mori-forest text-xs font-bold rounded-lg shadow-sm hover:bg-mori-sage hover:text-white transition-all group"><i class="fas fa-user-shield mr-1.5 text-blue-500 group-hover:scale-110 transition-transform"></i> 網站操作員認證 及 儀表板管理</button>
                          </div>
                          <div class="md:text-left">
                              <h4 class="font-black text-blue-600 mb-4 text-[21px] tracking-wide">教學與計畫支持網絡：</h4>
@@ -398,7 +324,6 @@
                  </div>
              </div>
 
-             <!-- 首頁專屬浮動小幫手 -->
              <button onclick="window.openModal('chat-bot-modal')" class="fixed bottom-8 right-6 md:bottom-12 md:right-10 z-[90] flex flex-col items-center group transition-transform hover:scale-110">
                  <div class="bg-white text-blue-500 rounded-full shadow-[0_10px_25px_rgba(59,130,246,0.4)] border-4 border-blue-100 flex items-center justify-center w-14 h-14 text-3xl relative animate-bounce">🤖</div>
                  <span class="mt-2 bg-gray-800/70 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm backdrop-blur-sm tracking-wide">小幫手</span>
@@ -414,9 +339,7 @@
     <div id="enterprise-modal" class="modal-overlay hidden">
         <div class="modal-content max-w-6xl p-6 bg-mori-base shadow-2xl rounded-2xl border-t-4 border-mori-forest">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-2xl"></i></button>
-            <div class="text-center mb-6 mt-2">
-                <h3 class="text-3xl font-bold text-mori-dark mb-3"><i class="fas fa-building mr-3 text-mori-forest"></i>企業永續儀表板</h3>
-            </div>
+            <div class="text-center mb-6 mt-2"><h3 class="text-3xl font-bold text-mori-dark mb-3"><i class="fas fa-building mr-3 text-mori-forest"></i>企業永續儀表板</h3></div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <div class="lg:col-span-2 flex flex-col gap-6">
                     <div class="bg-white p-5 rounded-xl shadow border-2 border-mori-sage">
@@ -502,9 +425,7 @@
             <div class="absolute top-4 left-4 md:left-6 bg-blue-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-widest z-20 flex items-center border border-blue-800/20"><i class="fas fa-hashtag mr-1 opacity-70"></i>OKR-board</div>
 
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-2xl"></i></button>
-            <div class="text-center mb-6 mt-8 md:mt-2 flex flex-col items-center">
-                <h3 class="text-3xl font-bold text-blue-900 mb-2"><i class="fas fa-landmark mr-3 text-blue-600"></i>永續政府儀表板</h3>
-            </div>
+            <div class="text-center mb-6 mt-8 md:mt-2 flex flex-col items-center"><h3 class="text-3xl font-bold text-blue-900 mb-2"><i class="fas fa-landmark mr-3 text-blue-600"></i>永續政府儀表板</h3></div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <div class="lg:col-span-3 flex flex-col gap-6">
                     <div class="bg-white p-5 rounded-xl shadow border-2 border-blue-400">
@@ -535,13 +456,11 @@
                         <div class="space-y-3 mb-3">
                             <input type="text" id="host-proj-name" class="w-full p-2 border rounded-lg text-sm" placeholder="輸入計畫名稱 (必填)">
                             <input type="text" id="host-proj-event" class="w-full p-2 border rounded-lg text-sm" placeholder="輸入活動名稱 (必填)">
-                            
                             <div class="flex items-center gap-2">
                                 <label class="text-[11px] text-gray-500 font-bold whitespace-nowrap ml-1 w-14">執行日期</label>
                                 <input type="date" id="host-proj-date" class="w-full p-2 border rounded-lg text-sm text-gray-600 bg-white">
                             </div>
                             <input type="text" id="host-proj-desc" class="w-full p-2 border rounded-lg text-sm" placeholder="計畫說明 (選填)">
-                            
                             <input type="text" id="host-proj-supervisor" class="w-full p-2 border rounded-lg text-sm" placeholder="指導單位 (選填)">
                             <input type="text" id="host-proj-organizer" class="w-full p-2 border rounded-lg text-sm" placeholder="主辦單位 (選填)">
                             <input type="text" id="host-proj-executor" class="w-full p-2 border rounded-lg text-sm" placeholder="執行單位 (選填)">
@@ -567,7 +486,6 @@
         <div class="modal-content max-w-2xl p-6 border-t-8 border-mori-wood relative">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
             <h3 class="text-2xl font-bold text-center text-mori-forest mb-4">企業 ESG 行動評鑑</h3>
-            
             <div class="bg-green-50 p-4 rounded-xl border-2 border-green-300 mb-6 shadow-inner relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 text-6xl opacity-20 pointer-events-none">🌳</div>
                 <div class="relative z-10">
@@ -582,17 +500,12 @@
                     </div>
                 </div>
             </div>
-
             <div id="ent-eval-questions-container" class="space-y-8 mt-2"></div>
-            
             <div class="mt-6 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-comment-dots text-mori-sage mr-1.5"></i>寶貴意見與永續心得 (選填)</label>
                 <textarea id="ent-eval-feedback" class="w-full p-3 border border-gray-200 rounded-lg text-sm outline-none bg-gray-50 focus:border-mori-sage focus:bg-white transition-colors" rows="2" placeholder="請分享您對本次行動的建議或心得..."></textarea>
             </div>
-
-            <div class="flex justify-end gap-3 mt-4">
-                <button id="quick-fill-ent-stars-btn" class="text-xs text-mori-forest font-bold mt-2 underline hover:text-mori-dark transition">快速填滿 5 分</button>
-            </div>
+            <div class="flex justify-end gap-3 mt-4"><button id="quick-fill-ent-stars-btn" class="text-xs text-mori-forest font-bold mt-2 underline hover:text-mori-dark transition">快速填滿 5 分</button></div>
             <button id="submit-ent-eval-btn" class="w-full py-3 bg-mori-forest text-white rounded-xl font-bold shadow-lg mt-2 hover:bg-mori-dark transition">確認結算歸戶</button>
         </div>
     </div>
@@ -602,38 +515,23 @@
         <div class="modal-content max-w-2xl p-6 border-t-8 border-blue-400 relative">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
             <h3 class="text-2xl font-bold text-center text-blue-900 mb-2">政府計畫執行活動滿意度評鑑</h3>
-            
             <div class="bg-green-50 p-4 rounded-xl border-2 border-green-300 mb-5 shadow-inner relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 text-6xl opacity-20 pointer-events-none">🌳</div>
                 <div class="relative z-10">
-                    <p class="text-[14px] text-gray-800 font-black mb-4 leading-relaxed tracking-wide">
-                        親愛的參與者您好：<br>
-                        感謝您參與本次計畫活動。為提升未來品質，請針對各項指標給予評分，您的建議將作為後續執行單位之重要參考。此外，本次活動所累計的數據將會歸戶到本計畫的成果卡片中，感謝您為地球環境盡一份心力。
-                    </p>
+                    <p class="text-[14px] text-gray-800 font-black mb-4 leading-relaxed tracking-wide">親愛的參與者您好：<br>感謝您參與本次計畫活動。為提升未來品質，請針對各項指標給予評分，您的建議將作為後續執行單位之重要參考。此外，本次活動所累計的數據將會歸戶到本計畫的成果卡片中，感謝您為地球環境盡一份心力。</p>
                     <div class="border-t border-green-200/80 pt-4">
                         <p class="text-sm font-bold text-green-800 mb-2 flex items-center"><span class="text-xl mr-2">🌳</span>歸戶至：<span id="gov-eval-target-name" class="text-green-700 ml-1"></span></p>
-                        <div class="flex gap-3 text-sm font-bold mb-4">
-                            <span class="bg-white px-2 py-1 rounded text-mori-forest shadow-sm">減碳: <span id="gov-eval-target-carbon">0</span>g</span>
-                            <span class="bg-white px-2 py-1 rounded text-mori-wood shadow-sm">綠消: $<span id="gov-eval-target-green">0</span></span>
-                        </div>
-                        <div class="border-t border-green-200 pt-4">
-                            <p class="text-[14px] text-mori-dark font-black tracking-wide mb-1.5"><i class="fas fa-magic mr-1 text-mori-forest"></i>貼心提醒：確認結算時，系統會自動將您的數據生成「永續旅遊證書」並下載。</p>
-                            <p class="text-[13px] text-gray-800 font-bold tracking-wide">個人累計數據將於結算後自動歸零，並轉移至專案儀表板中。</p>
-                        </div>
+                        <div class="flex gap-3 text-sm font-bold mb-4"><span class="bg-white px-2 py-1 rounded text-mori-forest shadow-sm">減碳: <span id="gov-eval-target-carbon">0</span>g</span><span class="bg-white px-2 py-1 rounded text-mori-wood shadow-sm">綠消: $<span id="gov-eval-target-green">0</span></span></div>
+                        <div class="border-t border-green-200 pt-4"><p class="text-[14px] text-mori-dark font-black tracking-wide mb-1.5"><i class="fas fa-magic mr-1 text-mori-forest"></i>貼心提醒：確認結算時，系統會自動將您的數據生成「永續旅遊證書」並下載。</p><p class="text-[13px] text-gray-800 font-bold tracking-wide">個人累計數據將於結算後自動歸零，並轉移至專案儀表板中。</p></div>
                     </div>
                 </div>
             </div>
-
             <div id="gov-eval-questions-container" class="space-y-6"></div>
-
             <div class="mt-6 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <label class="block text-base font-black text-gray-800 tracking-wide mb-3"><i class="fas fa-comment-dots text-blue-500 mr-1.5"></i>寶貴意見與永續心得 (選填)</label>
                 <textarea id="gov-eval-feedback" class="w-full p-3 border border-gray-200 rounded-lg text-sm outline-none bg-gray-50 focus:border-blue-500 focus:bg-white transition-colors" rows="2" placeholder="請分享您對本次計畫的建議或心得..."></textarea>
             </div>
-
-            <div class="flex justify-end gap-3 mt-4">
-                <button id="quick-fill-gov-stars-btn" class="text-xs text-blue-600 font-bold mt-2 underline hover:text-blue-800 transition">快速填滿 5 分</button>
-            </div>
+            <div class="flex justify-end gap-3 mt-4"><button id="quick-fill-gov-stars-btn" class="text-xs text-blue-600 font-bold mt-2 underline hover:text-blue-800 transition">快速填滿 5 分</button></div>
             <button id="submit-gov-eval-btn" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg mt-2 hover:bg-blue-700 transition">確認結算歸戶</button>
         </div>
     </div>
@@ -643,23 +541,14 @@
         <div class="modal-content max-w-lg p-6 bg-white border-t-4 border-mori-forest">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
             <h3 class="text-2xl font-bold text-mori-forest mb-4 text-center">綠色消費計算機</h3>
-            
             <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 mb-4 shadow-inner">
-                <div class="text-xs text-amber-800 font-bold leading-relaxed flex items-start text-justify mb-1.5">
-                    <i class="fas fa-exclamation-triangle mt-0.5 mr-2 text-amber-500 shrink-0"></i>
-                    <span>請自主辨識農產標章或依企業認定是否符合ESG評鑑的商品或 <span class="text-green-600 font-bold">SROI (✓)</span> 價值活動商品。</span>
-                </div>
-                <div class="text-[11px] text-amber-700/90 font-bold leading-relaxed flex items-start text-justify pt-1.5 border-t border-amber-200/60">
-                    <i class="fas fa-th-tack mt-0.5 mr-1.5 opacity-70 shrink-0"></i>
-                    <span>📌 本區記錄之消費金額，可作為企業範疇三 (類別四) 購買之商品及服務，或 CSR 社會參與實績之佐證。</span>
-                </div>
+                <div class="text-xs text-amber-800 font-bold leading-relaxed flex items-start text-justify mb-1.5"><i class="fas fa-exclamation-triangle mt-0.5 mr-2 text-amber-500 shrink-0"></i><span>請自主辨識農產標章或依企業認定是否符合ESG評鑑的商品或 <span class="text-green-600 font-bold">SROI (✓)</span> 價值活動商品。</span></div>
+                <div class="text-[11px] text-amber-700/90 font-bold leading-relaxed flex items-start text-justify pt-1.5 border-t border-amber-200/60"><i class="fas fa-th-tack mt-0.5 mr-1.5 opacity-70 shrink-0"></i><span>📌 本區記錄之消費金額，可作為企業範疇三 (類別四) 購買之商品及服務，或 CSR 社會參與實績之佐證。</span></div>
             </div>
-
             <div class="flex mb-4 bg-gray-100 p-1 rounded-lg">
                 <button class="tab-btn flex-1 py-2 text-sm font-bold active-tab bg-white text-mori-forest shadow-sm rounded-md transition" data-tab="tab-green">綠色採購</button>
                 <button class="tab-btn flex-1 py-2 text-sm font-bold text-gray-500 rounded-md transition hover:text-gray-700" data-tab="tab-sroi">SROI 社會價值</button>
             </div>
-            
             <div id="tab-green" class="tab-content space-y-5">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-3">1. 選擇標章類型 (點擊選擇)</label>
@@ -679,77 +568,10 @@
                 </div>
                 <button id="log-green-procure-btn" class="w-full py-3 bg-mori-forest hover:bg-mori-dark transition text-white font-bold rounded-lg shadow-md flex justify-center items-center text-[15px]">確認登錄消費 <span id="green-total-display" class="ml-1 text-yellow-300 font-mono tracking-wider">$0</span></button>
             </div>
-            
             <div id="tab-sroi" class="tab-content hidden space-y-4">
                 <div><label class="block text-xs font-bold text-gray-500 mb-1">選擇 SROI 合作農場</label><select id="sroi-unit-select" class="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:border-mori-wood font-bold text-gray-700"></select></div>
                 <div><label class="block text-xs font-bold text-gray-500 mb-1">消費金額 ($)</label><input type="number" id="sroi-price" class="w-full p-2.5 border rounded-lg text-sm focus:outline-none focus:border-mori-wood text-center font-bold" placeholder="0" min="0"></div>
                 <button id="log-sroi-btn" class="w-full py-3 bg-mori-wood hover:bg-yellow-600 transition text-white font-bold rounded-lg shadow-md text-[15px]">登錄 SROI 價值</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 7. 預約導覽車 Modal -->
-    <div id="taxi-info-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-md p-6 bg-white border-t-4 border-yellow-400 relative">
-            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-            <div class="text-center mb-4"><div class="text-5xl mb-2">🚕</div><h3 class="text-2xl font-bold text-gray-800">預約導覽車服務</h3></div>
-            <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 mb-6 text-sm text-gray-700 leading-relaxed text-justify shadow-inner">
-                <p class="mb-3">由「<span class="font-bold text-yellow-800">社團法人南投縣水里鄉商圈創生共好協會</span>」培訓的「永續專案」及「觀光商圈」導覽駕駛帶路，車隊具備合法多元計程車、9人與20人座包車，滿足各類需求。</p>
-                <p class="font-bold text-mori-forest mb-3"><i class="fas fa-bullhorn mr-1 text-mori-sage"></i>上車即導覽，帶您輕鬆探索在地生態與商圈魅力！</p>
-                <div class="border-t border-yellow-200/60 pt-3"><p class="font-bold text-gray-800 flex items-center"><i class="fas fa-phone-alt mr-2 text-yellow-600"></i>預約請洽：</p><p class="text-gray-600 mt-1 ml-6 font-medium">社團法人南投縣水里鄉商圈創生共好協會</p></div>
-            </div>
-            <div class="flex flex-col gap-3"><button id="taxi-confirm-btn" class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl shadow-md transition flex justify-center items-center"><i class="fas fa-check-circle mr-2"></i>我已預約成功 / 返回選擇交通方式</button></div>
-        </div>
-    </div>
-
-    <!-- 8. 單人自駕說明 Modal -->
-    <div id="drive-alone-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-md p-6 bg-white border-t-4 border-red-500 relative">
-            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-            <div class="text-center mb-4"><div class="text-5xl mb-2">🚘</div><h3 class="text-2xl font-bold text-gray-800">單人自駕 (高碳排)</h3></div>
-            <div class="bg-red-50 p-5 rounded-xl border border-red-100 mb-6 text-sm text-gray-700 leading-relaxed text-justify shadow-inner">
-                <p>您選的交通方式為獨自駕駛交通工具進行旅遊。</p>
-                <p class="mt-2">其他共乘方式或是大眾交通工具的減碳量皆以此為<span class="font-bold text-red-600 px-1">基準</span>進行計算，因此選擇本項，減碳量將計算為 <span class="font-bold text-red-600 text-lg px-1">0</span>。</p>
-                <p class="mt-3 pt-3 border-t border-red-200/60 text-[12px] font-bold text-red-800 tracking-wide"><i class="fas fa-bullseye mr-1 text-red-500"></i>📌 邊界界定減碳基準線 (Baseline) 設定為『單人駕駛燃油小客車』。</p>
-            </div>
-            <div class="flex flex-col gap-3"><button id="drive-alone-confirm-btn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-md transition flex justify-center items-center tracking-wide"><i class="fas fa-check mr-2"></i>我確認以此方式進行旅遊</button></div>
-        </div>
-    </div>
-
-    <!-- 9. 搭乘高鐵說明 Modal -->
-    <div id="hsr-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-md p-6 bg-white border-t-4 border-orange-500 relative">
-            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-            <div class="text-center mb-4"><div class="text-5xl mb-2">🚆</div><h3 class="text-2xl font-bold text-gray-800">高鐵運輸搭乘紀錄</h3></div>
-            <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 mb-5 text-sm text-gray-700 leading-relaxed text-justify shadow-inner">
-                <p>選擇鐵路運輸！作為極低碳的大眾運輸工具，軌道運輸能大幅減少跨縣市移動的碳排放。</p>
-                <p class="mt-2 font-bold text-orange-700"><i class="fas fa-magic mr-1"></i>請設定您的搭乘起訖站，系統將自動核算減碳里程，</p>
-                <p class="mt-2 font-bold text-mori-forest"><i class="fas fa-exclamation-circle text-red-500 mr-1 animate-pulse"></i>抵達鐵路目的站後，請再次選取您拜訪景點使用的交通方式。請儘量保存您的票據證明，做為您的減碳依據。</p>
-            </div>
-            <div class="flex flex-col gap-3 mb-5 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                <div class="flex items-center gap-3"><span class="font-bold text-gray-600 whitespace-nowrap text-sm"><i class="fas fa-map-marker-alt text-orange-400 mr-1"></i>起站</span><select id="hsr-start" class="flex-1 p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 font-bold text-gray-700"></select></div>
-                <div class="flex items-center justify-center -my-1 text-gray-300"><i class="fas fa-arrow-down"></i></div>
-                <div class="flex items-center gap-3"><span class="font-bold text-gray-600 whitespace-nowrap text-sm"><i class="fas fa-flag-checkered text-mori-forest mr-1"></i>迄站</span><select id="hsr-end" class="flex-1 p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-orange-500 font-bold text-gray-700"></select></div>
-            </div>
-            <div id="hsr-result" class="text-center text-sm font-bold text-gray-500 mb-4 min-h-[1.5em] transition-all">請選擇起訖站進行計算</div>
-            <div class="flex flex-col gap-3"><button id="hsr-confirm-btn" class="w-full py-3 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold rounded-xl shadow-md transition flex justify-center items-center opacity-50 cursor-not-allowed tracking-wide" disabled><i class="fas fa-train mr-2"></i>確認搭乘並前往任務</button></div>
-        </div>
-    </div>
-
-    <!-- 9.5 高鐵票號二次驗證 Modal -->
-    <div id="hsr-ticket-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-orange-500 relative text-center">
-            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times text-xl"></i></button>
-            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-ticket-alt text-2xl text-orange-500"></i></div></div>
-            <h3 class="text-xl font-bold text-mori-dark mb-2">請輸入高鐵票號</h3>
-            
-            <p class="text-[12px] md:text-[13px] text-gray-700 mb-5 leading-relaxed text-justify bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
-                <i class="fas fa-info-circle mr-1 text-orange-500"></i>票號顯示於實體車票、手機 T-EX App、超商繳費單或車票上。
-            </p>
-
-            <input type="text" id="hsr-ticket-verify-input" class="w-full p-3 border-2 border-gray-200 rounded-xl text-center text-lg font-mono tracking-widest focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/20 transition-all mb-5 bg-white uppercase placeholder-gray-300" placeholder="輸入票號">
-            <div class="flex flex-col gap-3">
-                <button id="hsr-ticket-verify-btn" class="w-full py-3 bg-orange-500 text-white rounded-xl font-bold shadow-md hover:bg-orange-600 transition flex justify-center items-center"><i class="fas fa-check-circle mr-2"></i>確認票號並記錄里程</button>
             </div>
         </div>
     </div>
@@ -760,9 +582,7 @@
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
             <h3 class="text-xl font-bold text-mori-dark mb-2">掃描分享探探里山</h3>
             <p class="text-xs text-gray-500 mb-4">邀請好友一起加入永續旅遊的行列</p>
-            <div class="flex justify-center p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-inner mb-4">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://farmcmd.github.io/ESGT/" alt="探探里山 QR Code" class="w-48 h-48 mix-blend-multiply">
-            </div>
+            <div class="flex justify-center p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-inner mb-4"><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://farmcmd.github.io/ESGT/" alt="探探里山 QR Code" class="w-48 h-48 mix-blend-multiply"></div>
             <button id="copy-link-btn" class="w-full py-2.5 bg-mori-light text-mori-forest border border-mori-sage rounded-xl font-bold text-sm hover:bg-mori-sage hover:text-white transition-all shadow-sm"><i class="fas fa-link mr-1.5"></i> 複製網址</button>
         </div>
     </div>
@@ -805,25 +625,16 @@
                         <p class="text-[11px] text-slate-500 mt-1.5 font-medium leading-relaxed"><i class="fas fa-info-circle mr-1"></i>說明權限：各類活動中解說系統操作、數據講解及歸戶操作。</p>
                     </div>
                     <div class="p-0">
-                        <div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200">
-                            <span class="flex-1">認證人員單位</span>
-                            <span class="w-32 text-right">操作管理師</span>
-                        </div>
-                        <div id="operator-list-container" class="max-h-60 overflow-y-auto custom-scrollbar">
-                            <div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div>
-                        </div>
+                        <div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="flex-1">認證人員單位</span><span class="w-32 text-right">操作管理師</span></div>
+                        <div id="operator-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"><div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div></div>
                     </div>
                 </div>
 
-                <!-- 企業/計畫儀表管理名單 (動態授權版) -->
+                <!-- 企業/計畫儀表管理名單 -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                     <div class="bg-indigo-50/40 border-b border-gray-200 p-3 md:p-4"><h4 class="font-bold text-indigo-800 text-lg flex items-center"><i class="fas fa-chart-pie text-indigo-500 mr-2"></i>企業 / 計畫儀表管理名單</h4></div>
                     <div class="p-0">
-                        <div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200">
-                            <span class="w-1/3">儀表板名稱</span>
-                            <span class="w-1/3 text-center">歸戶許可</span>
-                            <span class="w-1/3 text-right">負責儀表板</span>
-                        </div>
+                        <div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="w-1/3">儀表板名稱</span><span class="w-1/3 text-center">歸戶許可</span><span class="w-1/3 text-right">負責儀表板</span></div>
                         <div id="auth-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"></div>
                     </div>
                 </div>
@@ -836,9 +647,7 @@
                     </div>
                     <div class="p-0">
                         <div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="flex-1">認證講師所屬單位</span><span class="w-32 text-right">講師姓名</span></div>
-                        <div id="lecturer-list-container" class="max-h-60 overflow-y-auto custom-scrollbar">
-                            <div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div>
-                        </div>
+                        <div id="lecturer-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"><div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div></div>
                     </div>
                 </div>
             </div>
@@ -850,34 +659,10 @@
         <div class="modal-content max-w-lg p-6 bg-white border-t-4 border-yellow-500 rounded-2xl shadow-2xl relative">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times text-xl"></i></button>
             <h3 class="text-xl font-bold text-gray-800 mb-4 text-center"><i class="fas fa-gem text-yellow-500 mr-2"></i>總承結算卡片預覽</h3>
-            <div class="bg-gray-50 p-4 rounded-xl shadow-inner max-h-[60vh] overflow-y-auto no-scrollbar flex justify-center items-start">
-                <div id="summary-card-container" class="w-full max-w-[400px]"></div>
-            </div>
+            <div class="bg-gray-50 p-4 rounded-xl shadow-inner max-h-[60vh] overflow-y-auto no-scrollbar flex justify-center items-start"><div id="summary-card-container" class="w-full max-w-[400px]"></div></div>
             <div class="mt-4 flex justify-end gap-3">
                 <button class="close-button px-5 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-200 transition">關閉預覽</button>
                 <button id="download-summary-btn" class="px-5 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition flex items-center"><i class="fas fa-download mr-2"></i> 匯出高清圖檔</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 17. 獎勵驗證 Modal -->
-    <div id="reward-verification-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-mori-forest relative text-center">
-            <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"><i class="fas fa-times text-xl"></i></button>
-            <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-shield-alt text-2xl text-mori-forest"></i></div></div>
-            <h3 class="text-xl font-bold text-mori-dark mb-2">旅程獎勵驗證</h3>
-            
-            <p class="text-[12px] md:text-[13px] text-gray-700 mb-5 leading-relaxed text-justify bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-inner">
-                請在目的地(終點)向工作人員索取密碼，輸入後可獲得 <span class="font-bold text-mori-forest text-[14px]">100%</span> 的減碳與里程獎勵。若無密碼，則會直接結算，獲得 <span class="font-bold text-gray-800">1/10</span> 的數據。<br><br>
-                <span class="block border-t border-gray-200 pt-2 mt-1 text-[11px] text-gray-500 font-medium">
-                    <i class="fas fa-info-circle mr-1 text-mori-sage"></i>此機制是為了讓主頁的共同累積減碳量儘量能夠達到真實數據，也讓測試人員可以獲得體驗。同時也避免洗數據的疑慮。
-                </span>
-            </p>
-
-            <input type="text" id="reward-verify-code" maxlength="7" class="w-full p-3 border-2 border-gray-200 rounded-xl text-center text-lg font-mono tracking-widest focus:outline-none focus:border-mori-forest focus:ring-4 focus:ring-mori-forest/20 transition-all mb-5 bg-gray-50" placeholder="輸入7碼數字">
-            <div class="flex flex-col gap-3">
-                <button id="reward-verify-full-btn" class="w-full py-3 bg-mori-forest text-white rounded-xl font-bold shadow-md hover:bg-mori-dark transition flex justify-center items-center"><i class="fas fa-check-circle mr-2"></i>輸入密碼獲取完整獎勵</button>
-                <button id="reward-verify-tenth-btn" class="w-full py-3 bg-gray-100 text-gray-600 border border-gray-200 rounded-xl font-bold shadow-sm hover:bg-gray-200 transition flex justify-center items-center"><i class="fas fa-forward mr-2"></i>無密碼，直接結算 (1/10)</button>
             </div>
         </div>
     </div>
@@ -891,19 +676,6 @@
             <div class="flex gap-3">
                 <button id="custom-prompt-cancel" class="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition shadow-sm border border-gray-200">取消</button>
                 <button id="custom-prompt-confirm" class="flex-1 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg font-bold hover:shadow-lg transition shadow-md">確認產出</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 19. 最新活動訊息全版面 Modal -->
-    <div id="events-modal" class="modal-overlay hidden !p-0 z-[200]">
-        <div class="modal-content w-full h-[100dvh] !max-h-[100dvh] !rounded-none border-0 relative flex flex-col bg-white">
-            <div class="bg-gradient-to-r from-yellow-400 to-amber-500 p-3 md:p-4 flex justify-between items-center shadow-md z-10 shrink-0">
-                <h3 class="text-lg md:text-xl font-bold text-yellow-950 tracking-wide flex items-center"><i class="fas fa-bullhorn text-red-600 animate-pulse mr-2"></i>最新活動訊息及報名平台</h3>
-                <button class="close-button text-yellow-950 hover:text-white bg-white/30 hover:bg-black/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm"><i class="fas fa-times text-lg"></i></button>
-            </div>
-            <div class="flex-grow w-full relative bg-gray-50 overflow-hidden">
-                <iframe src="https://farmcmd.github.io/ESGT/events.html" class="absolute inset-0 w-full h-full border-none" title="最新活動訊息"></iframe>
             </div>
         </div>
     </div>
@@ -924,13 +696,14 @@
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
+    <!-- 核心腳本區塊 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, increment, serverTimestamp, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
         // ==========================================
-        // 1. 常數與靜態資料 (移除景點列表)
+        // 1. 常數與靜態資料
         // ==========================================
         const firebaseConfig = { apiKey: "AIzaSyCEH65YbNirj_IRmtsIJZS-HNEbsRBBsSQ", authDomain: "sustainable-tourism-65025.firebaseapp.com", projectId: "sustainable-tourism-65025" };
         const LOCAL_STORAGE_KEY = 'shuilMoriData_v3.0';
@@ -964,22 +737,20 @@
         // ==========================================
         // 2. 狀態變數 (State)
         // ==========================================
-        let state = { totalMileage: 0, totalCarbon: 0, totalScore: 0, playerName: '', playerCode: '', greenProcure: 0, sroiProcure: 0, projectProcure: 0, activityLogs: [], checkoutHistory: [], currentTransport: null };
+        let state = { totalMileage: 0, totalCarbon: 0, totalScore: 0, playerName: '', playerCode: '', greenProcure: 0, sroiProcure: 0, projectProcure: 0, activityLogs: [], checkoutHistory: [], currentTransport: null, pendingSync: [] };
         let globalGovData = { projects: [] };
         let globalEntData = { projects: [] };
         let globalCerts = { operators: [], lecturers: [] };
-        let pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false }; // 保留給首頁手動里程功能使用
+        let pendingTrip = { distMeters: 0, distKm: 0, reduction: 0, isValid: false };
         let pendingGovEvalSubmission = null, pendingEntEvalSubmission = null;
         let db = null, auth = null, isOfflineMode = false;
         let isBackendReady = false, govLoaded = false, entLoaded = false, absoluteLoaded = false; 
-        
         let globalAbsolute = { carbon: 0, green: 0, visitor_count: 0 }; 
         let summaryState = { entMode: false, entSelected: new Set(), govMode: false, govSelected: new Set() };
 
         // ==========================================
         // 3. 核心工具函數 (Core Utils)
         // ==========================================
-        
         window.triggerEntSearch = function() {
             if(typeof renderEntProjectsDashboard === 'function') renderEntProjectsDashboard();
             if(typeof updateEntProjectDropdown === 'function') updateEntProjectDropdown();
@@ -994,8 +765,7 @@
         window.showToast = function(msg) {
             let toast = document.getElementById('custom-toast');
             if(toast) { 
-                toast.textContent = msg; 
-                toast.classList.add('show'); 
+                toast.textContent = msg; toast.classList.add('show'); 
                 if(window.toastTimer) clearTimeout(window.toastTimer);
                 window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000); 
             }
@@ -1012,18 +782,10 @@
             const cancelBtn = document.getElementById('custom-prompt-cancel');
             
             if(!modal) return callback(defaultValue);
+            titleEl.textContent = message; inputEl.value = defaultValue;
             
-            titleEl.textContent = message; 
-            inputEl.value = defaultValue;
-            
-            confirmBtn.onclick = () => { 
-                window.closeModal('custom-prompt-modal'); 
-                callback(inputEl.value); 
-            };
-            cancelBtn.onclick = () => { 
-                window.closeModal('custom-prompt-modal'); 
-                callback(null); 
-            };
+            confirmBtn.onclick = () => { window.closeModal('custom-prompt-modal'); callback(inputEl.value); };
+            cancelBtn.onclick = () => { window.closeModal('custom-prompt-modal'); callback(null); };
             
             window.openModal('custom-prompt-modal'); 
             setTimeout(() => { inputEl.focus(); inputEl.select(); }, 100);
@@ -1041,8 +803,7 @@
             
             scrollLists.forEach(list => {
                 origStyles.push({ el: list, maxH: list.style.maxHeight, overflowY: list.style.overflowY });
-                list.style.maxHeight = 'none';
-                list.style.overflowY = 'visible';
+                list.style.maxHeight = 'none'; list.style.overflowY = 'visible';
             });
 
             if (feedbackSec) {
@@ -1067,20 +828,12 @@
             } catch(err) { window.showToast('下載失敗，請重試'); } 
             finally {
                 document.body.removeChild(clone);
-                scrollLists.forEach((list, index) => {
-                    list.style.maxHeight = origStyles[index].maxH;
-                    list.style.overflowY = origStyles[index].overflowY;
-                });
-                if (feedbackSec) { 
-                    feedbackSec.style.display = origDisplay; 
-                    if (printCb && printCb.checked && printToggleLabel) printToggleLabel.style.display = 'flex'; 
-                }
+                scrollLists.forEach((list, index) => { list.style.maxHeight = origStyles[index].maxH; list.style.overflowY = origStyles[index].overflowY; });
+                if (feedbackSec) { feedbackSec.style.display = origDisplay; if (printCb && printCb.checked && printToggleLabel) printToggleLabel.style.display = 'flex'; }
             }
         };
 
-        window.getFormattedTime = function() {
-            const d = new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        }
+        window.getFormattedTime = function() { const d = new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
 
         window.addLog = function(text) {
             const time = getFormattedTime();
@@ -1096,12 +849,16 @@
             list.innerHTML = state.activityLogs.map(l => `<div class="bg-white p-2 rounded text-xs border border-gray-100 mb-1 shadow-sm"><span class="text-[10px] text-mori-forest font-bold font-mono tracking-tight">${l.time}</span><br>${l.text}</div>`).join('');
         }
 
-        function saveData() { if(document.getElementById('player-name')) state.playerName = document.getElementById('player-name').value; try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {} }
+        function saveData() { 
+            if(document.getElementById('player-name')) state.playerName = document.getElementById('player-name').value; 
+            try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state)); } catch(e) {} 
+        }
 
         function loadLocalData() {
             try { const raw = localStorage.getItem(LOCAL_STORAGE_KEY); if(raw) { state = { ...state, ...JSON.parse(raw) }; } } catch(e) { }
             state.greenProcure = state.greenProcure || 0; state.sroiProcure = state.sroiProcure || 0; state.projectProcure = state.projectProcure || 0;
             state.totalCarbon = state.totalCarbon || 0; state.totalScore = state.totalScore || 0; state.activityLogs = state.activityLogs || []; state.checkoutHistory = state.checkoutHistory || [];
+            state.pendingSync = state.pendingSync || [];
             if (!state.playerCode) state.playerCode = Math.random().toString(36).substring(2, 7).toUpperCase();
             if(document.getElementById('player-name')) document.getElementById('player-name').value = state.playerName || '';
             if(document.getElementById('player-code')) document.getElementById('player-code').textContent = state.playerCode;
@@ -1123,10 +880,37 @@
 
         function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 
+        window.syncOfflineData = async function() {
+            if (isOfflineMode || !db || !state.pendingSync || state.pendingSync.length === 0) return;
+            let syncCount = 0; const queue = [...state.pendingSync]; state.pendingSync = []; saveData(); let failedQueue = [];
+
+            for (const task of queue) {
+                try {
+                    if (task.type === 'global_add') {
+                        await setDoc(doc(db, 'system_stats', 'global_absolute'), { carbon: increment(task.data.carbon), green: increment(task.data.green), [`daily_${task.data.date}_carbon`]: increment(task.data.carbon) }, { merge: true });
+                        syncCount++;
+                    } else if (task.type === 'ent_checkout' || task.type === 'gov_checkout') {
+                        const collectionName = task.type === 'ent_checkout' ? 'ent_projects' : 'gov_projects';
+                        if (task.id && !task.id.startsWith('mock_')) {
+                            const updates = { ...task.data, updatedAt: serverTimestamp() };
+                            if (task.feedback) updates.feedbacks = arrayUnion(task.feedback);
+                            await setDoc(doc(db, collectionName, task.id), updates, { merge: true });
+                            syncCount++;
+                        }
+                    }
+                } catch (e) { failedQueue.push(task); }
+            }
+            if (failedQueue.length > 0) { state.pendingSync = [...failedQueue, ...state.pendingSync]; saveData(); }
+            if (syncCount > 0) { window.showToast(`☁️ 已成功將 ${syncCount} 筆離線儲存的數據同步至雲端！`); }
+        };
+
         async function addToGlobalTotal(carbonDelta, greenDelta) {
-            const todayStr = getTodayKey(); globalAbsolute.carbon = (globalAbsolute.carbon || 0) + carbonDelta; globalAbsolute.green = (globalAbsolute.green || 0) + greenDelta; globalAbsolute[`daily_${todayStr}_carbon`] = (globalAbsolute[`daily_${todayStr}_carbon`] || 0) + carbonDelta;
+            const todayStr = getTodayKey(); 
+            globalAbsolute.carbon = (globalAbsolute.carbon || 0) + carbonDelta; globalAbsolute.green = (globalAbsolute.green || 0) + greenDelta; globalAbsolute[`daily_${todayStr}_carbon`] = (globalAbsolute[`daily_${todayStr}_carbon`] || 0) + carbonDelta;
             updateGlobalSummary();
-            if (!isOfflineMode && db) { try { await setDoc(doc(db, 'system_stats', 'global_absolute'), { carbon: increment(carbonDelta), green: increment(greenDelta), [`daily_${todayStr}_carbon`]: increment(carbonDelta) }, { merge: true }); } catch(e) {} }
+            const task = { type: 'global_add', data: { carbon: carbonDelta, green: greenDelta, date: todayStr }, timestamp: Date.now() };
+            if (!isOfflineMode && db) { try { await setDoc(doc(db, 'system_stats', 'global_absolute'), { carbon: increment(carbonDelta), green: increment(greenDelta), [`daily_${todayStr}_carbon`]: increment(carbonDelta) }, { merge: true }); } catch(e) { state.pendingSync.push(task); saveData(); } } 
+            else { state.pendingSync.push(task); saveData(); }
         }
 
         function renderCheckoutHistory() {
@@ -1144,7 +928,7 @@
         }
 
         // ==========================================
-        // 3.5 DOM 節點動態化 (Dynamic Rendering)
+        // 4. DOM 節點動態化 (Dynamic Rendering)
         // ==========================================
         function renderQuestionnaires() {
             const entContainer = document.getElementById('ent-eval-questions-container');
@@ -1154,7 +938,7 @@
                 const entData = [
                     { title: '一、 環境永續參與 (E)', qs: ['1. 減碳認知：本次活動是否有效提升您對低碳旅遊與碳排放的認知？', '2. 生態導覽：您認為本次生態導覽或環境教育活動的內容豐富度？', '3. 綠色消費：您是否認同購買在地小農或友善環境產品的永續價值？', '4. 資源節約：活動中是否落實了減少一次性餐具及資源浪費的理念？'] },
                     { title: '二、 社會價值與地方創生 (S)', qs: ['5. 地方文化：本次行程是否讓您更深入了解當地的文化與社區發展？', '6. 經濟支持：您覺得企業舉辦此活動對當地商圈與青農是否有實質幫助？', '7. 團隊凝聚：本次戶外活動是否有助於提升企業員工間的交流與凝聚力？', '8. 身心健康：您認為參與里山自然體驗對您的身心健康與壓力釋放是否有益？'] },
-                    { title: '三、 企業願景與綜合評價 (G)', qs: ['9. 願景對齊：您認為本次活動是否符合公司推動 ESG 及永續發展的願景？', '10. 數據透明：使用「探探里山」平台記錄與歸戶數據，流程是否透明且直覺？', '11. 服務安排：您對本次行程的交通、食宿及整體時間節奏安排是否滿意？', '12. 持續參與：未來公司若繼續舉辦類似的 ESG 永續活動，您的參與意願？'] }
+                    { title: '三、 企業願景與綜合評價 (G)', qs: ['9. 願景對齊：您認為本次活動是否符合公司推推動 ESG 及永續發展的願景？', '10. 數據透明：使用「探探里山」平台記錄與歸戶數據，流程是否透明且直覺？', '11. 服務安排：您對本次行程的交通、食宿及整體時間節奏安排是否滿意？', '12. 持續參與：未來公司若繼續舉辦類似的 ESG 永續活動，您的參與意願？'] }
                 ];
                 let qIndex = 1;
                 entContainer.innerHTML = entData.map((sec, idx) => `
@@ -1185,26 +969,52 @@
                 `).join('');
             }
             
-            // 🚀 綁定星星點擊事件
             document.querySelectorAll('.number-rating i').forEach(star => {
                 star.addEventListener('click', (e) => {
                     const val = parseInt(e.currentTarget.dataset.val);
                     const parent = e.currentTarget.parentNode;
                     Array.from(parent.children).forEach((s, idx) => {
-                        if (idx < val) {
-                            s.classList.remove('text-gray-300');
-                            s.classList.add('text-yellow-400');
-                        } else {
-                            s.classList.remove('text-yellow-400');
-                            s.classList.add('text-gray-300');
-                        }
+                        if (idx < val) { s.classList.remove('text-gray-300'); s.classList.add('text-yellow-400'); } 
+                        else { s.classList.remove('text-yellow-400'); s.classList.add('text-gray-300'); }
                     });
                 });
             });
         }
 
+        function renderTransportButtons() {
+            const grid = document.getElementById('transport-grid'); if(!grid) return; grid.innerHTML = '';
+            Object.keys(transportData).forEach(k => {
+                const t = transportData[k]; const btn = document.createElement('div');
+                btn.className = "bg-white p-4 rounded-xl border-2 border-transparent hover:border-mori-sage cursor-pointer shadow-sm text-center transition-all flex flex-col items-center justify-center hover:scale-105";
+                const textSizeClass = (k === 'walk_bike' || k === 'taxi') ? 'text-[10.5px]' : 'text-[13px]';
+                btn.innerHTML = `<div class="text-3xl mb-2">${t.icon}</div><div class="${textSizeClass} font-black text-gray-800 tracking-wide">${t.name}</div>`;
+                btn.onclick = () => {
+                    if (k === 'taxi') { window.openModal('taxi-info-modal'); } 
+                    else if (k === 'drive_alone') { window.openModal('drive-alone-modal'); } 
+                    else if (k === 'thsr') { window.openModal('hsr-modal'); } 
+                    else {
+                        state.currentTransport = k; 
+                        window.showToast(`已選擇交通方式：${t.name}，即將開啟任務地圖...`); 
+                        saveData(); setTimeout(() => { window.location.href = 'mission.html'; }, 600);
+                    }
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderCityOptions() {
+            const selects = [document.getElementById('city-select'), document.getElementById('hsr-start'), document.getElementById('hsr-end')];
+            const hsrHtml = '<option value="">-- 選擇車站 --</option>' + hsrStations.map(c => `<option value="${c.name}">${c.name}站</option>`).join('');
+            if(selects[1]) selects[1].innerHTML = hsrHtml; if(selects[2]) selects[2].innerHTML = hsrHtml;
+        }
+
+        function renderSroiOptions() {
+            const select = document.getElementById('sroi-unit-select'); if(!select) return;
+            select.innerHTML = '<option value="">-- 選擇 SROI 合作農場 --</option>' + sroiUnits.map(u => `<option value="${u.name}" data-weight="${u.weight}">${u.name} (加權 x${u.weight})</option>`).join('');
+        }
+
         // ==========================================
-        // 儀表板渲染與選單更新模組
+        // 5. 儀表板渲染與選單更新模組
         // ==========================================
         window.handleAuthorization = async function(id, type) {
             const pwd = prompt('🔒 請輸入系統管理員密碼以開啟歸戶權限：');
@@ -1214,82 +1024,41 @@
                         const collectionName = type === 'ent' ? 'ent_projects' : 'gov_projects';
                         await setDoc(doc(db, collectionName, id), { isAuthorized: true }, { merge: true });
                         window.showToast('✅ 授權成功！已開啟歸戶功能。');
-                    } catch(err) {
-                        window.showToast('❌ 授權失敗，請檢查網路連線。');
-                    }
+                    } catch(err) { window.showToast('❌ 授權失敗，請檢查網路連線。'); }
                 } else {
-                    if (type === 'ent') {
-                        const proj = globalEntData.projects.find(x => x.id === id);
-                        if (proj) proj.isAuthorized = true;
-                    } else {
-                        const proj = globalGovData.projects.find(x => x.id === id);
-                        if (proj) proj.isAuthorized = true;
-                    }
-                    window.showToast('✅ (離線/預設) 授權成功！已開啟歸戶功能。');
-                    renderAuthList();
-                    if(typeof updateEntProjectDropdown === 'function') updateEntProjectDropdown();
-                    if(typeof updateProjectDropdown === 'function') updateProjectDropdown();
-                    if(typeof renderEntProjectsDashboard === 'function') renderEntProjectsDashboard();
-                    if(typeof renderGovDashboard === 'function') renderGovDashboard();
+                    if (type === 'ent') { const proj = globalEntData.projects.find(x => x.id === id); if (proj) proj.isAuthorized = true; } 
+                    else { const proj = globalGovData.projects.find(x => x.id === id); if (proj) proj.isAuthorized = true; }
+                    window.showToast('✅ (離線/預設) 授權成功！已開啟歸戶功能。'); renderAuthList();
+                    if(typeof updateEntProjectDropdown === 'function') updateEntProjectDropdown(); if(typeof updateProjectDropdown === 'function') updateProjectDropdown();
+                    if(typeof renderEntProjectsDashboard === 'function') renderEntProjectsDashboard(); if(typeof renderGovDashboard === 'function') renderGovDashboard();
                 }
-            } else if (pwd !== null) {
-                window.showToast('❌ 密碼錯誤，授權失敗！');
-            }
+            } else if (pwd !== null) { window.showToast('❌ 密碼錯誤，授權失敗！'); }
         };
 
         function renderAuthList() {
-            const container = document.getElementById('auth-list-container');
-            if(!container) return;
-            
+            const container = document.getElementById('auth-list-container'); if(!container) return;
             let allProjects = [];
-            globalEntData.projects.forEach(p => allProjects.push({...p, _type: 'ent'}));
-            globalGovData.projects.forEach(p => allProjects.push({...p, _type: 'gov'}));
-            
-            allProjects.sort((a, b) => {
-                const timeA = a.updatedAt ? (typeof a.updatedAt.toMillis === 'function' ? a.updatedAt.toMillis() : new Date(a.updatedAt).getTime()) : 0;
-                const timeB = b.updatedAt ? (typeof b.updatedAt.toMillis === 'function' ? b.updatedAt.toMillis() : new Date(b.updatedAt).getTime()) : 0;
-                return timeB - timeA;
-            });
-            
-            if(allProjects.length === 0) {
-                container.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">尚無儀表板資料</div>';
-                return;
-            }
-
+            globalEntData.projects.forEach(p => allProjects.push({...p, _type: 'ent'})); globalGovData.projects.forEach(p => allProjects.push({...p, _type: 'gov'}));
+            allProjects.sort((a, b) => { const timeA = a.updatedAt ? (typeof a.updatedAt.toMillis === 'function' ? a.updatedAt.toMillis() : new Date(a.updatedAt).getTime()) : 0; const timeB = b.updatedAt ? (typeof b.updatedAt.toMillis === 'function' ? b.updatedAt.toMillis() : new Date(b.updatedAt).getTime()) : 0; return timeB - timeA; });
+            if(allProjects.length === 0) { container.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">尚無儀表板資料</div>'; return; }
             container.innerHTML = allProjects.map(p => {
                 const name = p._type === 'ent' ? `${p.orgName} ${p.event ? `(${p.event})` : ''}` : p.name;
-                const badgeStr = p._type === 'ent' 
-                    ? '<span class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-2 py-1 rounded shadow-sm text-[10px] md:text-xs">企業儀表板</span>'
-                    : '<span class="bg-mori-light/50 border border-mori-sage/30 text-mori-forest px-2 py-1 rounded shadow-sm text-[10px] md:text-xs">計畫儀表板</span>';
-                
-                const authStr = p.isAuthorized 
-                    ? '<span class="text-green-600 font-bold text-sm"><i class="fas fa-check-circle mr-1"></i>已授權</span>'
-                    : `<button class="auth-trigger-btn px-3 py-1.5 bg-gray-100 border border-gray-300 text-gray-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 rounded-lg text-xs font-bold transition shadow-sm" onclick="window.handleAuthorization('${p.id}', '${p._type}')"><i class="fas fa-lock mr-1"></i>點擊授權</button>`;
-
-                return `
-                <div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition">
-                    <span class="w-1/3 font-bold text-gray-700 text-[13px] md:text-sm truncate pr-2" title="${name}">${name}</span>
-                    <span class="w-1/3 text-center">${authStr}</span>
-                    <span class="w-1/3 text-right">${badgeStr}</span>
-                </div>
-                `;
+                const badgeStr = p._type === 'ent' ? '<span class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-2 py-1 rounded shadow-sm text-[10px] md:text-xs">企業儀表板</span>' : '<span class="bg-mori-light/50 border border-mori-sage/30 text-mori-forest px-2 py-1 rounded shadow-sm text-[10px] md:text-xs">計畫儀表板</span>';
+                const authStr = p.isAuthorized ? '<span class="text-green-600 font-bold text-sm"><i class="fas fa-check-circle mr-1"></i>已授權</span>' : `<button class="auth-trigger-btn px-3 py-1.5 bg-gray-100 border border-gray-300 text-gray-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 rounded-lg text-xs font-bold transition shadow-sm" onclick="window.handleAuthorization('${p.id}', '${p._type}')"><i class="fas fa-lock mr-1"></i>點擊授權</button>`;
+                return `<div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 hover:bg-gray-50 transition"><span class="w-1/3 font-bold text-gray-700 text-[13px] md:text-sm truncate pr-2" title="${name}">${name}</span><span class="w-1/3 text-center">${authStr}</span><span class="w-1/3 text-right">${badgeStr}</span></div>`;
             }).join('');
         }
 
         function renderGovDashboard() {
-            const grid = document.getElementById('gov-projects-grid');
-            if(!grid) return; grid.innerHTML = '';
+            const grid = document.getElementById('gov-projects-grid'); if(!grid) return; grid.innerHTML = '';
             if (globalGovData.projects.length === 0) { grid.innerHTML = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無計畫</div>'; return; }
             
             globalGovData.projects.forEach(proj => {
                 const isExpired = proj.deadline && new Date() > new Date(proj.deadline);
                 const opacityClass = isExpired ? 'bg-gray-50 opacity-80' : 'bg-white';
-                const ec = Number(proj.eval_count) || 0;
-                const totalScore = Number(proj.total_score) || 0;
-                const avg = ec > 0 ? (totalScore / (ec * 11)).toFixed(1) : "0.0";
-                const avgPercent = ec > 0 ? ((totalScore / (ec * 11)) / 5) * 100 : 0;
-                
-                const wrapper = document.createElement('div'); wrapper.className = "relative h-full";
+                const ec = Number(proj.eval_count) || 0; const totalScore = Number(proj.total_score) || 0;
+                const avg = ec > 0 ? (totalScore / (ec * 11)).toFixed(1) : "0.0"; const avgPercent = ec > 0 ? ((totalScore / (ec * 11)) / 5) * 100 : 0;
+                const wrapper = document.createElement('div'); wrapper.className = "relative h-full wrapper-to-export";
 
                 let feedbackHtml = '';
                 if (proj.feedbacks && proj.feedbacks.length > 0) {
@@ -1308,9 +1077,7 @@
                     if (isExpired) {
                         const isChecked = summaryState.govSelected.has(proj.id);
                         summaryOverlay = `<div class="absolute inset-0 z-30 rounded-2xl cursor-pointer summary-gov-toggle ${isChecked ? 'border-4 border-yellow-400 bg-yellow-400/10' : 'border border-gray-300 bg-white/60 hover:bg-white/30'} transition-all" data-id="${proj.id}"><div class="absolute top-4 left-4 w-6 h-6 rounded border-2 ${isChecked ? 'border-yellow-500 bg-yellow-500' : 'border-gray-400 bg-white'} flex items-center justify-center shadow-sm">${isChecked ? '<i class="fas fa-check text-white text-xs"></i>' : ''}</div></div>`;
-                    } else {
-                        summaryOverlay = `<div class="absolute inset-0 bg-gray-200/70 z-30 rounded-2xl cursor-not-allowed backdrop-blur-[1px]" onclick="window.showToast('⚠️ 此計畫尚未截止歸戶，無法列入總承結算')"></div>`;
-                    }
+                    } else { summaryOverlay = `<div class="absolute inset-0 bg-gray-200/70 z-30 rounded-2xl cursor-not-allowed backdrop-blur-[1px]" onclick="window.showToast('⚠️ 此計畫尚未截止歸戶，無法列入總承結算')"></div>`; }
                 }
 
                 const displayCode = proj.cardCode || (proj.id.startsWith('mock_') ? 'GOV99' : proj.id.slice(-5).toUpperCase());
@@ -1338,8 +1105,7 @@
                         ${proj.organizer ? `<div class="flex items-start"><span class="w-[65px] flex-shrink-0 text-blue-900 font-black tracking-wide text-[14px]"><i class="fas fa-sitemap mr-1"></i>主辦</span><span class="text-gray-800 font-bold text-[14px] leading-relaxed pt-px">${proj.organizer}</span></div>` : ''}
                         ${proj.coOrganizer ? `<div class="flex items-start"><span class="w-[65px] flex-shrink-0 text-blue-900 font-black tracking-wide text-[14px]"><i class="fas fa-hands-helping mr-1"></i>協辦</span><span class="text-gray-800 font-bold text-[14px] leading-relaxed pt-px">${proj.coOrganizer}</span></div>` : ''}
                         ${proj.executor ? `<div class="flex items-start"><span class="w-[65px] flex-shrink-0 text-blue-900 font-black tracking-wide text-[14px]"><i class="fas fa-tools mr-1"></i>執行</span><span class="text-gray-800 font-bold text-[14px] leading-relaxed pt-px">${proj.executor}</span></div>` : ''}
-                    </div>
-                    ` : ''}
+                    </div>` : ''}
                     <div class="mb-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
                         <div class="flex justify-between items-end mb-1.5"><span class="text-[13px] font-black text-gray-700 tracking-wide flex items-center"><i class="fas fa-star text-yellow-400 mr-1.5 text-base"></i>活動滿意度 (${ec}人)</span><span class="text-sm font-black text-yellow-500">${avg} <span class="text-[10px] text-gray-400 font-normal">/ 5.0</span></span></div>
                         <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden"><div class="bg-yellow-400 h-1.5 rounded-full transition-all duration-1000" style="width: ${avgPercent}%"></div></div>
@@ -1347,98 +1113,55 @@
                     <div class="grid grid-cols-2 gap-3 mt-2">
                         <div class="bg-white p-3.5 rounded-xl border border-green-100 shadow-sm relative overflow-hidden group hover:border-green-200 transition-colors">
                             <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black tracking-wide">累計減碳</p><span class="bg-green-50 text-green-600 text-[10px] px-1.5 py-0.5 rounded flex items-center"><i class="fas fa-arrow-trend-up"></i></span></div>
-                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${Math.round(Number(proj.carbon) || 0).toLocaleString()} <span class="text-[10px] text-gray-400 font-normal ml-0.5">g/CO2e</span></p><div class="flex items-end gap-[2px] mb-0.5 opacity-30 group-hover:opacity-60 transition-opacity"><div class="w-1.5 h-2 bg-green-500 rounded-t-sm"></div><div class="w-1.5 h-3 bg-green-500 rounded-t-sm"></div><div class="w-1.5 h-4 bg-green-500 rounded-t-sm"></div><div class="w-1.5 h-5 bg-green-500 rounded-t-sm"></div></div></div>
+                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${Math.round(Number(proj.carbon) || 0).toLocaleString()} <span class="text-[10px] text-gray-400 font-normal ml-0.5">g/CO2e</span></p></div>
                         </div>
                         <div class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden group hover:border-blue-200 transition-colors">
                             <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black tracking-wide">綠色消費</p><span class="bg-blue-50 text-blue-600 text-[10px] px-1.5 py-0.5 rounded flex items-center"><i class="fas fa-arrow-trend-up"></i></span></div>
-                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal mr-0.5">$</span>${(Number(proj.green) || 0).toLocaleString()}</p><div class="flex items-end gap-[2px] mb-0.5 opacity-30 group-hover:opacity-60 transition-opacity"><div class="w-1.5 h-2 bg-blue-500 rounded-t-sm"></div><div class="w-1.5 h-3 bg-blue-500 rounded-t-sm"></div><div class="w-1.5 h-4 bg-blue-500 rounded-t-sm"></div><div class="w-1.5 h-5 bg-blue-500 rounded-t-sm"></div></div></div>
+                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal mr-0.5">$</span>${(Number(proj.green) || 0).toLocaleString()}</p></div>
                         </div>
                     </div>
                     ${sroiHtml}${feedbackHtml}
-                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end text-[10px] text-gray-400 pb-2"><span class="inline-block leading-relaxed break-all pr-2"><i class="fas fa-link mr-1 text-gray-300"></i>溯源網址: <br class="sm:hidden"> ${traceUrl} <span class="inline-block ml-2 align-middle text-[11px] font-mono font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 tracking-wider shadow-sm">#${displayCode}</span></span><i class="fas fa-qrcode text-gray-300 text-xl flex-shrink-0 mb-0.5"></i></div>
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end text-[10px] text-gray-400 pb-2"><span class="inline-block leading-relaxed break-all pr-2"><i class="fas fa-link mr-1 text-gray-300"></i>溯源網址: <br class="sm:hidden"> ${traceUrl} <span class="inline-block ml-2 align-middle text-[11px] font-mono font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 tracking-wider shadow-sm">#${displayCode}</span></span></div>
                 `;
 
                 card.querySelector('.share-card-btn').onclick = (e) => {
                     e.stopPropagation();
-                    if (navigator.clipboard && window.isSecureContext) {
-                        navigator.clipboard.writeText(traceUrl).then(() => window.showToast('🔗 專屬計畫連結已複製！')).catch(() => window.prompt('請複製此連結:', traceUrl));
-                    } else {
-                        const textArea = document.createElement("textarea"); textArea.value = traceUrl; textArea.style.position = "fixed"; textArea.style.left = "-9999px"; document.body.appendChild(textArea); textArea.select();
-                        try { document.execCommand('copy'); window.showToast('🔗 專屬計畫連結已複製！'); } catch(err) { window.prompt('請複製此連結:', traceUrl); } document.body.removeChild(textArea);
-                    }
+                    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(traceUrl).then(() => window.showToast('🔗 專屬計畫連結已複製！')).catch(() => window.prompt('請複製此連結:', traceUrl)); } 
+                    else { const textArea = document.createElement("textarea"); textArea.value = traceUrl; textArea.style.position = "fixed"; textArea.style.left = "-9999px"; document.body.appendChild(textArea); textArea.select(); try { document.execCommand('copy'); window.showToast('🔗 專屬計畫連結已複製！'); } catch(err) { window.prompt('請複製此連結:', traceUrl); } document.body.removeChild(textArea); }
                 };
 
                 card.querySelector('.delete-btn').onclick = async (e) => {
                     e.stopPropagation(); 
                     const pwd = prompt(`⚠️ 準備刪除計畫「${proj.name}」。請輸入密碼：`); 
                     if (pwd !== 'mori2025') { if (pwd !== null) window.showToast('密碼錯誤'); return; }
-                    
                     if (!confirm(`確定要永久刪除「${proj.name}」嗎？`)) return;
-                    
-                    if (db && !isOfflineMode && !proj.id.startsWith('mock_')) { 
-                        try { 
-                            await deleteDoc(doc(db, 'gov_projects', proj.id)); 
-                            window.showToast('已刪除！'); 
-                        } catch(err) { 
-                            window.showToast('刪除失敗'); 
-                        } 
-                    } else { 
-                        globalGovData.projects = globalGovData.projects.filter(p => p.id !== proj.id); 
-                        renderGovDashboard(); 
-                        updateProjectDropdown(); 
-                        window.showToast('已刪除！'); 
-                    }
+                    if (db && !isOfflineMode && !proj.id.startsWith('mock_')) { try { await deleteDoc(doc(db, 'gov_projects', proj.id)); window.showToast('已刪除！'); } catch(err) { window.showToast('刪除失敗'); } } 
+                    else { globalGovData.projects = globalGovData.projects.filter(p => p.id !== proj.id); renderGovDashboard(); updateProjectDropdown(); window.showToast('已刪除！'); }
                 };
 
-                card.querySelector('.download-btn').onclick = (e) => {
-                    e.stopPropagation();
-                    window.exportDashboardCard(wrapper, `探探里山_計畫儀表板_${proj.name || '未命名'}.png`);
-                };
+                card.querySelector('.download-btn').onclick = (e) => { e.stopPropagation(); window.exportDashboardCard(wrapper, `探探里山_計畫儀表板_${proj.name || '未命名'}.png`); };
 
                 const summaryToggle = card.querySelector('.summary-gov-toggle');
-                if (summaryToggle) {
-                    summaryToggle.onclick = (e) => {
-                        e.stopPropagation();
-                        if (summaryState.govSelected.has(proj.id)) summaryState.govSelected.delete(proj.id);
-                        else summaryState.govSelected.add(proj.id);
-                        document.getElementById('gov-summary-count').textContent = summaryState.govSelected.size;
-                        renderGovDashboard();
-                    };
-                }
+                if (summaryToggle) { summaryToggle.onclick = (e) => { e.stopPropagation(); if (summaryState.govSelected.has(proj.id)) summaryState.govSelected.delete(proj.id); else summaryState.govSelected.add(proj.id); document.getElementById('gov-summary-count').textContent = summaryState.govSelected.size; renderGovDashboard(); }; }
 
                 wrapper.appendChild(card); grid.appendChild(wrapper);
-            });
-
-            grid.querySelectorAll('.auth-card-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    window.handleAuthorization(e.currentTarget.dataset.id, e.currentTarget.dataset.type);
-                });
             });
         }
 
         function renderEntProjectsDashboard() {
-            const grid = document.getElementById('enterprise-grid');
-            if(!grid) return; grid.innerHTML = '';
+            const grid = document.getElementById('enterprise-grid'); if(!grid) return; grid.innerHTML = '';
             if (globalEntData.projects.length === 0) { grid.innerHTML = '<div class="col-span-full py-8 text-center text-gray-400 border border-dashed rounded-xl">目前尚無企業活動</div>'; return; }
             
             globalEntData.projects.forEach(proj => {
                 const isExpired = proj.deadline && new Date() > new Date(proj.deadline);
                 const opacityClass = isExpired ? 'bg-gray-50 opacity-80' : 'bg-white';
-                const ec = Number(proj.eval_count) || 0;
-                const totalScore = Number(proj.total_score) || 0;
+                const ec = Number(proj.eval_count) || 0; const totalScore = Number(proj.total_score) || 0;
                 let baseAvgNum = ec > 0 ? (totalScore / (ec * 12)) : 0; baseAvgNum = Math.min(5.0, baseAvgNum);
                 let avgE = baseAvgNum.toFixed(1), avgS = baseAvgNum.toFixed(1), avgG = baseAvgNum.toFixed(1);
                 const scoreE = Number(proj.score_e) || 0, scoreS = Number(proj.score_s) || 0, scoreG = Number(proj.score_g) || 0, esgSum = scoreE + scoreS + scoreG;
-                if (esgSum > 0) {
-                    const weightE = scoreE / (esgSum / 3), weightS = scoreS / (esgSum / 3), weightG = scoreG / (esgSum / 3);
-                    avgE = Math.min(5.0, baseAvgNum * weightE).toFixed(1); avgS = Math.min(5.0, baseAvgNum * weightS).toFixed(1); avgG = Math.min(5.0, baseAvgNum * weightG).toFixed(1);
-                }
-                const finalOverallNum = (Number(avgE) + Number(avgS) + Number(avgG)) / 3;
-                const avgOverall = finalOverallNum > 0 ? finalOverallNum.toFixed(1) : "0.0";
-                const avgOverallPercent = finalOverallNum > 0 ? (finalOverallNum / 5) * 100 : 0;
-                
-                const wrapper = document.createElement('div'); wrapper.className = "relative h-full";
+                if (esgSum > 0) { const weightE = scoreE / (esgSum / 3), weightS = scoreS / (esgSum / 3), weightG = scoreG / (esgSum / 3); avgE = Math.min(5.0, baseAvgNum * weightE).toFixed(1); avgS = Math.min(5.0, baseAvgNum * weightS).toFixed(1); avgG = Math.min(5.0, baseAvgNum * weightG).toFixed(1); }
+                const finalOverallNum = (Number(avgE) + Number(avgS) + Number(avgG)) / 3; const avgOverall = finalOverallNum > 0 ? finalOverallNum.toFixed(1) : "0.0"; const avgOverallPercent = finalOverallNum > 0 ? (finalOverallNum / 5) * 100 : 0;
+                const wrapper = document.createElement('div'); wrapper.className = "relative h-full wrapper-to-export";
 
                 let feedbackHtml = '';
                 if (proj.feedbacks && proj.feedbacks.length > 0) {
@@ -1457,9 +1180,7 @@
                     if (isExpired) {
                         const isChecked = summaryState.entSelected.has(proj.id);
                         summaryOverlay = `<div class="absolute inset-0 z-30 rounded-2xl cursor-pointer summary-ent-toggle ${isChecked ? 'border-4 border-yellow-400 bg-yellow-400/10' : 'border border-gray-300 bg-white/60 hover:bg-white/30'} transition-all" data-id="${proj.id}"><div class="absolute top-4 left-4 w-6 h-6 rounded border-2 ${isChecked ? 'border-yellow-500 bg-yellow-500' : 'border-gray-400 bg-white'} flex items-center justify-center shadow-sm">${isChecked ? '<i class="fas fa-check text-white text-xs"></i>' : ''}</div></div>`;
-                    } else {
-                        summaryOverlay = `<div class="absolute inset-0 bg-gray-200/70 z-30 rounded-2xl cursor-not-allowed backdrop-blur-[1px]" onclick="window.showToast('⚠️ 此活動尚未截止歸戶，無法列入總承結算')"></div>`;
-                    }
+                    } else { summaryOverlay = `<div class="absolute inset-0 bg-gray-200/70 z-30 rounded-2xl cursor-not-allowed backdrop-blur-[1px]" onclick="window.showToast('⚠️ 此活動尚未截止歸戶，無法列入總承結算')"></div>`; }
                 }
 
                 const badgeHtml = isExpired 
@@ -1495,25 +1216,21 @@
                     <div class="grid grid-cols-2 gap-3 mt-2">
                         <div class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden group hover:border-mori-sage transition-colors">
                             <div class="absolute top-0 left-0 w-1 h-full bg-mori-forest"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black tracking-wide">員工累計減碳</p><span class="bg-green-50 text-mori-forest text-[10px] px-1.5 py-0.5 rounded flex items-center"><i class="fas fa-arrow-trend-up"></i></span></div>
-                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${Math.round(Number(proj.carbon) || 0).toLocaleString()} <span class="text-[10px] text-gray-400 font-normal ml-0.5">g/CO2e</span></p><div class="flex items-end gap-[2px] mb-0.5 opacity-30 group-hover:opacity-60 transition-opacity"><div class="w-1.5 h-2 bg-mori-forest rounded-t-sm"></div><div class="w-1.5 h-3 bg-mori-forest rounded-t-sm"></div><div class="w-1.5 h-4 bg-mori-forest rounded-t-sm"></div><div class="w-1.5 h-5 bg-mori-forest rounded-t-sm"></div></div></div>
+                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-1">${Math.round(Number(proj.carbon) || 0).toLocaleString()} <span class="text-[10px] text-gray-400 font-normal ml-0.5">g/CO2e</span></p></div>
                         </div>
                         <div class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden group hover:border-mori-wood transition-colors">
                             <div class="absolute top-0 left-0 w-1 h-full bg-mori-wood"></div><div class="flex justify-between items-start mb-2"><p class="text-[13px] text-gray-700 font-black tracking-wide">員工綠色消費</p><span class="bg-yellow-50 text-yellow-700 text-[10px] px-1.5 py-0.5 rounded flex items-center"><i class="fas fa-arrow-trend-up"></i></span></div>
-                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal mr-0.5">$</span>${(Number(proj.green) || 0).toLocaleString()}</p><div class="flex items-end gap-[2px] mb-0.5 opacity-30 group-hover:opacity-60 transition-opacity"><div class="w-1.5 h-2 bg-mori-wood rounded-t-sm"></div><div class="w-1.5 h-3 bg-mori-wood rounded-t-sm"></div><div class="w-1.5 h-4 bg-mori-wood rounded-t-sm"></div><div class="w-1.5 h-5 bg-mori-wood rounded-t-sm"></div></div></div>
+                            <div class="flex justify-between items-end"><p class="font-black text-gray-700 text-xl flex items-baseline gap-0.5"><span class="text-[12px] text-gray-400 font-normal mr-0.5">$</span>${(Number(proj.green) || 0).toLocaleString()}</p></div>
                         </div>
                     </div>
                     ${sroiHtml}${feedbackHtml}
-                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end text-[10px] text-gray-400 pb-2"><span class="inline-block leading-relaxed break-all pr-2"><i class="fas fa-link mr-1 text-gray-300"></i>溯源網址: <br class="sm:hidden"> ${traceUrl} <span class="inline-block ml-2 align-middle text-[11px] font-mono font-black text-mori-forest bg-mori-light/50 px-2 py-0.5 rounded border border-mori-sage/30 tracking-wider shadow-sm">#${displayCode}</span></span><i class="fas fa-qrcode text-gray-300 text-xl flex-shrink-0 mb-0.5"></i></div>
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end text-[10px] text-gray-400 pb-2"><span class="inline-block leading-relaxed break-all pr-2"><i class="fas fa-link mr-1 text-gray-300"></i>溯源網址: <br class="sm:hidden"> ${traceUrl} <span class="inline-block ml-2 align-middle text-[11px] font-mono font-black text-mori-forest bg-mori-light/50 px-2 py-0.5 rounded border border-mori-sage/30 tracking-wider shadow-sm">#${displayCode}</span></span></div>
                 `;
 
                 card.querySelector('.share-card-btn').onclick = (e) => {
                     e.stopPropagation();
-                    if (navigator.clipboard && window.isSecureContext) {
-                        navigator.clipboard.writeText(traceUrl).then(() => window.showToast('🔗 專屬企業連結已複製！')).catch(() => window.prompt('請複製此連結:', traceUrl));
-                    } else {
-                        const textArea = document.createElement("textarea"); textArea.value = traceUrl; textArea.style.position = "fixed"; textArea.style.left = "-9999px"; document.body.appendChild(textArea); textArea.select();
-                        try { document.execCommand('copy'); window.showToast('🔗 專屬企業連結已複製！'); } catch(err) { window.prompt('請複製此連結:', traceUrl); } document.body.removeChild(textArea);
-                    }
+                    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(traceUrl).then(() => window.showToast('🔗 專屬企業連結已複製！')).catch(() => window.prompt('請複製此連結:', traceUrl)); } 
+                    else { const textArea = document.createElement("textarea"); textArea.value = traceUrl; textArea.style.position = "fixed"; textArea.style.left = "-9999px"; document.body.appendChild(textArea); textArea.select(); try { document.execCommand('copy'); window.showToast('🔗 專屬企業連結已複製！'); } catch(err) { window.prompt('請複製此連結:', traceUrl); } document.body.removeChild(textArea); }
                 };
 
                 card.querySelector('.delete-btn').onclick = async (e) => {
@@ -1523,30 +1240,12 @@
                     else { globalEntData.projects = globalEntData.projects.filter(p => p.id !== proj.id); renderEntProjectsDashboard(); updateEntProjectDropdown(); window.showToast('已刪除！'); }
                 };
 
-                card.querySelector('.download-btn').onclick = (e) => {
-                    e.stopPropagation();
-                    window.exportDashboardCard(wrapper, `探探里山_企業儀表板_${proj.orgName || '未命名'}.png`);
-                };
+                card.querySelector('.download-btn').onclick = (e) => { e.stopPropagation(); window.exportDashboardCard(wrapper, `探探里山_企業儀表板_${proj.orgName || '未命名'}.png`); };
 
                 const summaryToggle = card.querySelector('.summary-ent-toggle');
-                if (summaryToggle) {
-                    summaryToggle.onclick = (e) => {
-                        e.stopPropagation();
-                        if (summaryState.entSelected.has(proj.id)) summaryState.entSelected.delete(proj.id);
-                        else summaryState.entSelected.add(proj.id);
-                        document.getElementById('ent-summary-count').textContent = summaryState.entSelected.size;
-                        renderEntProjectsDashboard();
-                    };
-                }
+                if (summaryToggle) { summaryToggle.onclick = (e) => { e.stopPropagation(); if (summaryState.entSelected.has(proj.id)) summaryState.entSelected.delete(proj.id); else summaryState.entSelected.add(proj.id); document.getElementById('ent-summary-count').textContent = summaryState.entSelected.size; renderEntProjectsDashboard(); }; }
 
                 wrapper.appendChild(card); grid.appendChild(wrapper);
-            });
-
-            grid.querySelectorAll('.auth-card-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    window.handleAuthorization(e.currentTarget.dataset.id, e.currentTarget.dataset.type);
-                });
             });
         }
 
@@ -1568,9 +1267,7 @@
                 let displayProjects = globalEntData.projects;
                 if (keyword) {
                     displayProjects = displayProjects.filter(proj => 
-                        (proj.orgName && proj.orgName.toLowerCase().includes(keyword)) ||
-                        (proj.event && proj.event.toLowerCase().includes(keyword)) ||
-                        (proj.year && String(proj.year).toLowerCase().includes(keyword))
+                        (proj.orgName && proj.orgName.toLowerCase().includes(keyword)) || (proj.event && proj.event.toLowerCase().includes(keyword)) || (proj.year && String(proj.year).toLowerCase().includes(keyword))
                     );
                 }
                 select.innerHTML = '<option value="">-- 選擇企業 --</option>' + displayProjects.map(p => {
@@ -1615,7 +1312,7 @@
         }
 
         // ==========================================
-        // 4. Firebase 真實監聽與整合 
+        // 6. Firebase 監聽與綁定 
         // ==========================================
         function initGlobalCounters() {
             if (!db) return;
@@ -1671,301 +1368,151 @@
                     if(user && db) {
                         initGlobalCounters(); 
                         if (!pageLoaded) { pageLoaded = true; setDoc(doc(db, 'system_stats', 'global_absolute'), { visitor_count: increment(1) }, { merge: true }).catch(e => {}); }
+                        window.syncOfflineData(); 
                     } else if (isOfflineMode) { loadMockData(); }
                 });
             } catch (e) { isOfflineMode = true; loadMockData(); }
         }
 
         // ==========================================
-        // 6. UI 渲染與畫面更新模組
+        // 7. 🚀 核心綁定模組 (Events Binding)
         // ==========================================
-        function renderTransportButtons() {
-            const grid = document.getElementById('transport-grid'); if(!grid) return; grid.innerHTML = '';
-            Object.keys(transportData).forEach(k => {
-                const t = transportData[k]; const btn = document.createElement('div');
-                btn.className = "bg-white p-4 rounded-xl border-2 border-transparent hover:border-mori-sage cursor-pointer shadow-sm text-center transition-all flex flex-col items-center justify-center hover:scale-105";
-                const textSizeClass = (k === 'walk_bike' || k === 'taxi') ? 'text-[10.5px]' : 'text-[13px]';
-                btn.innerHTML = `<div class="text-3xl mb-2">${t.icon}</div><div class="${textSizeClass} font-black text-gray-800 tracking-wide">${t.name}</div>`;
-                btn.onclick = () => {
-                    if (k === 'taxi') { window.openModal('taxi-info-modal'); } 
-                    else if (k === 'drive_alone') { window.openModal('drive-alone-modal'); } 
-                    else if (k === 'thsr') { window.openModal('hsr-modal'); } 
-                    else {
-                        // 🚀解耦核心：儲存狀態後直接跳轉至獨立子網頁
-                        state.currentTransport = k; 
-                        window.showToast(`已選擇交通方式：${t.name}，即將開啟任務地圖...`); 
-                        saveData();
-                        setTimeout(() => { window.location.href = 'mission.html'; }, 600);
-                    }
-                };
-                grid.appendChild(btn);
-            });
-        }
-
-        function renderCityOptions() {
-            const selects = [document.getElementById('city-select'), document.getElementById('hsr-start'), document.getElementById('hsr-end')];
-            const hsrHtml = '<option value="">-- 選擇車站 --</option>' + hsrStations.map(c => `<option value="${c.name}">${c.name}站</option>`).join('');
-            if(selects[1]) selects[1].innerHTML = hsrHtml;
-            if(selects[2]) selects[2].innerHTML = hsrHtml;
-        }
-
-        function renderSroiOptions() {
-            const select = document.getElementById('sroi-unit-select'); if(!select) return;
-            select.innerHTML = '<option value="">-- 選擇 SROI 合作農場 --</option>' + sroiUnits.map(u => `<option value="${u.name}" data-weight="${u.weight}">${u.name} (加權 x${u.weight})</option>`).join('');
-        }
-
-        function processTripCompletion(distKm, carbon) {
-            state.totalMileage += (distKm * 1000); 
-            state.totalCarbon += carbon;
-            state.totalScore += Math.round(carbon / 10);
-            updateDisplays();
-            addToGlobalTotal(carbon, 0);
-            window.addLog(`完成旅程: ${distKm.toFixed(1)}km, 獲得減碳 ${carbon}g`);
-            window.showToast('✅ 積分已記錄！');
-        }
-
         function bindGlobalEvents() {
-            document.getElementById('player-name')?.addEventListener('change', (e) => {
-                state.playerName = e.target.value.trim();
-                saveData();
-                window.showToast('✅ 旅者姓名已自動儲存！');
-            });
-
-            document.querySelectorAll('.close-button').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const modal = e.currentTarget.closest('.modal-overlay');
-                    if (modal) window.closeModal(modal.id);
-                });
-            });
-            
-            document.getElementById('taxi-confirm-btn')?.addEventListener('click', () => {
-                state.currentTransport = 'taxi'; 
-                saveData();
-                window.closeModal('taxi-info-modal'); 
-                window.showToast('已設定為導覽車，正在前往任務地圖...');
-                setTimeout(() => { window.location.href = 'mission.html'; }, 600);
-            });
-
-            document.getElementById('drive-alone-confirm-btn')?.addEventListener('click', () => {
-                state.currentTransport = 'drive_alone'; 
-                saveData();
-                window.closeModal('drive-alone-modal'); 
-                window.showToast('已設定為單人自駕，正在前往任務地圖...');
-                setTimeout(() => { window.location.href = 'mission.html'; }, 600);
-            });
-
-            document.getElementById('hsr-confirm-btn')?.addEventListener('click', () => { window.openModal('hsr-ticket-modal'); window.closeModal('hsr-modal'); });
-            document.getElementById('hsr-start')?.addEventListener('change', checkHsrInputs);
-            document.getElementById('hsr-end')?.addEventListener('change', checkHsrInputs);
-            
-            function checkHsrInputs() {
-                const s1 = document.getElementById('hsr-start').value; const s2 = document.getElementById('hsr-end').value; const btn = document.getElementById('hsr-confirm-btn');
-                if (s1 && s2 && s1 !== s2) {
-                    const st1 = hsrStations.find(s => s.name === s1);
-                    const st2 = hsrStations.find(s => s.name === s2);
-                    const R = 6371; 
-                    const dLat = (st2.lat - st1.lat) * Math.PI / 180; 
-                    const dLng = (st2.lng - st1.lng) * Math.PI / 180;
-                    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(st1.lat * Math.PI / 180) * Math.cos(st2.lat * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
-                    const distKm = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-                    const reduction = Math.round(distKm * (transportData['thsr'].reduction / 10)); 
-                    
-                    window.pendingHsrTrip = { distKm, reduction };
-
-                    btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); 
-                    document.getElementById('hsr-result').innerHTML = `<span class="text-green-600 font-bold tracking-wide"><i class="fas fa-check-circle mr-1"></i>路線完成 | 距離: <span class="text-mori-forest">${distKm.toFixed(1)}km</span>，減碳: <span class="text-mori-forest">${reduction}g</span></span>`;
-                } else {
-                    btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); document.getElementById('hsr-result').textContent = '請選擇不同的起訖站進行計算';
-                    window.pendingHsrTrip = null;
-                }
-            }
-
-            document.getElementById('hsr-ticket-verify-btn')?.addEventListener('click', () => {
-                const tkt = document.getElementById('hsr-ticket-verify-input').value;
-                if(tkt.length > 3) {
-                    if (window.pendingHsrTrip) {
-                        processTripCompletion(window.pendingHsrTrip.distKm, window.pendingHsrTrip.reduction);
-                        window.pendingHsrTrip = null; 
-                    }
-                    state.currentTransport = 'thsr'; 
-                    saveData();
-                    window.closeModal('hsr-ticket-modal'); 
-                    window.showToast('高鐵驗證成功！減碳里程已登錄，正在前往任務地圖...');
-                    setTimeout(() => { window.location.href = 'mission.html'; }, 1000);
-                } else { window.showToast('請輸入正確的票號'); }
-            });
-
-            const quickManualInput = document.getElementById('quick-manual-km');
-            const quickManualResult = document.getElementById('quick-manual-result');
-            const quickManualSubmit = document.getElementById('quick-manual-submit-btn');
-
-            if (quickManualInput && quickManualResult && quickManualSubmit) {
-                quickManualInput.addEventListener('input', (e) => {
-                    const km = parseFloat(e.target.value);
-                    if (isNaN(km) || km <= 0) {
-                        quickManualResult.textContent = '減碳 0 g';
-                        quickManualSubmit.disabled = true;
-                        quickManualSubmit.classList.add('opacity-50', 'cursor-not-allowed');
-                        return;
-                    }
-                    const reduction = Math.round(km * 100);
-                    quickManualResult.innerHTML = `減碳 <span class="text-emerald-600 font-black text-lg">${reduction}</span> g`;
-                    
-                    quickManualSubmit.disabled = false;
-                    quickManualSubmit.classList.remove('opacity-50', 'cursor-not-allowed');
-                    
-                    pendingTrip = { distKm: km, reduction: reduction, isValid: true };
-                });
-
-                quickManualSubmit.addEventListener('click', () => {
-                    if (pendingTrip.isValid) {
-                        const codeInput = document.getElementById('reward-verify-code');
-                        if (codeInput) codeInput.value = '';
-                        window.openModal('reward-verification-modal'); 
-                        
-                        quickManualInput.value = '';
-                        quickManualResult.textContent = '減碳 0 g';
-                        quickManualSubmit.disabled = true;
-                        quickManualSubmit.classList.add('opacity-50', 'cursor-not-allowed');
-                    }
-                });
-            }
-
-            document.getElementById('reward-verify-full-btn')?.addEventListener('click', () => {
-                const code = document.getElementById('reward-verify-code').value;
-                if(code.length > 0) { processTripCompletion(pendingTrip.distKm, pendingTrip.reduction); window.closeModal('reward-verification-modal'); } 
-                else { window.showToast('請輸入密碼'); }
-            });
-            document.getElementById('reward-verify-tenth-btn')?.addEventListener('click', () => {
-                processTripCompletion(pendingTrip.distKm, Math.round(pendingTrip.reduction / 10)); window.closeModal('reward-verification-modal');
-            });
-
-            document.querySelectorAll('.label-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    document.querySelectorAll('.label-card').forEach(c => c.classList.remove('border-mori-forest', 'bg-mori-light', 'shadow-md'));
-                    e.currentTarget.classList.add('border-mori-forest', 'bg-mori-light', 'shadow-md');
-                });
-            });
-
-            document.getElementById('log-sroi-btn')?.addEventListener('click', () => {
-                const select = document.getElementById('sroi-unit-select'); const price = parseFloat(document.getElementById('sroi-price').value) || 0;
-                if(select.value && price > 0) {
-                    const weight = parseFloat(select.options[select.selectedIndex].dataset.weight) || 1;
-                    const total = price * weight; state.sroiProcure += total; addToGlobalTotal(0, total); window.addLog(`SROI 登錄: $${total.toFixed(0)}`); updateDisplays(); window.closeModal('green-consumption-modal'); window.showToast('SROI 價值登錄成功！');
-                } else { window.showToast('請選擇農場並輸入金額'); }
-            });
-
+            // 切換綠消與 SROI 頁籤
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active-tab', 'bg-white', 'text-mori-forest', 'shadow-sm'); b.classList.add('text-gray-500'); });
-                    e.target.classList.remove('text-gray-500'); e.target.classList.add('active-tab', 'bg-white', 'text-mori-forest', 'shadow-sm');
+                    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('bg-white', 'text-mori-forest', 'shadow-sm', 'active-tab'); b.classList.add('text-gray-500'); });
+                    e.currentTarget.classList.remove('text-gray-500'); e.currentTarget.classList.add('bg-white', 'text-mori-forest', 'shadow-sm', 'active-tab');
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                    document.getElementById(e.target.dataset.tab).classList.remove('hidden');
+                    document.getElementById(e.currentTarget.dataset.tab).classList.remove('hidden');
                 });
             });
 
-            function fallbackCopy(text, customMsg = '🔗 網址複製成功！') {
-                const textArea = document.createElement("textarea"); textArea.value = text; textArea.style.position = "fixed"; textArea.style.left = "-9999px";
-                document.body.appendChild(textArea); textArea.focus(); textArea.select();
-                try { document.execCommand('copy'); window.showToast(customMsg); } catch (err) { window.prompt("請手動複製以下網址分享：", text); }
-                document.body.removeChild(textArea);
-            }
-
-            document.getElementById('header-share-btn')?.addEventListener('click', () => window.openModal('qrcode-modal'));
-            
-            document.getElementById('copy-link-btn')?.addEventListener('click', (e) => {
-                if (e) e.preventDefault(); const url = 'https://farmcmd.github.io/ESGT/', msg = '🔗 網址複製成功！';
-                const btn = e.currentTarget, originalHtml = btn.innerHTML; btn.innerHTML = '<i class="fas fa-check mr-1.5 text-green-500"></i> 已複製';
-                setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
-                if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(url).then(() => window.showToast(msg)).catch(() => fallbackCopy(url, msg)); } else { fallbackCopy(url, msg); }
+            // 綠色消費標章選擇
+            document.querySelectorAll('.label-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    document.querySelectorAll('.label-card').forEach(c => { c.classList.remove('border-mori-forest', 'bg-mori-light', 'shadow-md'); c.querySelector('i').classList.remove('text-mori-forest'); c.querySelector('span').classList.remove('text-mori-forest'); });
+                    const cur = e.currentTarget;
+                    cur.classList.add('border-mori-forest', 'bg-mori-light', 'shadow-md');
+                    cur.querySelector('i').classList.add('text-mori-forest');
+                    cur.querySelector('span').classList.add('text-mori-forest');
+                });
             });
 
-            let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-            document.getElementById('install-pwa-btn')?.addEventListener('click', () => {
-                const modal = document.getElementById('pwa-install-modal'); if (!modal) return;
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream, isAndroid = /Android/.test(navigator.userAgent);
-                document.getElementById('pwa-native-install-section')?.classList.add('hidden'); document.getElementById('pwa-ios-instruction')?.classList.add('hidden'); document.getElementById('pwa-android-instruction')?.classList.add('hidden');
-                if (deferredPrompt) { document.getElementById('pwa-native-install-section')?.classList.remove('hidden'); } 
-                else if (isIOS) { document.getElementById('pwa-ios-instruction')?.classList.remove('hidden'); } 
-                else { document.getElementById('pwa-android-instruction')?.classList.remove('hidden'); }
-                window.openModal('pwa-install-modal');
+            // 綠色消費計算
+            const calcGreen = () => {
+                const qty = parseFloat(document.getElementById('green-qty').value) || 0;
+                const price = parseFloat(document.getElementById('green-price').value) || 0;
+                document.getElementById('green-total-display').textContent = '$' + Math.floor(qty * price).toLocaleString();
+            };
+            document.getElementById('green-qty')?.addEventListener('input', calcGreen);
+            document.getElementById('green-price')?.addEventListener('input', calcGreen);
+
+            // 登錄綠消按鈕
+            document.getElementById('log-green-procure-btn')?.addEventListener('click', () => {
+                const qty = parseFloat(document.getElementById('green-qty').value) || 0;
+                const price = parseFloat(document.getElementById('green-price').value) || 0;
+                const total = Math.floor(qty * price);
+                if (total > 0) {
+                    state.greenProcure += total; state.totalScore += Math.floor(total / 100);
+                    window.addLog(`登錄綠色採購: $${total}`);
+                    updateDisplays(); saveData(); window.closeModal('green-consumption-modal');
+                    document.getElementById('green-qty').value = '1'; document.getElementById('green-price').value = ''; calcGreen();
+                    window.showToast(`✅ 成功登錄綠色消費 $${total}`);
+                } else { window.showToast('請輸入有效金額'); }
+            });
+
+            // 登錄 SROI 按鈕
+            document.getElementById('log-sroi-btn')?.addEventListener('click', () => {
+                const select = document.getElementById('sroi-unit-select');
+                const price = parseFloat(document.getElementById('sroi-price').value) || 0;
+                if (select.value && price > 0) {
+                    const weight = parseFloat(select.options[select.selectedIndex].dataset.weight) || 1;
+                    const total = Math.floor(price * weight);
+                    state.sroiProcure += total; state.totalScore += Math.floor(total / 100);
+                    window.addLog(`登錄 ${select.value} 價值: $${total}`);
+                    updateDisplays(); saveData(); window.closeModal('green-consumption-modal');
+                    document.getElementById('sroi-price').value = ''; select.value = '';
+                    window.showToast(`✅ 成功登錄 SROI 價值 $${total}`);
+                } else { window.showToast('請選擇單位並輸入有效金額'); }
+            });
+
+            // 手動里程登錄
+            const qkmInput = document.getElementById('quick-manual-km');
+            const qkmBtn = document.getElementById('quick-manual-submit-btn');
+            const qkmRes = document.getElementById('quick-manual-result');
+            if(qkmInput) {
+                qkmInput.addEventListener('input', (e) => {
+                    const km = parseFloat(e.target.value);
+                    if (km > 0) {
+                        const reduction = Math.round(km * 400);
+                        qkmRes.textContent = `減碳 ${reduction} g`;
+                        qkmBtn.disabled = false; qkmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        qkmRes.textContent = '減碳 0 g';
+                        qkmBtn.disabled = true; qkmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                });
+            }
+            if(qkmBtn) {
+                qkmBtn.addEventListener('click', () => {
+                    const km = parseFloat(qkmInput.value);
+                    if (km > 0) {
+                        const reduction = Math.round(km * 400);
+                        state.totalMileage += (km * 1000); state.totalCarbon += reduction; state.totalScore += Math.round(reduction / 10);
+                        addToGlobalTotal(reduction, 0);
+                        window.addLog(`手動登錄低碳里程: ${km}km`);
+                        updateDisplays(); saveData();
+                        qkmInput.value = ''; qkmRes.textContent = '減碳 0 g';
+                        qkmBtn.disabled = true; qkmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        window.showToast('✅ 成功登錄低碳里程！');
+                    }
+                });
+            }
+
+            // 高鐵里程計算
+            const hsrStart = document.getElementById('hsr-start'), hsrEnd = document.getElementById('hsr-end'), hsrBtn = document.getElementById('hsr-confirm-btn'), hsrRes = document.getElementById('hsr-result');
+            const calcHsr = () => {
+                if(hsrStart.value && hsrEnd.value && hsrStart.value !== hsrEnd.value) {
+                    const s = hsrStations.find(x=>x.name === hsrStart.value), e = hsrStations.find(x=>x.name === hsrEnd.value);
+                    const distMeters = google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng(s.lat, s.lng), new google.maps.LatLng(e.lat, e.lng));
+                    const distKm = distMeters / 1000; const reduction = Math.round(distKm * 65);
+                    window.pendingHsrTrip = { distKm, reduction };
+                    hsrRes.innerHTML = `預估鐵路距離 ${distKm.toFixed(1)}km<br>減碳貢獻 <span class="text-mori-forest font-black">${reduction}g</span>`;
+                    hsrBtn.disabled = false; hsrBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else { hsrRes.innerHTML = '請選擇不同的起訖站'; hsrBtn.disabled = true; hsrBtn.classList.add('opacity-50', 'cursor-not-allowed'); }
+            };
+            hsrStart?.addEventListener('change', calcHsr); hsrEnd?.addEventListener('change', calcHsr);
+            hsrBtn?.addEventListener('click', () => { window.closeModal('hsr-modal'); window.openModal('hsr-ticket-modal'); });
+
+            // 其他輔助按鈕
+            document.querySelectorAll('.close-button').forEach(btn => {
+                btn.addEventListener('click', (e) => { const modal = e.currentTarget.closest('.modal-overlay'); if (modal) window.closeModal(modal.id); });
+            });
+            document.getElementById('player-name')?.addEventListener('input', saveData);
+            document.getElementById('header-share-btn')?.addEventListener('click', () => window.openModal('qrcode-modal'));
+            document.getElementById('copy-link-btn')?.addEventListener('click', () => {
+                const url = 'https://farmcmd.github.io/ESGT/';
+                if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(url).then(() => window.showToast('🔗 網址已複製！')); }
+                else { const textArea = document.createElement("textarea"); textArea.value = url; document.body.appendChild(textArea); textArea.select(); document.execCommand('copy'); document.body.removeChild(textArea); window.showToast('🔗 網址已複製！'); }
+            });
+
+            // PWA 安裝邏輯
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault(); deferredPrompt = e;
+                const btn = document.getElementById('install-pwa-btn');
+                if (btn) { btn.classList.remove('hidden'); btn.onclick = () => { window.openModal('pwa-install-modal'); }; }
+                document.getElementById('pwa-native-install-section')?.classList.remove('hidden');
             });
             document.getElementById('pwa-native-install-btn')?.addEventListener('click', async () => {
-                if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') window.showToast('感謝您安裝探探里山 APP！'); deferredPrompt = null; window.closeModal('pwa-install-modal'); }
+                if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { window.closeModal('pwa-install-modal'); } deferredPrompt = null; }
             });
-
-            const langSelect = document.getElementById('custom-lang-select');
-            if (langSelect) {
-                const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]+)/);
-                let currentLang = 'zh-TW';
-                if (match) {
-                    const parsedLang = match[1].split('/').pop();
-                    const validLangs = Array.from(langSelect.options).map(o => o.value);
-                    if (validLangs.includes(parsedLang)) currentLang = parsedLang;
-                }
-                langSelect.value = currentLang;
-                if (currentLang === 'zh-TW') {
-                    const domain = window.location.hostname;
-                    document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                    if (domain) document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
-                }
-                langSelect.addEventListener('change', function(e) {
-                    const lang = e.target.value; const domain = window.location.hostname;
-                    if (lang === 'zh-TW') {
-                        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                        if (domain) document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
-                        window.showToast('🌐 恢復繁體中文，系統自動套用中...');
-                    } else {
-                        document.cookie = `googtrans=/zh-TW/${lang}; path=/;`;
-                        if (domain) document.cookie = `googtrans=/zh-TW/${lang}; path=/; domain=${domain};`;
-                        window.showToast('🌐 語言切換中，系統自動套用中...');
-                    }
-                    setTimeout(() => { window.location.reload(); }, 500);
-                });
-            }
-
-            document.getElementById('export-data-button')?.addEventListener('click', () => {
-                try {
-                    const dataStr = JSON.stringify(state, null, 2);
-                    const blob = new Blob([dataStr], { type: "application/json" });
-                    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url;
-                    a.download = `探探里山_個人進度備份_${window.getFormattedTime().replace(/[\/ :]/g, '')}.json`;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-                    window.showToast('✅ 個人進度檔匯出成功！');
-                } catch (e) { window.showToast('❌ 匯出失敗，請稍後再試。'); }
-            });
-
-            document.getElementById('import-data-btn-trigger')?.addEventListener('click', () => document.getElementById('import-data-input')?.click() );
-
-            document.getElementById('import-data-input')?.addEventListener('change', (e) => {
-                const file = e.target.files[0]; if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const importedState = JSON.parse(event.target.result);
-                        if (importedState && typeof importedState === 'object') {
-                            state = { ...state, ...importedState }; saveData(); updateDisplays();
-                            if(typeof renderCheckoutHistory === 'function') renderCheckoutHistory(); if(typeof renderLogs === 'function') renderLogs();
-                            if(document.getElementById('player-name')) document.getElementById('player-name').value = state.playerName || '';
-                            if(document.getElementById('player-code')) document.getElementById('player-code').textContent = state.playerCode || '...';
-                            window.showToast('✅ 進度檔匯入成功！所有資料已還原。');
-                        } else { window.showToast('❌ 檔案格式不符，無法匯入。'); }
-                    } catch (err) { window.showToast('❌ 檔案解析失敗，請確認是否為有效的備份檔。'); }
-                    e.target.value = ''; 
-                };
-                reader.readAsText(file);
-            });
-
-            document.getElementById('download-blank-btn')?.addEventListener('click', () => {
-                try {
-                    const blankState = { totalMileage: 0, totalCarbon: 0, totalScore: 0, playerName: '', playerCode: '', greenProcure: 0, sroiProcure: 0, projectProcure: 0, activityLogs: [], checkoutHistory: [], currentTransport: null };
-                    const dataStr = JSON.stringify(blankState, null, 2);
-                    const blob = new Blob([dataStr], { type: "application/json" });
-                    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url;
-                    a.download = `探探里山_空白重置檔.json`;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-                    window.showToast('✅ 空白重置檔下載成功！請利用匯入功能進行重置。');
-                } catch (e) { window.showToast('❌ 下載失敗，請稍後再試。'); }
+            const isIos = () => { const userAgent = window.navigator.userAgent.toLowerCase(); return /iphone|ipad|ipod/.test(userAgent); };
+            document.getElementById('install-pwa-btn')?.addEventListener('click', () => {
+                window.openModal('pwa-install-modal');
+                if (isIos() && !window.navigator.standalone) { document.getElementById('pwa-ios-instruction').classList.remove('hidden'); document.getElementById('pwa-native-install-section').classList.add('hidden'); }
+                else if (!deferredPrompt) { document.getElementById('pwa-android-instruction').classList.remove('hidden'); document.getElementById('pwa-native-install-section').classList.add('hidden'); }
             });
         }
 
@@ -1986,45 +1533,10 @@
                 } else { window.showToast('請先選擇要歸戶的企業'); }
             });
 
-            // 🚀 綁定企業問卷「快速填滿 5 分」按鈕
             document.getElementById('quick-fill-ent-stars-btn')?.addEventListener('click', () => {
-                document.querySelectorAll('.ent-eval-q .number-rating i').forEach(i => {
-                    i.classList.remove('text-gray-300');
-                    i.classList.add('text-yellow-400');
-                });
+                document.querySelectorAll('.ent-eval-q .number-rating i').forEach(i => { i.classList.remove('text-gray-300'); i.classList.add('text-yellow-400'); });
             });
             
-            document.getElementById('create-ent-proj-btn')?.addEventListener('click', async () => {
-                const org = document.getElementById('ent-create-org').value.trim();
-                const event = document.getElementById('ent-create-event').value.trim();
-                if (!org || !event) return window.showToast('請填寫企業名稱與活動名稱');
-
-                const newCardCode = Math.random().toString(36).substring(2, 7).toUpperCase();
-
-                const newProj = {
-                    orgName: org, event: event, year: document.getElementById('ent-create-year').value.trim() || new Date().getFullYear().toString(),
-                    websiteUrl: document.getElementById('ent-create-website').value.trim(), remark: document.getElementById('ent-create-remark').value.trim(),
-                    deadline: document.getElementById('ent-create-deadline').value || null,
-                    linkedProject: {
-                        type: document.getElementById('ent-create-proj-type').value,
-                        amount: parseFloat(document.getElementById('ent-create-proj-amount').value) || 0,
-                        sroiWeight: parseFloat(document.getElementById('ent-create-proj-sroi').value) || 1.0
-                    },
-                    carbon: 0, green: 0, eval_count: 0, total_score: 0, score_e: 0, score_s: 0, score_g: 0, feedbacks: [],
-                    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), isAuthorized: true, cardCode: newCardCode
-                };
-
-                if (db && !isOfflineMode) {
-                    try { await addDoc(collection(db, 'ent_projects'), newProj); window.showToast('✅ 企業儀表板建立成功！'); } 
-                    catch(e) { window.showToast('❌ 建立失敗，請檢查網路連線'); }
-                } else {
-                    newProj.id = 'mock_ent_' + Date.now(); globalEntData.projects.push(newProj);
-                    renderEntProjectsDashboard(); updateEntProjectDropdown(); renderAuthList(); window.showToast('✅ (離線) 企業儀表板建立成功！');
-                }
-                
-                document.getElementById('ent-create-org').value = ''; document.getElementById('ent-create-event').value = '';
-            });
-
             document.getElementById('submit-ent-eval-btn')?.addEventListener('click', async () => {
                 if(!pendingEntEvalSubmission) return;
                 
@@ -2042,19 +1554,28 @@
 
                 const feedbackText = document.getElementById('ent-eval-feedback').value.trim();
                 const currentFeedback = feedbackText ? { text: feedbackText, time: new Date().toISOString() } : null;
-
                 const totalGreen = state.greenProcure + state.sroiProcure;
                 
-                if (db && !isOfflineMode && !pendingEntEvalSubmission.startsWith('mock_')) {
-                    try {
-                        const updates = {
-                            carbon: increment(state.totalCarbon), green: increment(totalGreen), eval_count: increment(1),
-                            total_score: increment(totalScore), score_e: increment(scoreE), score_s: increment(scoreS), score_g: increment(scoreG),
-                            updatedAt: serverTimestamp()
-                        };
-                        if (currentFeedback) updates.feedbacks = arrayUnion(currentFeedback);
-                        await setDoc(doc(db, 'ent_projects', pendingEntEvalSubmission), updates, { merge: true });
-                    } catch(e) { window.showToast('雲端歸戶失敗，請重試'); return; }
+                if (!pendingEntEvalSubmission.startsWith('mock_')) {
+                    const updates = {
+                        carbon: increment(state.totalCarbon), green: increment(totalGreen), eval_count: increment(1),
+                        total_score: increment(totalScore), score_e: increment(scoreE), score_s: increment(scoreS), score_g: increment(scoreG)
+                    };
+                    const task = { type: 'ent_checkout', id: pendingEntEvalSubmission, data: updates, feedback: currentFeedback, timestamp: Date.now() };
+
+                    if (db && !isOfflineMode) {
+                        try {
+                            const finalUpdates = { ...updates, updatedAt: serverTimestamp() };
+                            if (currentFeedback) finalUpdates.feedbacks = arrayUnion(currentFeedback);
+                            await setDoc(doc(db, 'ent_projects', pendingEntEvalSubmission), finalUpdates, { merge: true });
+                        } catch(e) { 
+                            state.pendingSync.push(task); saveData(); 
+                            window.showToast('⚠️ 網路不穩，企業歸戶數據已暫存本機，將於連線後上傳。'); 
+                        }
+                    } else {
+                        state.pendingSync.push(task); saveData(); 
+                        window.showToast('⚠️ 處於離線模式，企業歸戶數據已安全暫存本機。');
+                    }
                 } else {
                     const proj = globalEntData.projects.find(p => p.id === pendingEntEvalSubmission);
                     if(proj) {
@@ -2072,6 +1593,31 @@
                 renderEntProjectsDashboard();
                 document.getElementById('download-cert-btn')?.click(); 
             });
+
+            document.getElementById('create-ent-proj-btn')?.addEventListener('click', async () => {
+                const orgName = document.getElementById('ent-create-org').value.trim();
+                const event = document.getElementById('ent-create-event').value.trim();
+                const year = document.getElementById('ent-create-year').value.trim() || new Date().getFullYear().toString();
+                const websiteUrl = document.getElementById('ent-create-website').value.trim();
+                const remark = document.getElementById('ent-create-remark').value.trim();
+                const deadlineStr = document.getElementById('ent-create-deadline').value;
+                const deadline = deadlineStr ? new Date(deadlineStr).toISOString() : null;
+
+                const projType = document.getElementById('ent-create-proj-type').value;
+                const amount = parseFloat(document.getElementById('ent-create-proj-amount').value) || 0;
+                const sroiWeight = parseFloat(document.getElementById('ent-create-proj-sroi').value) || 1.0;
+
+                if(!orgName || !event) return window.showToast('請填寫企業名稱與活動名稱！');
+                
+                const newProj = { orgName, event, year, websiteUrl, remark, deadline, linkedProject: { type: projType, amount, sroiWeight }, carbon: 0, green: 0, eval_count: 0, total_score: 0, score_e: 0, score_s: 0, score_g: 0, isAuthorized: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+                
+                if (db && !isOfflineMode) {
+                    try { await addDoc(collection(db, 'ent_projects'), newProj); window.showToast('✅ 成功建立專屬企業儀表板！'); document.getElementById('ent-create-org').value = ''; document.getElementById('ent-create-event').value = ''; } 
+                    catch (e) { window.showToast('❌ 建立失敗，請檢查網路連線。'); }
+                } else { window.showToast('⚠️ 目前處於離線狀態，無法建立新儀表板。'); }
+            });
+            
+            document.getElementById('ent-search-input')?.addEventListener('input', updateEntProjectDropdown);
         }
 
         function bindGovernmentFlow() {
@@ -2091,68 +1637,44 @@
                 } else { window.showToast('請先選擇要歸戶的計畫'); }
             });
 
-            // 🚀 綁定政府計畫問卷「快速填滿 5 分」按鈕
             document.getElementById('quick-fill-gov-stars-btn')?.addEventListener('click', () => {
-                document.querySelectorAll('.gov-eval-q .number-rating i').forEach(i => {
-                    i.classList.remove('text-gray-300');
-                    i.classList.add('text-yellow-400');
-                });
+                document.querySelectorAll('.gov-eval-q .number-rating i').forEach(i => { i.classList.remove('text-gray-300'); i.classList.add('text-yellow-400'); });
             });
             
-            document.getElementById('create-proj-btn')?.addEventListener('click', async () => {
-                const name = document.getElementById('host-proj-name').value.trim();
-                if (!name) return window.showToast('請填寫計畫名稱');
-
-                const newCardCode = Math.random().toString(36).substring(2, 7).toUpperCase();
-
-                const newProj = {
-                    name: name, event: document.getElementById('host-proj-event').value.trim(), date: document.getElementById('host-proj-date').value,
-                    desc: document.getElementById('host-proj-desc').value.trim(), supervisor: document.getElementById('host-proj-supervisor').value.trim(),
-                    organizer: document.getElementById('host-proj-organizer').value.trim(), executor: document.getElementById('host-proj-executor').value.trim(),
-                    coOrganizer: document.getElementById('host-proj-coorganizer').value.trim(), budget: parseFloat(document.getElementById('host-proj-budget').value) || 0,
-                    sroi: parseFloat(document.getElementById('host-proj-sroi').value) || 1.0, deadline: document.getElementById('host-proj-deadline').value || null,
-                    carbon: 0, green: 0, eval_count: 0, total_score: 0, feedbacks: [],
-                    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), isAuthorized: true, cardCode: newCardCode
-                };
-
-                if (db && !isOfflineMode) {
-                    try { await addDoc(collection(db, 'gov_projects'), newProj); window.showToast('✅ 政府儀表板建立成功！'); } 
-                    catch(e) { window.showToast('❌ 建立失敗，請檢查網路連線'); }
-                } else {
-                    newProj.id = 'mock_gov_' + Date.now(); globalGovData.projects.push(newProj);
-                    renderGovDashboard(); updateProjectDropdown(); renderAuthList(); window.showToast('✅ (離線) 政府儀表板建立成功！');
-                }
-                
-                document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = '';
-            });
-
             document.getElementById('submit-gov-eval-btn')?.addEventListener('click', async () => {
                 if(!pendingGovEvalSubmission) return;
                 
                 let totalScore = 0, answered = 0;
                 document.querySelectorAll('.gov-eval-q').forEach((qDiv) => {
                     const stars = Array.from(qDiv.querySelectorAll('.number-rating i.text-yellow-400'));
-                    if (stars.length > 0) {
-                        totalScore += stars.length; answered++;
-                    }
+                    if (stars.length > 0) { totalScore += stars.length; answered++; }
                 });
 
                 if (answered < 11) return window.showToast('請完成所有 11 題滿意度指標，協助提升未來計畫品質。');
 
                 const feedbackText = document.getElementById('gov-eval-feedback').value.trim();
                 const currentFeedback = feedbackText ? { text: feedbackText, time: new Date().toISOString() } : null;
-
                 const totalGreen = state.greenProcure + state.sroiProcure;
                 
-                if (db && !isOfflineMode && !pendingGovEvalSubmission.startsWith('mock_')) {
-                    try {
-                        const updates = {
-                            carbon: increment(state.totalCarbon), green: increment(totalGreen), eval_count: increment(1),
-                            total_score: increment(totalScore), updatedAt: serverTimestamp()
-                        };
-                        if (currentFeedback) updates.feedbacks = arrayUnion(currentFeedback);
-                        await setDoc(doc(db, 'gov_projects', pendingGovEvalSubmission), updates, { merge: true });
-                    } catch(e) { window.showToast('雲端歸戶失敗，請重試'); return; }
+                if (!pendingGovEvalSubmission.startsWith('mock_')) {
+                    const updates = {
+                        carbon: increment(state.totalCarbon), green: increment(totalGreen), eval_count: increment(1), total_score: increment(totalScore)
+                    };
+                    const task = { type: 'gov_checkout', id: pendingGovEvalSubmission, data: updates, feedback: currentFeedback, timestamp: Date.now() };
+
+                    if (db && !isOfflineMode) {
+                        try {
+                            const finalUpdates = { ...updates, updatedAt: serverTimestamp() };
+                            if (currentFeedback) finalUpdates.feedbacks = arrayUnion(currentFeedback);
+                            await setDoc(doc(db, 'gov_projects', pendingGovEvalSubmission), finalUpdates, { merge: true });
+                        } catch(e) { 
+                            state.pendingSync.push(task); saveData(); 
+                            window.showToast('⚠️ 網路不穩，計畫歸戶數據已暫存本機，將於連線後上傳。'); 
+                        }
+                    } else {
+                        state.pendingSync.push(task); saveData(); 
+                        window.showToast('⚠️ 處於離線模式，計畫歸戶數據已安全暫存本機。');
+                    }
                 } else {
                     const proj = globalGovData.projects.find(p => p.id === pendingGovEvalSubmission);
                     if(proj) {
@@ -2169,111 +1691,154 @@
                 renderGovDashboard();
                 document.getElementById('download-cert-btn')?.click(); 
             });
+            
+            document.getElementById('create-proj-btn')?.addEventListener('click', async () => {
+                const name = document.getElementById('host-proj-name').value.trim();
+                const event = document.getElementById('host-proj-event').value.trim();
+                const date = document.getElementById('host-proj-date').value;
+                const desc = document.getElementById('host-proj-desc').value.trim();
+                const supervisor = document.getElementById('host-proj-supervisor').value.trim();
+                const organizer = document.getElementById('host-proj-organizer').value.trim();
+                const executor = document.getElementById('host-proj-executor').value.trim();
+                const coOrganizer = document.getElementById('host-proj-coorganizer').value.trim();
+                const budget = parseFloat(document.getElementById('host-proj-budget').value) || 0;
+                const sroi = parseFloat(document.getElementById('host-proj-sroi').value) || 1.0;
+                const deadlineStr = document.getElementById('host-proj-deadline').value;
+                const deadline = deadlineStr ? new Date(deadlineStr).toISOString() : null;
+
+                if(!name || !event) return window.showToast('請填寫計畫名稱與活動名稱！');
+                
+                const newProj = { name, event, date, desc, supervisor, organizer, executor, coOrganizer, budget, sroi, deadline, carbon: 0, green: 0, eval_count: 0, total_score: 0, isAuthorized: true, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+                
+                if (db && !isOfflineMode) {
+                    try { await addDoc(collection(db, 'gov_projects'), newProj); window.showToast('✅ 成功建立新計畫儀表板！'); document.getElementById('host-proj-name').value = ''; document.getElementById('host-proj-event').value = ''; } 
+                    catch (e) { window.showToast('❌ 建立失敗，請檢查網路連線。'); }
+                } else { window.showToast('⚠️ 目前處於離線狀態，無法建立新計畫。'); }
+            });
         }
 
         function bindDownloadEvents() {
-            window.generateAndDownloadCertificate = async function(auto = false, attributionTarget = null) {
-                if (!window.html2canvas) { return window.showToast('截圖模組準備中，請稍候再試...'); }
-                if(auto) window.showToast('結算中，系統正為您自動生成證書...'); else window.showToast('精美證書產生中...');
-
-                const name = document.getElementById('player-name')?.value || '匿名旅者';
-                const code = document.getElementById('player-code')?.textContent || '';
-                const mileage = ((state.totalMileage || 0) / 1000).toFixed(1);
-                const carbon = (state.totalCarbon || 0).toFixed(0);
-                const score = state.totalScore || 0;
-                const green = state.greenProcure || 0;
-                const sroi = Math.floor(state.sroiProcure || 0);
-                
-                const logs = (state.activityLogs || []).slice(0, 5);
-                const logsHtml = logs.length > 0 ? logs.map(l => `<div class="text-[12px] mb-3 leading-relaxed border-b border-gray-200/60 pb-2.5 last:border-0 last:pb-0 last:mb-0"><span class="text-mori-forest font-bold bg-mori-light/50 px-1.5 py-0.5 rounded mr-1.5 shadow-sm font-mono tracking-tight">${l.time}</span> <span class="text-gray-700">${l.text}</span></div>`).join('') : '<div class="text-[12px] text-gray-400 mt-2 text-center py-4 border border-dashed border-gray-200 rounded-lg">尚無紀錄</div>';
-
-                const checkouts = (state.checkoutHistory || []).slice(0, 4);
-                const checkoutsHtml = checkouts.length > 0 ? checkouts.map(c => `<div class="text-[12px] mb-3 leading-relaxed border-b border-yellow-200/60 pb-2.5 last:border-0 last:pb-0 last:mb-0"><div class="flex justify-between items-start"><span class="font-bold text-gray-800"><i class="fas fa-check-circle text-yellow-500 mr-1.5"></i>${c.target}</span><span class="text-[10px] text-gray-400 font-mono tracking-tighter">${c.time || ''}</span></div><span class="text-gray-600 text-[11px] inline-block mt-1.5 bg-white px-2.5 py-1 rounded shadow-sm border border-yellow-100/50">減碳 <span class="text-mori-forest font-bold">${c.carbon}g</span> <span class="mx-1 text-gray-300">|</span> 綠消 <span class="text-mori-wood font-bold">$${c.green}</span></span></div>`).join('') : '<div class="text-[12px] text-gray-400 mt-2 text-center py-4 border border-dashed border-yellow-200 rounded-lg">尚無紀錄</div>';
-
-                let attributionHtml = '';
-                if (attributionTarget) { attributionHtml = `<div class="mt-4 bg-[#F0FDF4] p-4 rounded-xl border-2 border-[#86EFAC] block shadow-sm"><p class="text-[13px] font-bold text-[#166534] mb-1"><i class="fas fa-check-circle mr-1.5 text-[#059669]"></i>本次行動數據已正式貢獻歸戶至：</p><p class="text-xl font-black text-[#14532D] tracking-wide">${attributionTarget}</p></div>`; }
-
-                const tempContainer = document.createElement('div');
-                tempContainer.style.cssText = 'position: fixed; top: 0px; left: 0px; width: 800px; z-index: -9999; padding: 32px; background-color: #F7F4EF; pointer-events: none; font-family: "Noto Sans TC", sans-serif;';
-                tempContainer.innerHTML = `
-                    <div class="border-[12px] border-mori-forest/10 p-2 rounded-xl bg-white relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 text-9xl opacity-5 pointer-events-none">🌿</div>
-                        <div class="border-[3px] border-mori-sage p-10 rounded-lg relative z-10">
-                            <div class="text-center mb-8 border-b-2 border-mori-light pb-6">
-                                <h2 class="text-4xl font-bold text-mori-dark tracking-widest mb-2">探探里山永續旅遊證書</h2>
-                                <p class="text-mori-sage tracking-wider">Sustainable Tourism Certificate</p>
-                            </div>
-                            <div class="mb-6">
-                                <p class="text-lg text-gray-700 flex items-baseline"><span>茲證明 旅者：</span><span class="text-2xl font-bold text-mori-forest border-b-2 border-mori-forest pb-1 px-3 mx-2">${name}</span><span>(代碼：<span class="font-mono text-mori-wood">${code}</span>)</span></p>
-                                <p class="text-sm text-gray-600 mt-3 leading-relaxed">在本次探探里山永續旅遊中，積極實踐低碳與綠色消費，達成以下卓越成就，特頒此證以資鼓勵。</p>${attributionHtml}
-                            </div>
-                            <div class="grid grid-cols-3 gap-4 mb-6 text-center bg-[#F0F7F4] p-4 rounded-xl border border-mori-light">
-                                <div><p class="text-xs text-gray-500 mb-1">🌱 累積里程</p><p class="text-xl font-bold text-mori-forest">${mileage} km</p></div>
-                                <div><p class="text-xs text-gray-500 mb-1">🌳 減碳總量</p><p class="text-xl font-bold text-mori-forest">${carbon} g</p></div>
-                                <div><p class="text-xs text-gray-500 mb-1">✨ 永續積分</p><p class="text-xl font-bold text-mori-wood">${score} pts</p></div>
-                            </div>
-                            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-6 flex justify-between items-center">
-                                <span class="font-bold text-blue-800 text-sm"><i class="fas fa-shopping-basket mr-2"></i>綠色消費評鑑</span>
-                                <div class="flex gap-6 text-sm"><span>一般綠消: <span class="font-bold text-blue-600">$${green.toLocaleString()}</span></span><span>SROI 社會價值: <span class="font-bold text-purple-600">$${sroi.toLocaleString()}</span></span></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-6 mb-8">
-                                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner"><h4 class="font-bold text-gray-800 text-[13px] mb-4 border-b-2 border-gray-200 pb-2"><i class="fas fa-history mr-2 text-mori-sage"></i>永續行動與活動紀錄</h4><div class="space-y-1">${logsHtml}</div></div>
-                                <div class="bg-yellow-50/70 p-5 rounded-xl border border-yellow-200 shadow-inner"><h4 class="font-bold text-yellow-800 text-[13px] mb-4 border-b-2 border-yellow-200 pb-2"><i class="fas fa-trophy mr-2 text-yellow-600"></i>歸戶結算紀錄</h4><div class="space-y-1">${checkoutsHtml}</div></div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t-2 border-dashed border-gray-200 text-center">
-                                <p class="text-[10px] text-gray-500 font-bold tracking-wide mb-2.5 leading-relaxed max-w-2xl mx-auto"><i class="fas fa-info-circle text-gray-400 mr-1"></i>備註：本數據基準依循環境部/交通部碳排係數概算，邊界涵蓋旅客之綠色運輸轉移與在地綠色採購，可作為溫室氣體盤查範疇三之參考佐證。</p>
-                                <p class="text-xs text-gray-500 font-bold tracking-widest"><i class="fas fa-leaf text-mori-sage mr-1"></i>探探里山 永續旅遊行動倡議</p>
-                                <p class="text-[10px] text-gray-400 mt-1 font-mono tracking-tighter">${new Date().toISOString()}</p>
+            document.getElementById('download-cert-btn')?.addEventListener('click', async () => {
+                if (!window.html2canvas) return window.showToast('模組載入中，請稍後');
+                const container = document.getElementById('certificate-dom-container');
+                const today = new Date();
+                const certHtml = `
+                    <div style="background: linear-gradient(135deg, #F7F4EF 0%, #E8EFE6 100%); border: 12px solid #8B9D77; border-radius: 20px; padding: 40px; font-family: 'Noto Sans TC', sans-serif; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                        <div style="position: absolute; top: -50px; right: -50px; opacity: 0.1; font-size: 300px; color: #4A6741;"><i class="fas fa-leaf"></i></div>
+                        <div style="text-align: center; border-bottom: 2px dashed #8B9D77; padding-bottom: 20px; margin-bottom: 30px;">
+                            <h1 style="color: #4A6741; font-size: 36px; font-weight: 900; margin: 0; letter-spacing: 4px;">永續旅遊參與證書</h1>
+                            <p style="color: #8B9D77; font-size: 16px; margin-top: 10px; font-weight: bold; letter-spacing: 2px;">Certificate of Sustainable Tourism</p>
+                        </div>
+                        <div style="padding: 0 20px;">
+                            <p style="font-size: 18px; color: #2C3E28; line-height: 1.8; margin-bottom: 20px;">茲證明 旅者 <strong style="font-size: 24px; color: #4A6741; border-bottom: 2px solid #D2B48C; padding: 0 10px;">${state.playerName || '里山探索者'}</strong> (代碼: ${state.playerCode})，</p>
+                            <p style="font-size: 18px; color: #2C3E28; line-height: 1.8; margin-bottom: 30px;">積極參與「探探里山」永續旅遊計畫，身體力行低碳交通與綠色消費，為保護地球環境與促進地方創生做出具體貢獻。</p>
+                            
+                            <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.7); border-radius: 15px; padding: 20px; border: 1px solid #D2B48C; margin-bottom: 30px;">
+                                <div style="text-align: center;">
+                                    <p style="font-size: 14px; color: #8B9D77; font-weight: bold; margin: 0 0 5px 0;">累計減碳量</p>
+                                    <p style="font-size: 28px; color: #4A6741; font-weight: 900; margin: 0;">${Math.round(state.totalCarbon).toLocaleString()} <span style="font-size: 14px; font-weight: normal;">g/CO2e</span></p>
+                                </div>
+                                <div style="width: 2px; background: #D2B48C; opacity: 0.3;"></div>
+                                <div style="text-align: center;">
+                                    <p style="font-size: 14px; color: #8B9D77; font-weight: bold; margin: 0 0 5px 0;">綠消與社會價值</p>
+                                    <p style="font-size: 28px; color: #D2B48C; font-weight: 900; margin: 0;"><span style="font-size: 18px;">$</span>${Math.round(state.greenProcure + state.sroiProcure).toLocaleString()}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-
-                const container = document.getElementById('certificate-dom-container');
-                container.innerHTML = ''; container.appendChild(tempContainer);
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding: 0 20px;">
+                            <div>
+                                <p style="font-size: 14px; color: #2C3E28; font-weight: bold; margin: 0 0 5px 0;">發證單位：水里永續共好聯盟</p>
+                                <p style="font-size: 12px; color: #8B9D77; margin: 0;">發證日期：${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 80px; height: 80px; border: 3px solid #D2B48C; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px auto; background: rgba(210, 180, 140, 0.1);">
+                                    <span style="color: #D2B48C; font-weight: 900; font-size: 24px; transform: rotate(-15deg);">認證</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                container.innerHTML = certHtml;
+                window.showToast('🖼️ 證書生成中...');
                 
                 try {
                     await new Promise(r => setTimeout(r, 500));
-                    const canvas = await html2canvas(tempContainer, { scale: 2, backgroundColor: null, useCORS: true });
-                    const link = document.createElement('a'); link.download = `探探里山_永續旅遊證書_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                    if(auto) window.showToast('✅ 證書已自動下載！'); else window.showToast('✅ 證書下載成功！');
-                } catch(err) { console.error("Certificate generation failed:", err); window.showToast('證書產生失敗，請稍後再試'); } finally { container.innerHTML = ''; }
-            };
-            document.getElementById('download-cert-btn')?.addEventListener('click', () => { window.generateAndDownloadCertificate(false); });
+                    const canvas = await html2canvas(container.firstElementChild, { scale: 2, backgroundColor: null });
+                    const link = document.createElement('a');
+                    link.download = `探探里山_永續證書_${state.playerName || '旅者'}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    container.innerHTML = '';
+                    window.showToast('✅ 證書下載完成！');
+                } catch(e) { window.showToast('❌ 證書下載失敗'); container.innerHTML = ''; }
+            });
+
+            document.getElementById('export-data-button')?.addEventListener('click', () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+                const dlAnchorElem = document.createElement('a');
+                dlAnchorElem.setAttribute("href", dataStr);
+                dlAnchorElem.setAttribute("download", `mori_esg_data_${getTodayKey()}.json`);
+                dlAnchorElem.click();
+                window.showToast('✅ 個人進度已成功匯出');
+            });
+
+            document.getElementById('import-data-btn-trigger')?.addEventListener('click', () => {
+                document.getElementById('import-data-input').click();
+            });
+
+            document.getElementById('import-data-input')?.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedState = JSON.parse(e.target.result);
+                        state = { ...state, ...importedState };
+                        saveData();
+                        loadLocalData();
+                        window.showToast('✅ 個人進度匯入成功！');
+                    } catch (error) { window.showToast('❌ 匯入失敗：檔案格式錯誤'); }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
+            });
         }
 
         function bindSummaryEvents() {
             const entToggle = document.getElementById('toggle-ent-summary-btn');
-            if(entToggle) entToggle.onclick = () => { summaryState.entMode = true; summaryState.entSelected.clear(); document.getElementById('ent-summary-count').textContent = '0'; document.getElementById('ent-summary-action-bar')?.classList.remove('hidden'); renderEntProjectsDashboard(); };
-            
+            if (entToggle) entToggle.onclick = () => { summaryState.entMode = true; summaryState.entSelected.clear(); document.getElementById('ent-summary-count').textContent = '0'; document.getElementById('ent-summary-action-bar')?.classList.remove('hidden'); renderEntProjectsDashboard(); };
+
             const entCancel = document.getElementById('cancel-ent-summary-btn');
-            if(entCancel) entCancel.onclick = () => { summaryState.entMode = false; summaryState.entSelected.clear(); document.getElementById('ent-summary-action-bar')?.classList.add('hidden'); renderEntProjectsDashboard(); };
-            
+            if (entCancel) entCancel.onclick = () => { summaryState.entMode = false; summaryState.entSelected.clear(); document.getElementById('ent-summary-action-bar')?.classList.add('hidden'); renderEntProjectsDashboard(); };
+
             const entGen = document.getElementById('generate-ent-summary-btn');
-            if(entGen) entGen.onclick = () => {
-                if (summaryState.entSelected.size === 0) return window.showToast('請至少選擇一張已結案的活動卡片');
-                window.customPrompt("📝 請輸入本次總承報表的專案/企劃名稱：", "【年度/專案總結】企業綜合永續旅遊/永續活動績效", (customTitle) => {
-                    if (customTitle === null) return; window.showToast('🔄 報表生成中，請稍候...'); const finalTitle = customTitle.trim() !== "" ? customTitle.trim() : "【年度/專案總結】企業綜合永續旅遊/永續活動績效";
-                    let combined = { orgName: finalTitle, event: `共彙整 ${summaryState.entSelected.size} 個專案活動`, year: new Date().getFullYear(), eval_count: 0, total_score: 0, score_e: 0, score_s: 0, score_g: 0, carbon: 0, green: 0, linkedProject: { type: '綜合社會價值創造', amount: 0, sroiWeight: 1 }, feedbacks: [] };
-                    let sroiSum = 0; let includedProjectsList = []; 
+            if (entGen) entGen.onclick = () => {
+                if (summaryState.entSelected.size === 0) return window.showToast('請至少選擇一張已結案的企業卡片');
+                window.customPrompt("📝 請輸入本次總承報表的集團名稱：", "【年度/集團總結】企業ESG與永續旅遊績效", (customTitle) => {
+                    if (customTitle === null) return; window.showToast('🔄 報表生成中，請稍候...'); const finalTitle = customTitle.trim() !== "" ? customTitle.trim() : "【年度/集團總結】企業ESG與永續旅遊績效";
+                    let combined = { orgName: finalTitle, event: `共彙整 ${summaryState.entSelected.size} 場活動`, year: new Date().getFullYear(), eval_count: 0, total_score: 0, score_e: 0, score_s: 0, score_g: 0, carbon: 0, green: 0, projectProcure: 0, sroiWeight: 1, feedbacks: [] };
+                    let sroiSum = 0; let includedProjectsList = [];
                     
                     summaryState.entSelected.forEach(id => {
                         const p = globalEntData.projects.find(x => x.id === id); if(!p) return;
                         combined.eval_count += (Number(p.eval_count) || 0); combined.total_score += (Number(p.total_score) || 0); combined.score_e += (Number(p.score_e) || 0); combined.score_s += (Number(p.score_s) || 0); combined.score_g += (Number(p.score_g) || 0); combined.carbon += (Number(p.carbon) || 0); combined.green += (Number(p.green) || 0);
                         let currentSroi = '-';
-                        if(p.linkedProject && p.linkedProject.amount > 0) { currentSroi = p.linkedProject.sroiWeight || 1; combined.linkedProject.amount += p.linkedProject.amount; sroiSum += (p.linkedProject.amount * currentSroi); }
-                        if(p.feedbacks) combined.feedbacks.push(...p.feedbacks); includedProjectsList.push({ name: p.orgName + (p.event ? ` (${p.event})` : ''), date: p.year || '未提供', sroi: currentSroi });
+                        if(p.linkedProject && p.linkedProject.amount > 0) {
+                            currentSroi = p.linkedProject.sroiWeight || 1; combined.projectProcure += p.linkedProject.amount; sroiSum += (p.linkedProject.amount * currentSroi);
+                        }
+                        if(p.feedbacks) combined.feedbacks.push(...p.feedbacks);
+                        includedProjectsList.push({ name: p.orgName + (p.event ? ` (${p.event})` : ''), date: p.year || '未提供', sroi: currentSroi });
                     });
-                    if(combined.linkedProject.amount > 0) combined.linkedProject.sroiWeight = Number((sroiSum / combined.linkedProject.amount).toFixed(2));
+                    if(combined.projectProcure > 0) combined.sroiWeight = Number((sroiSum / combined.projectProcure).toFixed(2));
                     
                     const ec = combined.eval_count; const totalScore = combined.total_score;
                     let baseAvgNum = ec > 0 ? (totalScore / (ec * 12)) : 0; baseAvgNum = Math.min(5.0, baseAvgNum);
                     let avgE = baseAvgNum.toFixed(1), avgS = baseAvgNum.toFixed(1), avgG = baseAvgNum.toFixed(1);
-                    const scoreE = combined.score_e, scoreS = combined.score_s, scoreG = combined.score_g, esgSum = scoreE + scoreS + scoreG;
-                    if (esgSum > 0) { const weightE = scoreE / (esgSum / 3), weightS = scoreS / (esgSum / 3), weightG = scoreG / (esgSum / 3); avgE = Math.min(5.0, baseAvgNum * weightE).toFixed(1); avgS = Math.min(5.0, baseAvgNum * weightS).toFixed(1); avgG = Math.min(5.0, baseAvgNum * weightG).toFixed(1); }
+                    const esgSum = combined.score_e + combined.score_s + combined.score_g;
+                    if (esgSum > 0) { const weightE = combined.score_e / (esgSum / 3), weightS = combined.score_s / (esgSum / 3), weightG = combined.score_g / (esgSum / 3); avgE = Math.min(5.0, baseAvgNum * weightE).toFixed(1); avgS = Math.min(5.0, baseAvgNum * weightS).toFixed(1); avgG = Math.min(5.0, baseAvgNum * weightG).toFixed(1); }
                     const finalOverallNum = (Number(avgE) + Number(avgS) + Number(avgG)) / 3; const avgOverall = finalOverallNum > 0 ? finalOverallNum.toFixed(1) : "0.0"; const avgOverallPercent = finalOverallNum > 0 ? (finalOverallNum / 5) * 100 : 0;
 
-                    let sroiHtml = ''; if (combined.linkedProject.amount > 0) { const sroiTotal = Math.floor(combined.linkedProject.amount * combined.linkedProject.sroiWeight); sroiHtml = `<div class="mt-3 bg-gradient-to-br from-yellow-50 to-amber-50 p-4 pb-5 rounded-xl border-2 border-yellow-200 shadow-sm relative group"><i class="fas fa-crown absolute bottom-1 right-2 text-5xl text-yellow-500/10 data-html2canvas-ignore"></i><div class="flex justify-between items-center mb-3 relative z-10"><div class="flex items-center gap-2"><div class="bg-yellow-100 text-yellow-600 w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm"><i class="fas fa-hand-holding-heart"></i></div><span class="text-[12px] font-bold text-yellow-800">${combined.linkedProject.type}</span></div><div class="bg-white px-2 py-0.5 rounded text-[10px] font-bold text-yellow-600 border border-yellow-200 shadow-sm flex items-center"><i class="fas fa-arrow-trend-up mr-1"></i>綜合加權總合計算</div></div><div class="flex justify-between items-end relative z-10"><div><p class="text-[13px] text-yellow-800 font-black tracking-wide mb-1 block">投入預算及綠色消費總合</p><div class="font-bold text-yellow-700 text-sm block leading-normal py-0.5">$${combined.linkedProject.amount.toLocaleString()}</div></div><div class="text-right"><p class="text-[13px] text-yellow-800 font-black tracking-wide mb-1 block">創造價值總合</p><div class="font-black text-yellow-700 text-2xl block tracking-normal leading-normal py-0.5">$${sroiTotal.toLocaleString()}</div></div></div></div>`; }
+                    let sroiHtml = ''; if (combined.projectProcure > 0) { const sroiTotal = Math.floor(combined.projectProcure * combined.sroiWeight); sroiHtml = `<div class="mt-3 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 pb-5 rounded-xl border-2 border-teal-200 shadow-sm relative group"><i class="fas fa-chart-area absolute bottom-1 right-2 text-5xl text-teal-500/10 data-html2canvas-ignore"></i><div class="flex justify-between items-center mb-3 relative z-10"><div class="flex items-center gap-2"><div class="bg-teal-100 text-teal-600 w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm"><i class="fas fa-hand-holding-heart"></i></div><span class="text-[12px] font-bold text-teal-800">專案衍生 SROI</span></div><div class="bg-white px-2 py-0.5 rounded text-[10px] font-bold text-teal-600 border border-teal-100 shadow-sm flex items-center"><i class="fas fa-arrow-trend-up mr-1"></i>綜合加權總合</div></div><div class="flex justify-between items-end relative z-10"><div><p class="text-[13px] text-teal-800 font-black tracking-wide mb-1 block">專案投入總計</p><div class="font-bold text-teal-700 text-sm block leading-normal py-0.5">$${combined.projectProcure.toLocaleString()}</div></div><div class="text-right"><p class="text-[13px] text-teal-800 font-black tracking-wide mb-1 block">創造價值總合</p><div class="font-black text-teal-700 text-2xl block tracking-normal leading-normal py-0.5">$${sroiTotal.toLocaleString()}</div></div></div></div>`; }
                     let feedbackHtml = ''; if (combined.feedbacks.length > 0) { const listItems = combined.feedbacks.map(f => `<div class="mb-2 text-[11px] border-b border-gray-100 pb-1.5 last:border-0"><span class="text-gray-400 mr-1">${new Date(f.time).toLocaleDateString('zh-TW')}</span> <span class="font-bold text-gray-700">${f.text}</span></div>`).join(''); feedbackHtml = `<div class="mt-3 bg-white p-3 rounded-xl border border-yellow-200 shadow-sm feedback-section"><div class="flex justify-between items-center mb-2 pb-1.5 border-b border-yellow-100"><span class="text-xs font-bold text-yellow-700"><i class="fas fa-comments mr-1.5"></i>綜合參與者寶貴意見 (${combined.feedbacks.length})</span><label class="text-[10px] text-gray-500 cursor-pointer flex items-center print-toggle-label"><input type="checkbox" class="mr-1 print-feedback-cb rounded" checked>匯出</label></div><div class="feedback-list max-h-32 overflow-y-auto pr-2 custom-scrollbar">${listItems}</div></div>`; }
                     let projectsListHtml = ''; if (includedProjectsList.length > 0) { const listItems = includedProjectsList.map(item => `<div class="flex justify-between items-center text-[11px] mb-1.5 border-b border-gray-50 pb-1.5 last:border-0 last:pb-0 last:mb-0"><div class="flex flex-col flex-1 min-w-0 pr-2"><span class="font-bold text-gray-700 break-words leading-tight">${item.name}</span><span class="text-gray-400 text-[10px] mt-0.5 font-medium"><i class="fas fa-chart-line mr-1 text-mori-sage opacity-70"></i>SROI 加權: <span class="text-mori-forest font-bold">${item.sroi !== '-' ? 'x' + item.sroi : '無'}</span></span></div><span class="text-gray-500 shrink-0 font-mono tracking-tight">${item.date}</span></div>`).join(''); projectsListHtml = `<div class="mt-3 bg-white p-3 rounded-xl border border-yellow-200 shadow-sm"><div class="flex justify-between items-center mb-2 pb-1.5 border-b border-yellow-100"><span class="text-xs font-bold text-yellow-700"><i class="fas fa-tasks mr-1.5"></i>已整併活動清單 (${includedProjectsList.length})</span></div><div class="max-h-32 overflow-y-auto pr-2 custom-scrollbar">${listItems}</div></div>`; }
 
@@ -2331,73 +1896,77 @@
                     window.showToast('✅ 總承報表生成完畢');
                 });
             };
+
+            document.getElementById('download-summary-btn')?.addEventListener('click', () => {
+                const wrapper = document.querySelector('#summary-card-container .wrapper-to-export');
+                if (wrapper) {
+                    const titleEl = wrapper.querySelector('h4');
+                    const filename = titleEl ? `探探里山_總結承報_${titleEl.textContent}.png` : '探探里山_總結承報.png';
+                    window.exportDashboardCard(wrapper, filename);
+                }
+            });
         }
 
-        // 初始化與啟動
+        // ==========================================
+        // 8. 系統啟動進入點 (Initialization)
+        // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             loadLocalData();
             renderTransportButtons();
             renderCityOptions();
             renderSroiOptions();
             renderQuestionnaires();
+            
+            // 🚀 關鍵修復：重新載入所有遺失的事件綁定
             bindGlobalEvents();
             bindEnterpriseFlow();
             bindGovernmentFlow();
             bindDownloadEvents();
             bindSummaryEvents();
+            
             initFirebase();
 
-            // Canvas 背景
+            // 首頁動態星空 Canvas 渲染
             const canvas = document.getElementById('header-canvas');
             if (canvas) {
-                const ctx = canvas.getContext('2d');
-                let width, height;
+                const ctx = canvas.getContext('2d'); let width, height;
                 function resize() { width = canvas.width = canvas.offsetWidth; height = canvas.height = canvas.offsetHeight; }
                 window.addEventListener('resize', resize); resize();
                 const particles = [];
-                for (let i = 0; i < 40; i++) {
-                    particles.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() * 40 });
-                }
+                for (let i = 0; i < 40; i++) { particles.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 1, d: Math.random() * 40 }); }
                 function draw() {
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-                    ctx.beginPath();
+                    ctx.clearRect(0, 0, width, height); ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.beginPath();
                     for (let i = 0; i < particles.length; i++) {
-                        const p = particles[i];
-                        ctx.moveTo(p.x, p.y);
-                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-                        p.y -= Math.cos(p.d) + 0.5;
-                        p.x += Math.sin(p.d) * 0.5;
+                        const p = particles[i]; ctx.moveTo(p.x, p.y); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
+                        p.y -= Math.cos(p.d) + 0.5; p.x += Math.sin(p.d) * 0.5;
                         if (p.y < -10) { p.y = height + 10; p.x = Math.random() * width; }
                     }
-                    ctx.fill();
-                    requestAnimationFrame(draw);
+                    ctx.fill(); requestAnimationFrame(draw);
                 }
                 draw();
             }
 
-            // 綁定 URL Hash 監聽
+            // 解析 URL Hash 進行看板自動導航
             const hash = window.location.hash;
             if (hash) {
                 if (hash.startsWith('#ESG-board-')) {
                     const searchCode = hash.replace('#ESG-board-', '').toUpperCase();
                     setTimeout(() => {
-                        const selectEl = document.getElementById('ent-proj-select');
-                        let targetProjId = null;
+                        const selectEl = document.getElementById('ent-proj-select'); let targetProjId = null;
                         if (globalEntData.projects) { const p = globalEntData.projects.find(x => x.cardCode === searchCode || x.id.toUpperCase().endsWith(searchCode)); if (p) targetProjId = p.id; }
                         if (selectEl && targetProjId) { selectEl.value = targetProjId; selectEl.dispatchEvent(new Event('change', { bubbles: true })); window.showToast(`✅ 已自動為您選定專案代碼：#${searchCode}`); window.openModal('enterprise-modal'); }
                     }, 800);
                 } else if (hash.startsWith('#OKR-board-')) {
                     const searchCode = hash.replace('#OKR-board-', '').toUpperCase();
                     setTimeout(() => {
-                        const selectEl = document.getElementById('user-proj-select');
-                        let targetProjId = null;
+                        const selectEl = document.getElementById('user-proj-select'); let targetProjId = null;
                         if (globalGovData.projects) { const p = globalGovData.projects.find(x => x.cardCode === searchCode || x.id.toUpperCase().endsWith(searchCode)); if (p) targetProjId = p.id; }
                         if (selectEl && targetProjId) { selectEl.value = targetProjId; selectEl.dispatchEvent(new Event('change', { bubbles: true })); window.showToast(`✅ 已自動為您選定專案代碼：#${searchCode}`); window.openModal('gov-modal'); }
                     }, 800);
                 }
             }
 
+            // iframe 跨域看板連動 (Message passing)
             window.addEventListener('message', (event) => {
                 if (event.data && event.data.action === 'AUTO_SELECT_PROJECT') {
                     const searchCode = (event.data.code || '').toUpperCase();
@@ -2409,15 +1978,27 @@
                 }
                 if (event.data && event.data.action === 'REQUEST_BOARD_SELECTION') {
                     window.pendingEventCardId = event.data.cardId;
-                    if (typeof window.closeEventsModal === 'function') window.closeEventsModal();
-                    else window.closeModal('events-modal');
+                    if (typeof window.closeEventsModal === 'function') window.closeEventsModal(); else window.closeModal('events-modal');
                     const targetModalId = event.data.boardType === 'ent' ? 'enterprise-modal' : 'gov-modal';
-                    window.openModal(targetModalId);
-                    window.showToast('👆 請在畫面上「點擊」您要綁定的看板卡片');
+                    window.openModal(targetModalId); window.showToast('👆 請在畫面上「點擊」您要綁定的看板卡片');
                 }
             });
 
-            window.addEventListener('online', () => { if(isOfflineMode) { isOfflineMode = false; initFirebase(); window.showToast('網路已恢復，系統連線中...'); } });
+            // 🚀 離線/連線狀態監聽器
+            window.addEventListener('online', () => { 
+                if(isOfflineMode) { 
+                    isOfflineMode = false; initFirebase(); 
+                    window.showToast('📶 網路已恢復！系統正在背景為您同步離線數據...'); 
+                    setTimeout(() => window.syncOfflineData(), 2000);
+                } else {
+                    window.showToast('📶 網路連線已恢復穩定。'); window.syncOfflineData();
+                }
+            });
+
+            window.addEventListener('offline', () => {
+                isOfflineMode = true;
+                window.showToast('⚠️ 網路連線中斷，切換至離線模式。您的活動數據將自動暫存於本機，待網路恢復後上傳。');
+            });
         });
     </script>
 </body>
