@@ -174,12 +174,12 @@
                 </div>
                 <div class="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
                     <div class="relative inline-block w-full sm:w-auto">
-                        <button onclick="window.open('https://farmcmd.github.io/ESGT/dashboard.html?tab=ent', '_blank')" class="w-full sm:w-auto px-6 py-3.5 bg-mori-wood hover:bg-yellow-700 text-white text-[16px] font-black tracking-wide rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-2 border-mori-wood/50 flex items-center justify-center group">
+                        <button onclick="window.openDashboardModal('ent')" class="w-full sm:w-auto px-6 py-3.5 bg-mori-wood hover:bg-yellow-700 text-white text-[16px] font-black tracking-wide rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-2 border-mori-wood/50 flex items-center justify-center group">
                             <i class="fas fa-building mr-2 text-xl group-hover:scale-110 transition-transform"></i> 前往 企業永續儀表板
                         </button>
                     </div>
                     <div class="relative inline-block w-full sm:w-auto">
-                        <button onclick="window.open('https://farmcmd.github.io/ESGT/dashboard.html?tab=gov', '_blank')" class="w-full sm:w-auto px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-[16px] font-black tracking-wide rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-2 border-blue-400/50 flex items-center justify-center group">
+                        <button onclick="window.openDashboardModal('gov')" class="w-full sm:w-auto px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white text-[16px] font-black tracking-wide rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 border-2 border-blue-400/50 flex items-center justify-center group">
                             <i class="fas fa-landmark mr-2 text-xl group-hover:scale-110 transition-transform"></i> 前往 永續政府計畫儀表板
                         </button>
                     </div>
@@ -551,10 +551,10 @@
                         <div class="accordion-content p-4 pt-2 hidden space-y-3">
                             <p class="text-[11px] text-slate-500 font-medium leading-relaxed mb-2"><i class="fas fa-info-circle mr-1"></i>說明：快來看看有哪些企業及計畫正在為永續加分</p>
                             <div class="grid grid-cols-2 gap-2">
-                                <button onclick="window.open('https://farmcmd.github.io/ESGT/dashboard.html?tab=ent', '_blank')" class="w-full py-2 bg-mori-wood hover:bg-yellow-700 text-white rounded-lg transition text-[12px] font-bold shadow-sm flex flex-col items-center justify-center gap-1">
+                                <button onclick="window.openDashboardModal('ent')" class="w-full py-2 bg-mori-wood hover:bg-yellow-700 text-white rounded-lg transition text-[12px] font-bold shadow-sm flex flex-col items-center justify-center gap-1">
                                     <i class="fas fa-building text-base"></i> 企業儀表板
                                 </button>
-                                <button onclick="window.open('https://farmcmd.github.io/ESGT/dashboard.html?tab=gov', '_blank')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-[12px] font-bold shadow-sm flex flex-col items-center justify-center gap-1">
+                                <button onclick="window.openDashboardModal('gov')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-[12px] font-bold shadow-sm flex flex-col items-center justify-center gap-1">
                                     <i class="fas fa-landmark text-base"></i> 計畫儀表板
                                 </button>
                             </div>
@@ -778,6 +778,17 @@
     <div id="share-qrcode-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('share-qrcode-modal')"><i class="fas fa-times text-xl"></i></button><h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide"><i class="fas fa-qrcode text-blue-500 mr-2"></i>掃描條碼分享</h3><p class="text-[12px] text-gray-500 mb-4">請現場夥伴直接掃描，或點擊複製連結</p><div id="qrcode-container" class="flex justify-center mb-4 p-4 bg-white border-2 border-gray-100 rounded-xl shadow-inner min-h-[180px] items-center"></div><input type="text" id="share-modal-url" class="w-full p-2.5 border-2 border-gray-200 rounded-lg text-xs bg-gray-50 outline-none text-gray-600 mb-3 font-mono" readonly><button id="share-modal-copy-btn" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-copy mr-2"></i>複製專屬連結</button></div></div>
     <div id="chat-bot-modal" class="modal-overlay hidden"><div class="modal-content w-full max-w-4xl h-[80vh] p-0 overflow-hidden relative"><button class="absolute top-4 right-4 text-gray-400 z-50" onclick="window.closeModal('chat-bot-modal')"><i class="fas fa-times text-2xl"></i></button><iframe src="https://farmcmd.github.io/chat/" class="w-full h-full border-none"></iframe></div></div>
     
+    <!-- 🌟 新增：儀表板專用內嵌視窗 (Iframe Modal) -->
+    <div id="dashboard-iframe-modal" class="modal-overlay hidden" style="z-index: 9900;">
+        <div class="modal-content w-full max-w-6xl h-[90vh] md:h-[85vh] p-0 overflow-hidden relative bg-[#F9FAFB] rounded-2xl shadow-2xl border-t-4 border-yellow-400">
+            <!-- 關閉按鈕設計為帶有背景的圓鈕，避免被內部 iframe 蓋住 -->
+            <button class="absolute top-3 right-4 text-gray-600 z-50 bg-white hover:bg-gray-100 rounded-full w-9 h-9 flex items-center justify-center shadow-md transition-all duration-200 border border-gray-200" onclick="window.closeModal('dashboard-iframe-modal')">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <iframe id="dashboard-iframe" src="" class="w-full h-full border-none bg-transparent"></iframe>
+        </div>
+    </div>
+    
     <!-- 隱藏的證書匯出容器 -->
     <div id="export-receipt-container" class="p-8 w-[600px] absolute -left-[9999px] top-0 bg-[#F7F4EF] z-0"></div>
     <div id="certificate-dom-container" class="p-8 w-[800px] absolute -left-[9999px] top-0 bg-[#F7F4EF] z-0 font-sans"></div>
@@ -875,6 +886,17 @@
         };
 
         window.openEarthLogGame = function() { window.open('https://farmcmd.github.io/ESGT/game.html', '_blank'); };
+        
+        // 🌟 新增：啟動內嵌儀表板的智慧路由函數
+        window.openDashboardModal = function(tab) {
+            const iframe = document.getElementById('dashboard-iframe');
+            if (iframe) {
+                // 帶入 tab 參數讓 dashboard.html 知道要開啟哪個面板，並加上時間戳防止快取
+                iframe.src = `https://farmcmd.github.io/ESGT/dashboard.html?tab=${tab}&t=${Date.now()}`;
+            }
+            window.openModal('dashboard-iframe-modal');
+        };
+
         window.openModal = function(id) { document.getElementById(id)?.classList.remove('hidden'); };
         window.closeModal = function(id) { document.getElementById(id)?.classList.add('hidden'); };
         window.showToast = function(msg) { const t = document.getElementById('custom-toast'); if (t) { t.textContent = msg; t.classList.add('show'); if(window.toastTimer) clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => { t.classList.remove('show'); }, 3000); } };
