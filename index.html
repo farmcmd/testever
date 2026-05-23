@@ -10,16 +10,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQqHfWC0nFh9Y8t5kHn6pD1Tf2C1nP4=" crossorigin="">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- 🌟 新增：HTML5 原生相機掃描核心套件 -->
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script>
-        const MY_LINE_LIFF_ID = '2009624342-oTTGaOJl'; 
+        const MY_LINE_LIFF_ID = '2009624342-oTTGaOJl';
+        // Google Maps JavaScript API Key：若留空，系統會使用免 Key 的 Google Maps iframe 預覽模式。
+        // 正式部署若要啟用可互動標記、InfoWindow 與路線線段，請填入您的 API Key。
+        const GOOGLE_MAPS_API_KEY = atob('QUl6YVN5QWpOdjQ5QlBhX1gyU1N3aHR5SFR1eWZqTUFieEVHVS04'); 
         window.fbAsyncInit = function() { FB.init({ appId: '803120779511252', cookie: true, xfbml: true, version: 'v19.0' }); };
     </script>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v19.0"></script>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     
     <script>
@@ -52,6 +57,20 @@
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-down { animation: fadeInDown 0.3s ease-out forwards; }
         #header-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6; }
+        #poi-modal { z-index: 10050; }
+        #map { min-height: 500px; position: relative; z-index: 1; }
+        .leaflet-container { font-family: 'Noto Sans TC', sans-serif; border-radius: 0.5rem; }
+        .satoyama-div-icon { background: transparent; border: none; }
+        .satoyama-marker { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; background: #ffffff; border: 3px solid #4A6741; box-shadow: 0 8px 20px rgba(44,62,40,.28); font-size: 18px; transform: translate(-50%, -50%); }
+        .satoyama-marker.blue { border-color: #3B82F6; }
+        .satoyama-marker.green { border-color: #16A34A; }
+        .satoyama-popup-title { font-weight: 900; color: #2C3E28; font-size: 14px; margin-bottom: 4px; }
+        .satoyama-popup-desc { font-size: 12px; color: #4b5563; line-height: 1.5; max-width: 220px; }
+        .map-fallback-frame { width: 100%; height: 500px; border: 0; border-radius: .5rem; background: #f3f4f6; }
+        .google-map-frame { width: 100%; height: 500px; border: 0; border-radius: .5rem; background: #f3f4f6; }
+        .google-map-preview-toolbar { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: .75rem; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border: 1px solid rgba(74,103,65,.18); border-radius: 1rem; padding: .75rem 1rem; box-shadow: 0 12px 30px rgba(0,0,0,.12); }
+        .google-map-preview-toolbar a { font-size: 12px; font-weight: 900; color: #2563eb; }
+        .google-map-preview-toolbar span { font-size: 12px; font-weight: 900; color: #4A6741; }
         
         #custom-toast { position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%) translateY(20px); background-color: rgba(31, 41, 55, 0.95); color: white; padding: 0.8rem 1.5rem; border-radius: 9999px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); z-index: 2147483647; font-weight: bold; font-size: 0.9rem; opacity: 0; pointer-events: none; text-align: center; white-space: nowrap; backdrop-filter: blur(4px); transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         #custom-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -79,6 +98,7 @@
     </style>
 </head>
 <body class="font-sans antialiased overflow-x-hidden">
+    <div id="fb-root"></div>
     <div id="custom-toast"></div>
     
     <!-- 廣播跑馬燈系統 -->
@@ -586,7 +606,26 @@
                 </div>
             </div>
         </section>
-    </main>
+    </main>    <div id="poi-modal" class="modal-overlay hidden">
+        <div class="modal-content bg-white w-full max-w-4xl rounded-2xl shadow-2xl relative max-h-[92vh] overflow-y-auto">
+            <button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition" onclick="window.closeModal('poi-modal')"><i class="fas fa-times text-xl"></i></button>
+            <div class="p-6">
+                <div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100">
+                    <div class="flex gap-2">
+                        <button id="set-as-start-button" class="flex-1 py-2 bg-mori-light text-mori-dark rounded-lg hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm">設為起點</button>
+                        <button id="set-as-end-button" class="flex-1 py-2 bg-mori-forest text-white rounded-lg hover:bg-mori-dark font-bold text-sm transition shadow-sm">設為終點</button>
+                        <button class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 font-bold text-sm transition shadow-sm" onclick="window.closeModal('poi-modal')">關閉</button>
+                    </div>
+                    <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mt-2"></div>
+                </div>
+                <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3>
+                <div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
+                <div id="poi-iframe-container" class="hidden w-full overflow-hidden rounded-xl border border-gray-200 shadow-inner relative mb-2 bg-gray-50"></div>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- 🌟 最新活動列表 Modal (Accordion 折疊呈現) -->
     <div id="latest-events-modal" class="modal-overlay hidden" style="z-index: 9999;">
@@ -935,11 +974,367 @@
             if (hasTime) setTrackMessage('success', `已安全載入「${fileName}」，可依時間節點選擇可用軌跡區段。`);
             else setTrackMessage('error', `已載入「${fileName}」，但檔案缺少完整時間節點；目前只能作距離參考，不能登錄減碳。`);
             updateTrackCalculation();
+        }        const poiCategories = [{ id: 4, title: '1. 水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。' }, { id: 1, title: '2. 里山餐桌團隊', desc: '核心規劃團隊，提供生態旅遊與 ESG 專案規劃。' }, { id: 5, title: '3. 南投青農', desc: '結合優質青農，提供高品質特色食農體驗。' }, { id: 3, title: '4. 水里觀光商圈', desc: '提供在地特色美食與優質採購，串聯觀光與消費，支持商圈創生。' }, { id: 2, title: '5. 低碳食宿', desc: '精選本地觀光食宿，倡議節水節電與永續觀光。' }, { id: 'dynamic_events', title: '6. 最新活動與特別推薦', desc: '由主辦方不定期更新的快閃市集與限定地標。' }];
+        
+        let pois = [
+            {categoryId:4,id:'poi1',name:'水里溪畔驛站',coords:{lat:23.809799,lng:120.849286},icon:'🌲',description:'營業時間上午8:00~17:00。<br>位於水里圖書館內的小憩咖啡座，適合做為永續行程的起點與中繼休閒去處。亦是社團法人水里鄉商圈創生共好協會總部。',esgEligible:true, fbUrl: 'https://www.facebook.com/profile.php?id=100076220760859', iframeUrl: 'https://www.facebook.com/profile.php?id=100076220760859'},
+            {categoryId:4,id:'poi25',name:'國立臺灣大學生物資源暨農學院實驗林管理處-水里營林區',coords:{lat:23.814313377006552,lng:120.85343561499427},icon:'🏛️',description:'業務活動: 除造林與資源保育、研究與教育外，推動里山倡議及大學社會責任等活動。', websiteUrl: 'https://www.exfo.ntu.edu.tw/', fbUrl: 'https://www.facebook.com/xitou.nature.education?locale=zh_TW', iframeUrl: 'https://www.facebook.com/xitou.nature.education?locale=zh_TW'},
+            {categoryId:1,id:'poi12',name:'湧健酪梨園/梅園 SROI (✓)',coords:{lat:23.725349,lng:120.846123},icon:'🥑',description:'生產: 酪梨、青梅、梅精<br>特定活動:酪酪找生態/ 6小時/收費1299/人 / 含午餐、生態導覽、土壤觀察/DIY活動/沉浸式數位導覽應用<br>協作單位:里山餐桌團隊<br>預約活動: 食農教育、生態黨覽',esgEligible:true, fbUrl: 'https://www.facebook.com/profile.php?id=100085673588742&locale=zh_TW', iframeUrl: 'https://www.facebook.com/profile.php?id=100085673588742&locale=zh_TW'},
+            {categoryId:1,id:'poi11',name:'阿爾喜莊園 SROI (✓)',coords:{lat:23.803119,lng:120.926340},icon:'🍋',description:'生產: 檸檬、國蘭<br>特定活動:瓜呱報生態/ 6小時/收費1299/人 / 含午餐、生態導覽、設施導覽/DIY活動/沉浸式數位導覽應用<br>協作單位:里山餐桌團隊<br>預約活動: 食農教育、生態導覽、循環經濟教學',esgEligible:true, fbUrl: 'https://www.facebook.com/AHEIemon?locale=zh_TW', iframeUrl: 'https://www.facebook.com/AHEIemon?locale=zh_TW'},
+            {categoryId:1,id:'poi10',name:'雨社山下 SROI (✓)',coords:{lat:23.790644,lng:120.896569},icon:'🥒',description:'生產: 絲瓜、石虎蓮霧<br>特定活動:瓜呱報生態/ 6小時/收費1299/人 / 含午餐、生態導覽、河堤生態導覽/DIY活動/沉浸式數位導覽應用<br>協作單位:里山餐桌團隊<br>預約活動: 食農教育、生態導覽',esgEligible:true, fbUrl: 'https://www.facebook.com/YusheLand?locale=zh_TW', iframeUrl: 'https://www.facebook.com/YusheLand?locale=zh_TW'},
+            {categoryId:1,id:'poi8',name:'明揚養蜂 SROI (✓)',coords:{lat:23.803787,lng:120.862401},icon:'🐝',description:'生產: 國產蜂蜜、酪梨<br>特定活動:里山生態慢走/ 6小時/收費1299/人 / 含午餐、生態導覽、農村生活智慧/DIY活動/沉浸式數位導覽應用<br>協作單位:里山餐桌團隊<br>預約活動: 食農教育、生態導覽、金線連紓壓包',esgEligible:true, fbUrl: 'https://www.facebook.com/MingYangBee?locale=zh_TW', iframeUrl: 'https://www.facebook.com/MingYangBee?locale=zh_TW'},
+            {categoryId:1,id:'poi7',name:'指令教育農場 SROI (✓)',coords:{lat:23.802776,lng:120.864715},icon:'👆',description:'生產: 短期蔬菜<br>特定活動:里山生態慢走/ 6小時/收費1299/人 / 含午餐、生態導覽、農村生活智慧/DIY活動/沉浸式數位導覽應用<br>協作單位:里山餐桌團隊<br>預約活動: 食農教育、生態導覽、金線連紓壓包',esgEligible:true, fbUrl: 'https://www.facebook.com/FarmCMD?locale=zh_TW', iframeUrl: 'https://www.facebook.com/FarmCMD?locale=zh_TW'},
+            {categoryId:1,id:'poi19',name:'小茶米農場 SROI (✓)',coords:{lat:23.839892064879077,lng:120.63251990040033},icon:'🍵',description:'預約活動:食農教育1.爆打檸檬茶 2.調茶體驗',esgEligible:true, fbUrl: 'https://www.facebook.com/p/%E5%B0%8F%E8%8C%B6%E7%B1%B3%E8%BE%B2%E5%A0%B4-100057082105603/?locale=zh_TW', iframeUrl: 'https://www.facebook.com/p/%E5%B0%8F%E8%8C%B6%E7%B1%B3%E8%BE%B2%E5%A0%B4-100057082105603/?locale=zh_TW'},
+            {categoryId:1,id:'poi3',name:'鑫鮮菇園',coords:{lat:23.794049,lng:120.859407},icon:'🍄',description:'香菇園區導覽',esgEligible:true, fbUrl: 'https://www.facebook.com/Satoyamadining'},
+            {categoryId:1,id:'poi26',name:'饕農園',coords:{lat:23.806217691324676,lng:120.74678152084209},icon:'🧑‍🌾',description:'業務活動: 食農教育 市集 手做農產',esgEligible:true, websiteUrl: 'https://www.taofarm.tw/%E9%A5%95%E8%BE%B2%E5%9C%92%E5%B8%82%E9%9B%86%E6%99%82%E9%96%93', iframeUrl: 'https://www.taofarm.tw/%E9%A5%95%E8%BE%B2%E5%9C%92%E5%B8%82%E9%9B%86%E6%99%82%E9%96%93'},
+            {categoryId:1,id:'poi26_2',name:'饕農園 (第二據點)',coords:{lat:23.7875818658625,lng:120.7328778178834},icon:'🧑‍🌾',description:'業務活動: 食農教育 市集 手做農產',esgEligible:true, websiteUrl: 'https://www.taofarm.tw/%E9%A5%95%E8%BE%B2%E5%9C%92%E5%B8%82%E9%9B%86%E6%99%82%E9%96%93', iframeUrl: 'https://www.taofarm.tw/%E9%A5%95%E8%BE%B2%E5%9C%92%E5%B8%82%E9%9B%86%E6%99%82%E9%96%93'},
+            {categoryId:1,id:'poi27',name:'Hó-lah! 星澍柢家',coords:{lat:24.10235122116349,lng:120.66680502433258},icon:'🌱',description:'預約活動: 食農教育 生態導覽',esgEligible:true},
+            {categoryId:5,id:'poi30',name:'墨梵農場香草莊園',coords:{lat:23.722627,lng:120.850277},icon:'🪴',description:'預約活動: 食農教育DIY與綠色療育植栽', fbUrl: 'https://www.facebook.com/Satoyamadining'},
+            {categoryId:5,id:'poi20',name:'集元果觀光工廠',coords:{lat:23.825288405508015,lng:120.81423660000002},icon:'🍌',description:'山蕉生態導覽', fbUrl: 'https://www.facebook.com/jijibanana?locale=zh_TW', iframeUrl: 'https://www.facebook.com/jijibanana?locale=zh_TW'},
+            {categoryId:5,id:'poi21',name:'山水裡愛玉園',coords:{lat:23.827702759934983,lng:120.81435461719234},icon:'🌿',description:'預約活動:食農教育1.手洗愛玉DIY 2.石虎園區導覽', fbUrl: 'https://www.facebook.com/SunShuiLi?locale=zh_TW', iframeUrl: 'https://www.facebook.com/SunShuiLi?locale=zh_TW'},
+            {categoryId:5,id:'poi28',name:'新豐農場(冷泉米)',coords:{lat:24.065240930471894,lng:120.93769275440869},icon:'🌾',description:'預約活動: 食農教育 米食教育  客家文化活動 <br>協作單位:糯米橋休閒農業區', fbUrl: 'https://www.facebook.com/Sinfeng50?locale=zh_TW', iframeUrl: 'https://www.facebook.com/Sinfeng50?locale=zh_TW'},
+            {categoryId:5,id:'poi29',name:'逸和園檸檬宿',coords:{lat:24.049875320633813,lng:120.86159491207924},icon:'🍋',description:'預約活動: 食農教育 有機農業導覽活動<br>協作單位:國姓鄉農會', fbUrl: 'https://www.facebook.com/angelwing0521?locale=zh_TW', iframeUrl: 'https://www.facebook.com/angelwing0521?locale=zh_TW'},
+            {categoryId:3,id:'poi_new1',name:'水里槑休閒農業區(鵲橋小白屋)',coords:{lat:23.734616606941287,lng:120.856968180412686},icon:'🛖',description:'預約活動:1.食農教育活動，活動詳情請洽櫃台，2.賞梅導覽預約', fbUrl: 'https://www.facebook.com/profile.php?id=61573732140351&locale=zh_TW', iframeUrl: 'https://www.facebook.com/profile.php?id=61573732140351&locale=zh_TW'},
+            {categoryId:2,id:'poi16',name:'水里里山村(低碳旅店)',coords:{lat:23.813514741054327,lng:120.85372292524296},icon:'🏡',description:'預約活動:1.食農教育教室夜間開放，活動詳情請洽飯店櫃台，2.牛轀轆森林社區導覽',esgEligible:true, fbUrl: 'https://www.facebook.com/TGSatoyamaHotel?locale=zh_TW', iframeUrl: 'https://www.facebook.com/TGSatoyamaHotel?locale=zh_TW'},
+            {categoryId:2,id:'poi14',name:'機車貓聯盟(食店)',coords:{lat:23.810883,lng:120.855798},icon:'🍚',description:'預約活動: 無菜單料理、披薩<br>一般飲食:在地特色餐盒', fbUrl: 'https://www.facebook.com/changehsi/?locale=zh_TW', iframeUrl: 'https://www.facebook.com/changehsi/?locale=zh_TW'},
+            {categoryId:3,id:'poi23',name:'車程林班道',coords:{lat:23.83391340742498,lng:120.86619112601261},icon:'🚂',description:'預約活動:導覽預約及場館活動', fbUrl: 'https://www.facebook.com/search/top?q=%E6%9E%97%E7%8F%AD%E5%88%B0&locale=zh_TW', iframeUrl: 'https://www.facebook.com/search/top?q=%E6%9E%97%E7%8F%AD%E5%88%B0&locale=zh_TW'},
+            {categoryId:3,id:'poi24',name:'車埕木業展示館',coords:{lat:23.833549496234053,lng:120.8657961298074},icon:'🪵',description:'預約活動:導覽預約', fbUrl: 'https://www.facebook.com/profile.php?id=100057533984428&locale=zh_TW', iframeUrl: 'https://www.facebook.com/profile.php?id=100057533984428&locale=zh_TW'},
+            {categoryId:3,id:'poi18',name:'森音 Morinooto',coords:{lat:23.742587,lng:120.866954},icon:'🎶',description:'預約活動: 食農教育、森態導覽', fbUrl: 'https://www.facebook.com/morinooto111?locale=zh_TW', iframeUrl: 'https://www.facebook.com/morinooto111?locale=zh_TW'},
+            {categoryId:3,id:'poi9',name:'蛇窯文化園區',coords:{lat:23.801177,lng:120.864479},icon:'🏺',description:'門票:100~160元<br>體驗項目<br>手拉坯｜手捏陶｜彩繪撲滿｜釉下彩瓷｜古裝漢服體驗｜日本和服體驗', fbUrl: 'https://www.facebook.com/sskshop/?locale=zh_TW', iframeUrl: 'https://www.facebook.com/sskshop/?locale=zh_TW'},
+            {categoryId:'map_only',id:'poi15',name:'二坪大觀冰店',coords:{lat:23.813627,lng:120.859651},icon:'🍦',description:'老牌電廠老店'},
+            {categoryId:3,id:'poi17',name:'水里星光市集(周六市集)',coords:{lat:23.813636,lng:120.850816},icon:'💡',description:'星光市集', fbUrl: 'https://www.facebook.com/Satoyamadining'},
+            {categoryId:'map_only_blue',id:'poi32',name:'台中農改場',coords:{lat:24.001265,lng:120.533769},icon:'🏛️',description:'每年辦理開放日活動'},
+            {categoryId:'map_only_blue',id:'poi34',name:'水里鄉農會',coords:{lat:23.817368,lng:120.854835},icon:'🏢',description:'不定期辦理活動。'}
+        ];
+
+        let currentModalPoi = null;
+        let selectedStart = null;
+        let selectedEnd = null;
+        let satoyamaMap = null;
+        let satoyamaMarkersLayer = null;
+        let satoyamaRouteLayer = null;
+        let mapInitialized = false;
+        let googleMap = null;
+        let googleInfoWindow = null;
+        let googleMarkers = [];
+        let googleRouteLine = null;
+        let googleMapsApiPromise = null;
+
+        window.updateTripDisplay = function() {
+            const d = document.getElementById('selected-points-display');
+            const previewBtn = document.getElementById('preview-trip-button');
+            const confirmBtn = document.getElementById('confirm-trip-button');
+            if (!d) return;
+            if (selectedStart && selectedEnd) {
+                const km = haversineKm({ lat: selectedStart.coords.lat, lon: selectedStart.coords.lng }, { lat: selectedEnd.coords.lat, lon: selectedEnd.coords.lng });
+                d.innerHTML = `<span class="text-mori-forest">${selectedStart.name}</span> → <span class="text-mori-forest">${selectedEnd.name}</span><span class="ml-2 text-mori-wood font-black">約 ${km.toFixed(2)} km</span>`;
+                previewBtn?.classList.remove('hidden');
+                confirmBtn?.classList.remove('hidden');
+            } else if (selectedStart || selectedEnd) {
+                d.textContent = `已選擇${selectedStart ? '起點：' + selectedStart.name : '終點：' + selectedEnd.name}，請再選擇另一端`;
+                previewBtn?.classList.add('hidden');
+                confirmBtn?.classList.add('hidden');
+            } else {
+                d.textContent = '請選擇起點與終點';
+                previewBtn?.classList.add('hidden');
+                confirmBtn?.classList.add('hidden');
+            }
+            window.previewSelectedRoute(false);
+        };
+
+        function getPoiMarkerClass(poi) {
+            if (poi.categoryId === 'map_only_blue') return 'blue';
+            if (poi.categoryId === 'map_only' || poi.esgEligible) return 'green';
+            return '';
         }
+
+        function buildPoiPopup(poi) {
+            return `<div class="satoyama-popup-title">${poi.icon || '📍'} ${poi.name}</div>
+                <div class="satoyama-popup-desc">${poi.description || '暫無說明'}</div>
+                <div class="mt-2 flex gap-1">
+                    <button onclick="window.showPoiDetails('${poi.id}')" style="background:#4A6741;color:white;border:0;border-radius:8px;padding:5px 8px;font-size:12px;font-weight:800;cursor:pointer;">景點資訊</button>
+                    <button onclick="window.setPoiAsRoutePoint('${poi.id}','start')" style="background:#E8EFE6;color:#2C3E28;border:0;border-radius:8px;padding:5px 8px;font-size:12px;font-weight:800;cursor:pointer;">起點</button>
+                    <button onclick="window.setPoiAsRoutePoint('${poi.id}','end')" style="background:#D2B48C;color:white;border:0;border-radius:8px;padding:5px 8px;font-size:12px;font-weight:800;cursor:pointer;">終點</button>
+                </div>`;
+        }
+
+        function getGoogleMapsSearchUrl(query) {
+            return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+        }
+
+        function getGoogleMapsEmbedUrl(query) {
+            return 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&z=13&output=embed';
+        }
+
+        function getGoogleMapsDirectionsUrl(start, end) {
+            const origin = `${start.coords.lat},${start.coords.lng}`;
+            const destination = `${end.coords.lat},${end.coords.lng}`;
+            return 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(origin) + '&destination=' + encodeURIComponent(destination) + '&travelmode=driving';
+        }
+
+        function getGoogleMapsDirectionsEmbedUrl(start, end) {
+            const origin = `${start.coords.lat},${start.coords.lng}`;
+            const destination = `${end.coords.lat},${end.coords.lng}`;
+            return 'https://www.google.com/maps?saddr=' + encodeURIComponent(origin) + '&daddr=' + encodeURIComponent(destination) + '&output=embed';
+        }
+
+        function loadGoogleMapsApi() {
+            if (window.google && window.google.maps) return Promise.resolve();
+            if (!GOOGLE_MAPS_API_KEY) return Promise.reject(new Error('Google Maps API key is empty'));
+            if (googleMapsApiPromise) return googleMapsApiPromise;
+            googleMapsApiPromise = new Promise((resolve, reject) => {
+                const callbackName = 'initGoogleMapsApiCallback_' + Date.now();
+                window[callbackName] = () => { resolve(); delete window[callbackName]; };
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&callback=${callbackName}&language=zh-TW&region=TW`;
+                script.async = true;
+                script.defer = true;
+                script.onerror = () => reject(new Error('Google Maps API failed to load'));
+                document.head.appendChild(script);
+            });
+            return googleMapsApiPromise;
+        }
+
+        function renderMapMarkers() {
+            if (!googleMap || !window.google?.maps) return;
+            googleMarkers.forEach(marker => marker.setMap(null));
+            googleMarkers = [];
+            pois.filter(p => p.coords && Number.isFinite(p.coords.lat) && Number.isFinite(p.coords.lng)).forEach(poi => {
+                const marker = new google.maps.Marker({
+                    position: { lat: poi.coords.lat, lng: poi.coords.lng },
+                    map: googleMap,
+                    title: poi.name,
+                    label: { text: poi.icon || '📍', fontSize: '20px' }
+                });
+                marker.addListener('click', () => {
+                    if (!googleInfoWindow) googleInfoWindow = new google.maps.InfoWindow();
+                    googleInfoWindow.setContent(buildPoiPopup(poi));
+                    googleInfoWindow.open(googleMap, marker);
+                });
+                googleMarkers.push(marker);
+            });
+        }
+
+        function showMapOverlay(message, isError) {
+            const overlay = document.getElementById('map-overlay');
+            const text = document.getElementById('map-loading-text');
+            if (!overlay) return;
+            if (message) {
+                overlay.classList.remove('hidden');
+                overlay.style.opacity = '1';
+                overlay.style.pointerEvents = isError ? 'auto' : 'none';
+                if (text) text.textContent = message;
+            } else {
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                setTimeout(() => overlay.classList.add('hidden'), 350);
+            }
+        }
+
+        function initFallbackMap() {
+            const mapEl = document.getElementById('map');
+            if (!mapEl) return;
+            const query = '南投縣水里鄉 水里里山村';
+            mapEl.innerHTML = `
+                <iframe class="google-map-frame" src="${getGoogleMapsEmbedUrl(query)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                <div class="google-map-preview-toolbar">
+                    <span><i class="fas fa-map-marker-alt mr-1"></i>Google Maps 預覽模式</span>
+                    <a href="${getGoogleMapsSearchUrl(query)}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt mr-1"></i>開啟 Google 地圖</a>
+                </div>`;
+            showMapOverlay(null);
+            const status = document.getElementById('trip-calculation-status');
+            if (status) status.textContent = '目前使用 Google Maps 免 API Key 預覽模式；填入 Google Maps JavaScript API Key 後，可啟用地圖標記與互動路線。';
+        }
+
+        window.initSatoyamaMap = function() {
+            const mapEl = document.getElementById('map');
+            if (!mapEl) return;
+            if (!GOOGLE_MAPS_API_KEY) {
+                initFallbackMap();
+                return;
+            }
+            if (mapInitialized && googleMap) {
+                showMapOverlay(null);
+                return;
+            }
+            showMapOverlay('Google 地圖載入中...', false);
+            loadGoogleMapsApi().then(() => {
+                mapEl.innerHTML = '';
+                googleMap = new google.maps.Map(mapEl, {
+                    center: { lat: 23.8135, lng: 120.8537 },
+                    zoom: 12,
+                    mapTypeControl: false,
+                    streetViewControl: true,
+                    fullscreenControl: true
+                });
+                renderMapMarkers();
+                const boundsPois = pois.filter(p => p.coords && Number.isFinite(p.coords.lat) && Number.isFinite(p.coords.lng));
+                if (boundsPois.length) {
+                    const bounds = new google.maps.LatLngBounds();
+                    boundsPois.forEach(p => bounds.extend({ lat: p.coords.lat, lng: p.coords.lng }));
+                    googleMap.fitBounds(bounds);
+                }
+                mapInitialized = true;
+                showMapOverlay(null);
+            }).catch(err => {
+                console.warn('Google Maps init failed:', err);
+                initFallbackMap();
+            });
+        };
+
+        window.setPoiAsRoutePoint = function(poiId, type) {
+            const poi = pois.find(p => p.id === poiId);
+            if (!poi || !poi.coords) return;
+            if (type === 'start') selectedStart = { coords: poi.coords, name: poi.name };
+            if (type === 'end') selectedEnd = { coords: poi.coords, name: poi.name };
+            window.updateTripDisplay();
+            window.showToast(`已將 ${poi.name} 設為${type === 'start' ? '起點' : '終點'}`);
+        };
+
+        window.previewSelectedRoute = function(showToastMsg = true) {
+            if (!selectedStart || !selectedEnd) return;
+            const km = haversineKm({ lat: selectedStart.coords.lat, lon: selectedStart.coords.lng }, { lat: selectedEnd.coords.lat, lon: selectedEnd.coords.lng });
+            if (googleMap && window.google?.maps) {
+                const latlngs = [
+                    { lat: selectedStart.coords.lat, lng: selectedStart.coords.lng },
+                    { lat: selectedEnd.coords.lat, lng: selectedEnd.coords.lng }
+                ];
+                if (googleRouteLine) googleRouteLine.setMap(null);
+                googleRouteLine = new google.maps.Polyline({
+                    path: latlngs,
+                    geodesic: true,
+                    strokeColor: '#F59E0B',
+                    strokeOpacity: 0.9,
+                    strokeWeight: 5,
+                    map: googleMap
+                });
+                const bounds = new google.maps.LatLngBounds();
+                latlngs.forEach(p => bounds.extend(p));
+                googleMap.fitBounds(bounds);
+            } else {
+                const mapEl = document.getElementById('map');
+                if (mapEl) {
+                    const directionsUrl = getGoogleMapsDirectionsUrl(selectedStart, selectedEnd);
+                    mapEl.innerHTML = `
+                        <iframe class="google-map-frame" src="${getGoogleMapsDirectionsEmbedUrl(selectedStart, selectedEnd)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                        <div class="google-map-preview-toolbar">
+                            <span><i class="fas fa-route mr-1"></i>Google Maps 路線預覽</span>
+                            <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt mr-1"></i>開啟完整路線</a>
+                        </div>`;
+                    showMapOverlay(null);
+                }
+            }
+            const status = document.getElementById('trip-calculation-status');
+            if (status) status.textContent = `已使用 Google Maps 預覽路線，直線估算距離約 ${km.toFixed(2)} km。正式版可再串接 Google Directions API 做道路里程。`;
+            if (showToastMsg) window.showToast('已用 Google Maps 預覽起訖點路線');
+        };
+
+        window.renderPoiList = function() {
+            const container = document.getElementById('poi-list-container'); if(!container) return;
+            let html = '';
+            poiCategories.forEach(cat => {
+                const catPois = pois.filter(p => p.categoryId === cat.id);
+                if(catPois.length > 0) {
+                    html += `<div class="mb-4 last:mb-0"><div class="bg-mori-light/40 border-l-4 border-mori-sage px-3 py-2 rounded-r-lg mb-2 shadow-sm"><h4 class="font-bold text-mori-dark text-[13px] tracking-wide">${cat.title}</h4><p class="text-[10px] text-mori-forest/80 mt-0.5 leading-relaxed">${cat.desc}</p></div><div class="space-y-2 pl-1">${catPois.map(poi => `<div class="p-2.5 bg-white border border-gray-100 rounded-lg shadow-sm hover:border-mori-sage transition cursor-pointer flex items-center justify-between group" onclick="window.showPoiDetails('${poi.id}')"><div class="flex items-center"><span class="text-xl mr-2.5 group-hover:scale-110 transition-transform">${poi.icon}</span><div><h5 class="text-[13px] font-bold text-gray-800 leading-tight">${poi.name.replace('SROI (✓)', '<span class="text-green-600 font-bold">SROI (✓)</span>')}</h5></div></div><i class="fas fa-chevron-right text-gray-200 text-[10px] group-hover:text-mori-sage transition-colors"></i></div>`).join('')}</div></div>`;
+                }
+            });
+            container.innerHTML = html;
+        };
+
+        function normalizeFacebookPageUrl(fbUrl) {
+            if (!fbUrl) return '';
+            try {
+                const url = new URL(fbUrl);
+                if (!url.hostname.includes('facebook.com') && !url.hostname.includes('fb.com')) return fbUrl;
+                const allowedParams = new URLSearchParams();
+                if (url.pathname === '/profile.php' && url.searchParams.get('id')) {
+                    allowedParams.set('id', url.searchParams.get('id'));
+                    return `${url.origin}${url.pathname}?${allowedParams.toString()}`;
+                }
+                return `${url.origin}${url.pathname}`;
+            } catch (e) {
+                return fbUrl;
+            }
+        }
+
+        function parseFacebookPluginAfterModalVisible(container) {
+            const parse = () => {
+                if (window.FB && window.FB.XFBML && typeof window.FB.XFBML.parse === 'function') {
+                    window.FB.XFBML.parse(container);
+                }
+            };
+            requestAnimationFrame(() => setTimeout(parse, 250));
+        }
+
+        window.showPoiDetails = function(poiId) {
+            const poi = pois.find(p=>p.id===poiId); if(!poi) return; currentModalPoi = poi;
+            sessionStorage.setItem('satoyama_current_page', 'mission');
+            const titleEl = document.getElementById('poi-modal-title'); if(titleEl) titleEl.innerHTML = `<i class="fas fa-map-marker-alt text-mori-sage mr-2"></i>${poi.name || '未命名地標'}`;
+            const descEl = document.getElementById('poi-modal-description'); if(descEl) descEl.innerHTML = poi.description || '暫無說明';
+            const btnContainer = document.getElementById('poi-modal-dynamic-buttons');
+            if(btnContainer) {
+                let btnsHtml = '';
+                if(poi.fbUrl) btnsHtml += `<a href="${poi.fbUrl}" target="_blank" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm text-center border border-blue-200 w-full flex items-center justify-center mb-1 shadow-sm"><i class="fab fa-facebook mr-1.5"></i>查看 FB 粉絲頁</a>`;
+                if(poi.websiteUrl) btnsHtml += `<a href="${poi.websiteUrl}" target="_blank" class="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg font-bold text-sm text-center border border-gray-200 w-full flex items-center justify-center mb-1 shadow-sm"><i class="fas fa-external-link-alt mr-1.5"></i>前往官方網站</a>`;
+                if(poi.esgEligible && !poi.websiteUrl) btnsHtml += `<a href="https://farmcmd.github.io/JOY/" target="_blank" class="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg font-bold text-sm text-center border border-yellow-200 w-full flex items-center justify-center mb-1 shadow-sm"><i class="fas fa-ticket-alt mr-1.5"></i>查看活動與預約</a>`;
+                btnContainer.innerHTML = btnsHtml;
+            }
+            const iframeContainer = document.getElementById('poi-iframe-container');
+            if(iframeContainer) {
+                if(poi.iframeUrl) {
+                    if (poi.iframeUrl.includes('facebook.com') || poi.iframeUrl.includes('fb.com')) {
+                        const fbPageUrl = normalizeFacebookPageUrl(poi.iframeUrl);
+                        iframeContainer.innerHTML = `
+                            <div class="flex items-center justify-between gap-2 bg-blue-50 px-3 py-2 border-b border-blue-100">
+                                <span class="text-[12px] font-black text-blue-700 flex items-center"><i class="fab fa-facebook mr-1.5"></i>Facebook 官方 Page Plugin</span>
+                                <a href="${poi.iframeUrl}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center whitespace-nowrap"><i class="fas fa-external-link-alt mr-1"></i>另開新頁</a>
+                            </div>
+                            <div class="w-full bg-white py-3 flex justify-center overflow-hidden">
+                                <div class="fb-page"
+                                     data-href="${fbPageUrl}"
+                                     data-tabs="timeline"
+                                     data-width="500"
+                                     data-height="520"
+                                     data-small-header="false"
+                                     data-adapt-container-width="true"
+                                     data-hide-cover="false"
+                                     data-show-facepile="false"
+                                     data-hide-cta="false"
+                                     data-lazy="false">
+                                    <blockquote cite="${fbPageUrl}" class="fb-xfbml-parse-ignore">
+                                        <a href="${fbPageUrl}" target="_blank" rel="noopener noreferrer">Facebook 粉絲專頁</a>
+                                    </blockquote>
+                                </div>
+                            </div>
+                            <div class="bg-yellow-50 border-t border-yellow-100 px-3 py-2 text-[11px] text-yellow-800 leading-relaxed">
+                                <i class="fas fa-circle-info mr-1"></i>依 Meta 官方 Page Plugin 設定嵌入；僅公開且沒有年齡、國家/地區限制的粉專可顯示。若仍空白，請確認該粉專權限或使用「另開新頁」。
+                            </div>`;
+                        iframeContainer.classList.remove('hidden');
+                    } else {
+                        iframeContainer.innerHTML = `<iframe src="${poi.iframeUrl}" class="w-full h-[300px] border-none bg-gray-50" allowfullscreen></iframe>`;
+                        iframeContainer.classList.remove('hidden');
+                    }
+                } else {
+                    iframeContainer.innerHTML = '';
+                    iframeContainer.classList.add('hidden');
+                }
+            }
+            const startBtn = document.getElementById('set-as-start-button');
+            const endBtn = document.getElementById('set-as-end-button');
+            if(startBtn) startBtn.onclick = () => { selectedStart = { coords: poi.coords, name: poi.name }; window.updateTripDisplay(); window.closeModal('poi-modal'); window.showToast(`已將 ${poi.name} 設為起點`); };
+            if(endBtn) endBtn.onclick = () => { selectedEnd = { coords: poi.coords, name: poi.name }; window.updateTripDisplay(); window.closeModal('poi-modal'); window.showToast(`已將 ${poi.name} 設為終點`); };
+            window.openModal('poi-modal');
+            if (iframeContainer && poi.iframeUrl && (poi.iframeUrl.includes('facebook.com') || poi.iframeUrl.includes('fb.com'))) {
+                parseFacebookPluginAfterModalVisible(iframeContainer);
+            }
+        };
+
+
 
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            window.renderPoiList();
             const transports = [
                 ['🚶', '步行', '0 g/km'], ['🚲', '腳踏車', '0 g/km'], ['🚌', '公車/共乘', '低碳'],
                 ['🚆', '火車', '低碳'], ['🏍️', '機車/2人共乘', '共享'], ['🚗', '汽車3人', '共享'],
@@ -956,9 +1351,11 @@
                 `).join('');
                 grid.querySelectorAll('.transport-card').forEach(btn => {
                     btn.addEventListener('click', () => {
+                        sessionStorage.setItem('satoyama_current_page', 'mission');
                         PREVIEW_TRACK_STATE.selectedTransport = btn.dataset.title;
                         document.getElementById('homepage')?.classList.add('hidden');
                         document.getElementById('mission-page')?.classList.remove('hidden');
+                        setTimeout(() => window.initSatoyamaMap(), 200);
                         const display = document.getElementById('current-transport-display-mission');
                         if (display) display.innerHTML = '<i class="fas fa-info-circle mr-1.5 opacity-80"></i>交通方式: ' + btn.dataset.title;
                         const selectedTransport = document.getElementById('track-selected-transport');
@@ -969,10 +1366,12 @@
                 });
             }
             document.getElementById('back-to-home')?.addEventListener('click', () => {
+                sessionStorage.setItem('satoyama_current_page', 'home');
                 document.getElementById('mission-page')?.classList.add('hidden');
                 document.getElementById('homepage')?.classList.remove('hidden');
             });
             document.getElementById('change-transport-button')?.addEventListener('click', () => {
+                sessionStorage.setItem('satoyama_current_page', 'home');
                 document.getElementById('mission-page')?.classList.add('hidden');
                 document.getElementById('homepage')?.classList.remove('hidden');
                 document.getElementById('transport-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1044,6 +1443,30 @@
             }
             const code = document.getElementById('player-code');
             if (code && code.textContent === '...') code.textContent = 'T' + Math.floor(10000 + Math.random()*89999);
+            const savedPage = sessionStorage.getItem('satoyama_current_page');
+            if (savedPage === 'mission') {
+                document.getElementById('homepage')?.classList.add('hidden');
+                document.getElementById('mission-page')?.classList.remove('hidden');
+                setTimeout(() => window.initSatoyamaMap(), 250);
+            }
+            document.getElementById('preview-trip-button')?.addEventListener('click', () => window.previewSelectedRoute(true));
+            document.getElementById('confirm-trip-button')?.addEventListener('click', () => {
+                if (!selectedStart || !selectedEnd || !PREVIEW_TRACK_STATE.selectedTransport) {
+                    window.showToast('請先選擇交通方式、起點與終點');
+                    return;
+                }
+                const km = haversineKm({ lat: selectedStart.coords.lat, lon: selectedStart.coords.lng }, { lat: selectedEnd.coords.lat, lon: selectedEnd.coords.lng });
+                const carbonG = Math.round(km * getCarbonReductionPerKm(PREVIEW_TRACK_STATE.selectedTransport));
+                const mileageEl = document.getElementById('display-mileage');
+                const carbonEl = document.getElementById('display-carbon');
+                const currentMileage = parseFloat(mileageEl?.textContent || '0') || 0;
+                const currentCarbon = parseFloat((carbonEl?.textContent || '0').replaceAll(',', '')) || 0;
+                if (mileageEl) mileageEl.textContent = (currentMileage + km).toFixed(1);
+                if (carbonEl) carbonEl.textContent = Math.round(currentCarbon + carbonG).toLocaleString();
+                const statusText = document.getElementById('trip-calculation-status');
+                if (statusText) statusText.textContent = `已登錄景點移動：${km.toFixed(2)} km，預估減碳 ${carbonG.toLocaleString()} g CO₂e。`;
+                window.showToast('已登錄景點路線成就');
+            });
             const status = document.getElementById('connection-status');
             if (status) {
                 if (APP_ENV.isGithubPages) {
