@@ -690,7 +690,16 @@
     </div>
 
     <script>
-        // Canvas 預覽安全補丁：避免原始碼依賴外部後端時導致整頁中斷
+        // 環境判斷：GitHub Pages 顯示正式模式，Canvas / 本機才顯示預覽模式
+        const APP_ENV = {
+            hostname: window.location.hostname,
+            isGithubPages: window.location.hostname.endsWith('github.io'),
+            isLocalFile: window.location.protocol === 'file:',
+            isCanvasPreview: window.location.hostname.includes('chatgpt') || window.location.hostname.includes('openai') || window.location.hostname === ''
+        };
+        APP_ENV.isPreview = !APP_ENV.isGithubPages || APP_ENV.isLocalFile || APP_ENV.isCanvasPreview;
+
+        // 安全補丁：避免外部服務或尚未載入模組導致整頁中斷
         window.addEventListener('error', function(e) {
             console.warn('Preview runtime warning:', e.message);
         });
@@ -1036,7 +1045,15 @@
             const code = document.getElementById('player-code');
             if (code && code.textContent === '...') code.textContent = 'T' + Math.floor(10000 + Math.random()*89999);
             const status = document.getElementById('connection-status');
-            if (status) status.innerHTML = '<i class="fas fa-check-circle text-green-300 mr-2 text-xs"></i><span class="text-white/90 text-xs font-bold tracking-wide">預覽模式</span>';
+            if (status) {
+                if (APP_ENV.isGithubPages) {
+                    status.innerHTML = '<i class="fas fa-check-circle text-green-300 mr-2 text-xs"></i><span class="text-white/90 text-xs font-bold tracking-wide">正式網站</span>';
+                    status.title = '目前執行於 GitHub Pages 正式網站環境';
+                } else {
+                    status.innerHTML = '<i class="fas fa-eye text-green-300 mr-2 text-xs"></i><span class="text-white/90 text-xs font-bold tracking-wide">預覽模式</span>';
+                    status.title = '目前執行於 Canvas 或本機預覽環境';
+                }
+            }
         });
     </script>
 </body>
