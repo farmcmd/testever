@@ -1785,8 +1785,8 @@
             });
         };
 
-        // 啟動點
-        document.addEventListener('DOMContentLoaded', () => {
+        // 啟動點防呆：確保初始化函數被執行，不怕 DOMContentLoaded 錯過
+        function initApp() {
             window.loadLocalData();
             if (typeof window.initFirebase === 'function') { window.initFirebase(); }
             
@@ -1822,12 +1822,6 @@
                 }
             });
             
-            if(typeof window.bindSystemUtilities === 'function') window.bindSystemUtilities();
-            if(typeof window.bindMapAndTransportEvents === 'function') window.bindMapAndTransportEvents();
-            if(typeof window.bindGreenConsumptionEvents === 'function') window.bindGreenConsumptionEvents();
-            if(typeof window.bindMapAndActions === 'function') window.bindMapAndActions();
-            if(typeof window.bindPartnerSelectEvents === 'function') window.bindPartnerSelectEvents();
-
             document.querySelectorAll('.accordion-header').forEach(header => {
                 header.addEventListener('click', () => { const content = header.nextElementSibling; const icon = header.querySelector('i.fa-chevron-down'); content.classList.toggle('hidden'); if(icon) icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)'; });
             });
@@ -1860,7 +1854,14 @@
                     document.body.classList.remove('power-save-mode');
                 }
             });
-        });
+        }
+
+        // 偵測並確保執行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
