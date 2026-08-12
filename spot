@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>探探里山 - 在地景點列表 (外部圖鑑)</title>
+    <title>探探里山永續廊道 - 景點圖鑑</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -17,67 +17,75 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Modal 動畫設定 */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 300ms, transform 300ms; }
     </style>
 </head>
-<body class="p-4 md:p-6 custom-scrollbar h-screen overflow-y-auto bg-white rounded-xl shadow-inner border border-gray-100">
+<body class="p-4 md:p-6 custom-scrollbar h-screen overflow-y-auto bg-white rounded-xl shadow-inner border border-gray-100 relative">
 
-    <div class="mb-5 flex items-center justify-between border-b border-mori-light pb-3 sticky top-0 bg-white z-10">
-        <h2 class="text-xl font-black text-mori-forest flex items-center">
-            <i class="fas fa-map-marked-alt text-mori-sage mr-2"></i>在地景點列表
+    <!-- 頁首標題 -->
+    <div class="mb-5 flex flex-col sm:flex-row sm:items-center justify-between border-b border-mori-light pb-3 sticky top-0 bg-white/95 backdrop-blur-sm z-10 gap-2 pt-2">
+        <h2 class="text-xl md:text-2xl font-black text-mori-forest flex items-center tracking-wide">
+            <i class="fas fa-map-marked-alt text-mori-sage mr-2"></i>探探里山永續廊道
         </h2>
-        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md border border-gray-200 shadow-sm"><i class="fas fa-link mr-1 text-blue-400"></i>外部圖鑑模組</span>
+        <span class="text-xs font-bold text-gray-400 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-200 shadow-sm inline-flex items-center w-fit">
+            <i class="fas fa-link mr-1.5 text-blue-400 animate-pulse"></i>外部連動模組
+        </span>
     </div>
 
-    <div id="poi-list-container" class="space-y-4 pb-10">
+    <!-- 景點列表容器 -->
+    <div id="poi-list-container" class="space-y-5 pb-10">
         <!-- 景點列表將由 JS 動態生成在此 -->
     </div>
 
-    <!-- 景點詳細資訊 Modal (外部版本) -->
-    <div id="poi-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="poi-modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition outline-none" onclick="closePoiModal()"><i class="fas fa-times text-xl"></i></button>
-            <div class="p-6">
-                <!-- 🌟 傳送至主系統按鈕 -->
-                <div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100">
-                    <p class="text-xs text-center text-gray-500 font-bold mb-1"><i class="fas fa-satellite-dish text-blue-500 mr-1 animate-pulse"></i>傳送至主地圖進行操作：</p>
-                    <button id="send-to-main-button" class="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:shadow-lg font-black text-sm transition-all transform active:scale-95 shadow-md flex items-center justify-center group outline-none">
-                        <i class="fas fa-paper-plane mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>傳送此景點回主系統
+    <!-- 🌟 景點詳細資訊 Modal (外部版本) -->
+    <div id="poi-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] flex flex-col transform transition-transform duration-300 scale-95" id="poi-modal-content">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-gray-500 text-sm"><i class="fas fa-info-circle mr-1"></i>景點詳情</h3>
+                <button class="text-gray-400 hover:text-gray-600 transition outline-none bg-gray-50 hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center" onclick="closePoiModal()">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (可滾動區域) -->
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-grow">
+                <!-- 🌟 傳送至主系統按鈕區塊 -->
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 mb-5 text-center shadow-sm">
+                    <p class="text-[11px] text-blue-600 font-bold mb-2 tracking-wide flex items-center justify-center">
+                        <i class="fas fa-satellite-dish mr-1.5 animate-pulse"></i>將此地點傳送至地圖進行碳里程計算
+                    </p>
+                    <!-- 觸發送出訊息的按鈕 -->
+                    <button onclick="triggerSendToMainApp()" class="w-full py-3.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:shadow-lg hover:from-blue-600 hover:to-indigo-700 font-black text-sm transition-all transform active:scale-95 shadow-md flex items-center justify-center group outline-none tracking-wide">
+                        <i class="fas fa-paper-plane mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>傳送座標至主系統
                     </button>
-                    <button class="px-4 py-2 mt-1 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 font-bold text-sm transition shadow-sm outline-none" onclick="closePoiModal()">返回圖鑑</button>
-                    <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mt-2 border-t border-dashed border-gray-200 pt-3"></div>
                 </div>
                 
-                <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3>
-                <div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
-                <div id="poi-iframe-container" class="hidden w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner relative mb-2"></div>
+                <!-- 景點基本資訊 -->
+                <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2 leading-tight"></h3>
+                <div id="poi-modal-description" class="text-[13px] text-gray-600 leading-relaxed mb-4 bg-gray-50 p-3 rounded-lg border border-gray-100"></div>
+                
+                <!-- 動態按鈕區 (FB、官網等) -->
+                <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mb-4"></div>
+                
+                <!-- Iframe 預覽區 -->
+                <div id="poi-iframe-container" class="hidden w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner relative min-h-[150px]"></div>
             </div>
         </div>
     </div>
 
-    <!-- 提示框 -->
-    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-[60]">
-        訊息
+    <!-- 提示框 Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800/95 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-xl opacity-0 transition-opacity duration-300 pointer-events-none z-[60] flex items-center backdrop-blur-sm whitespace-nowrap border border-gray-700">
+        <i class="fas fa-check-circle text-green-400 mr-2 text-lg"></i><span id="toast-msg">訊息</span>
     </div>
 
     <script>
-        // === 與主系統連動的核心函式 ===
-        function sendToMainApp(spotName, lat, lng, description, icon) {
-            // 傳送資料回父層視窗 (即主系統)
-            window.parent.postMessage({
-                action: 'SELECT_EXTERNAL_POI',
-                poi: {
-                    id: 'spot_' + Date.now(), 
-                    name: spotName,           
-                    coords: { lat: parseFloat(lat), lng: parseFloat(lng) }, 
-                    description: description || '從外部圖鑑匯入的景點',
-                    icon: icon || '📍'                
-                }
-            }, '*');
-            showToast('📤 景點資料已傳送至主系統');
-            setTimeout(closePoiModal, 300); // 傳送後稍微延遲關閉 Modal
-        }
-
-        // === 資料定義 (從主頁提取) ===
+        // === 資料定義 (從您提供的清單中提取) ===
         const poiCategories = [
             { id: 4, title: '1. 水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。' }, 
             { id: 1, title: '2. 里山餐桌團隊', desc: '核心規劃團隊，提供生態旅遊與 ESG 專案規劃。' }, 
@@ -109,16 +117,16 @@
             {categoryId:3,id:'poi23',name:'車程林班道',coords:{lat:23.833913,lng:120.866191},icon:'🚂'},
             {categoryId:3,id:'poi24',name:'車埕木業展示館',coords:{lat:23.833549,lng:120.865796},icon:'🪵'},
             {categoryId:3,id:'poi18',name:'森音 Morinooto',coords:{lat:23.742587,lng:120.866954},icon:'🎶'},
-            {categoryId:3,id:'poi9',name:'蛇窯文化園區',coords:{lat:23.801177,lng:120.864479},icon:'🏺'},
-            {categoryId:3,id:'poi17',name:'水里星光市集',coords:{lat:23.813636,lng:120.850816},icon:'💡'}
+            {categoryId:3,id:'poi9',name:'蛇窯文化園區',coords:{lat:23.801177,lng:120.864479},icon:'🏺'}
         ];
 
-        let currentModalPoi = null;
+        let currentModalPoi = null; // 記錄目前 Modal 顯示的景點資料
 
         // === UI 輔助功能 ===
         function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas fa-check-circle text-green-400 mr-2"></i>${msg}`;
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.textContent = msg;
             toast.classList.remove('opacity-0');
             toast.classList.add('opacity-100');
             setTimeout(() => {
@@ -130,21 +138,75 @@
         function closePoiModal() {
             const modal = document.getElementById('poi-modal');
             const content = document.getElementById('poi-modal-content');
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
+            
+            // 縮小淡出動畫
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            // 等待動畫結束後隱藏 DOM
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
+            currentModalPoi = null;
         }
 
         function openPoiModal() {
             const modal = document.getElementById('poi-modal');
             const content = document.getElementById('poi-modal-content');
+            
+            // 顯示 DOM，然後執行放大淡入動畫
             modal.classList.remove('hidden');
-            // Allow display block to render before animating opacity/transform
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            // 強制重繪以確保動畫觸發
+            void modal.offsetWidth; 
+            
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
         }
+
+        // === 🌟 核心功能：與主系統連動 API ===
+        function sendToMainApp(spotName, lat, lng, description, icon) {
+            const payload = {
+                action: 'SELECT_EXTERNAL_POI',
+                poi: {
+                    id: 'ext_spot_' + Date.now(), // 產生暫時唯一碼
+                    name: spotName,           
+                    coords: { lat: parseFloat(lat), lng: parseFloat(lng) }, 
+                    description: description || '從探探里山永續廊道匯入的景點',
+                    icon: icon || '📍'                
+                }
+            };
+            
+            // 傳送資料回父層視窗 (主系統 iframe) 或來源視窗 (window.open)
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage(payload, '*');
+            } else if (window.opener) {
+                window.opener.postMessage(payload, '*');
+            } else {
+                console.warn('找不到可接收訊息的主系統。', payload);
+            }
+            
+            showToast('📤 景點座標已發送');
+            
+            // 稍微延遲關閉，讓使用者看到 toast 提示
+            setTimeout(() => {
+                closePoiModal();
+            }, 500);
+        }
+
+        // 綁定給 Modal 中按鈕呼叫的包裹函式
+        window.triggerSendToMainApp = function() {
+            if (currentModalPoi) {
+                sendToMainApp(
+                    currentModalPoi.name, 
+                    currentModalPoi.coords.lat, 
+                    currentModalPoi.coords.lng, 
+                    currentModalPoi.description, 
+                    currentModalPoi.icon
+                );
+            }
+        };
 
         // === 渲染邏輯 ===
         function renderList() {
@@ -155,23 +217,26 @@
                 const catPois = pois.filter(p => p.categoryId === cat.id);
                 if (catPois.length > 0) {
                     html += `
-                        <div class="mb-5 last:mb-0">
-                            <div class="bg-gray-50 border-l-4 border-mori-sage px-3 py-2 rounded-r-lg mb-3 shadow-sm border-t border-r border-b border-gray-100">
-                                <h4 class="font-bold text-mori-dark text-[14px] tracking-wide">${cat.title}</h4>
-                                <p class="text-[11px] text-gray-500 mt-0.5 leading-relaxed">${cat.desc}</p>
+                        <div class="mb-6 last:mb-0">
+                            <!-- 分類標題 -->
+                            <div class="bg-gray-50 border-l-[5px] border-mori-sage px-4 py-3 rounded-r-xl mb-3 shadow-sm border-t border-r border-b border-gray-100">
+                                <h4 class="font-black text-mori-dark text-[15px] tracking-wide">${cat.title}</h4>
+                                <p class="text-[11px] text-gray-500 mt-1 leading-relaxed">${cat.desc}</p>
                             </div>
-                            <div class="grid grid-cols-1 gap-2 pl-1">
+                            
+                            <!-- 景點項目網格 -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pl-1">
                                 ${catPois.map(poi => `
-                                    <div class="p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between group" onclick="showDetails('${poi.id}')">
-                                        <div class="flex items-center">
-                                            <span class="text-2xl mr-3 group-hover:scale-110 transition-transform bg-gray-50 w-10 h-10 flex items-center justify-center rounded-full border border-gray-100">${poi.icon}</span>
-                                            <div>
-                                                <h5 class="text-[14px] font-bold text-gray-800 leading-tight">${poi.name.replace('SROI (✓)','<span class="text-green-600 font-black ml-1 bg-green-50 px-1 py-0.5 rounded text-[10px]">SROI ✓</span>')}</h5>
-                                                ${poi.esgEligible ? '<span class="text-[10px] text-mori-sage font-bold"><i class="fas fa-leaf mr-1"></i>ESG 合作點</span>' : ''}
+                                    <div class="p-3.5 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-300 cursor-pointer flex items-center justify-between group transform hover:-translate-y-0.5" onclick="showDetails('${poi.id}')">
+                                        <div class="flex items-center overflow-hidden">
+                                            <span class="text-2xl mr-3 group-hover:scale-110 transition-transform bg-gray-50 w-11 h-11 flex items-center justify-center rounded-full border border-gray-100 shrink-0 shadow-inner">${poi.icon}</span>
+                                            <div class="truncate pr-2">
+                                                <h5 class="text-[14px] font-bold text-gray-800 leading-tight truncate">${poi.name.replace('SROI (✓)','<span class="text-green-600 font-black ml-1 bg-green-50 px-1 py-0.5 rounded text-[10px] border border-green-200 shadow-sm whitespace-nowrap">SROI ✓</span>')}</h5>
+                                                ${poi.esgEligible ? '<span class="text-[10px] text-mori-sage font-bold inline-block mt-1 bg-mori-light/50 px-1.5 py-0.5 rounded"><i class="fas fa-leaf mr-1"></i>ESG 合作點</span>' : ''}
                                             </div>
                                         </div>
-                                        <div class="flex flex-col items-end">
-                                            <i class="fas fa-share-square text-gray-300 text-sm group-hover:text-blue-500 transition-colors mb-1"></i>
+                                        <div class="shrink-0 flex items-center justify-center bg-gray-50 w-8 h-8 rounded-full group-hover:bg-blue-50 transition-colors">
+                                            <i class="fas fa-arrow-right text-gray-400 text-xs group-hover:text-blue-500 transition-colors"></i>
                                         </div>
                                     </div>
                                 `).join('')}
@@ -183,23 +248,23 @@
             container.innerHTML = html;
         }
 
-        function showDetails(poiId) {
+        window.showDetails = function(poiId) {
             const poi = pois.find(p => p.id === poiId);
             if (!poi) return;
             currentModalPoi = poi;
             
             const titleEl = document.getElementById('poi-modal-title');
-            if (titleEl) titleEl.innerHTML = `<span class="text-2xl mr-2">${poi.icon}</span>${poi.name}`;
+            if (titleEl) titleEl.innerHTML = `<span class="text-2xl mr-2">${poi.icon}</span>${poi.name.replace('SROI (✓)','')}`;
             
             const descEl = document.getElementById('poi-modal-description');
-            if (descEl) descEl.innerHTML = poi.description || '位於南投縣水里鄉，是您探索低碳永續與體驗在地生活的好去處。';
+            if (descEl) descEl.innerHTML = poi.description || '<i class="fas fa-map-pin mr-1 opacity-70"></i>此景點位於南投縣水里鄉，是您探索低碳永續與體驗在地生活的好去處。';
             
             const btnContainer = document.getElementById('poi-modal-dynamic-buttons');
             if (btnContainer) {
                 let btnsHtml = '';
-                if (poi.fbUrl) btnsHtml += `<a href="${poi.fbUrl}" target="_blank" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm text-center border border-blue-200 w-full flex items-center justify-center mb-1 shadow-sm hover:bg-blue-100 transition"><i class="fab fa-facebook mr-1.5 text-lg"></i>查看 Facebook 粉絲頁</a>`;
-                if (poi.websiteUrl) btnsHtml += `<a href="${poi.websiteUrl}" target="_blank" class="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg font-bold text-sm text-center border border-gray-200 w-full flex items-center justify-center mb-1 shadow-sm hover:bg-gray-100 transition"><i class="fas fa-external-link-alt mr-1.5"></i>前往官方網站</a>`;
-                if (poi.esgEligible && !poi.websiteUrl) { btnsHtml += `<a href="https://farmcmd.github.io/JOY/" target="_blank" class="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg font-bold text-sm text-center border border-yellow-200 w-full flex items-center justify-center mb-1 shadow-sm hover:bg-yellow-100 transition"><i class="fas fa-ticket-alt mr-1.5"></i>查看活動與預約</a>`; }
+                if (poi.fbUrl) btnsHtml += `<a href="${poi.fbUrl}" target="_blank" class="px-4 py-2.5 bg-blue-50 text-blue-600 rounded-lg font-bold text-[13px] text-center border border-blue-200 w-full flex items-center justify-center mb-2 shadow-sm hover:bg-blue-100 transition tracking-wide"><i class="fab fa-facebook mr-2 text-base"></i>查看 Facebook 粉絲頁</a>`;
+                if (poi.websiteUrl) btnsHtml += `<a href="${poi.websiteUrl}" target="_blank" class="px-4 py-2.5 bg-gray-50 text-gray-700 rounded-lg font-bold text-[13px] text-center border border-gray-200 w-full flex items-center justify-center mb-2 shadow-sm hover:bg-gray-100 transition tracking-wide"><i class="fas fa-external-link-alt mr-2 text-base"></i>前往官方網站</a>`;
+                if (poi.esgEligible && !poi.websiteUrl) { btnsHtml += `<a href="https://farmcmd.github.io/JOY/" target="_blank" class="px-4 py-2.5 bg-yellow-50 text-yellow-700 rounded-lg font-bold text-[13px] text-center border border-yellow-200 w-full flex items-center justify-center shadow-sm hover:bg-yellow-100 transition tracking-wide"><i class="fas fa-ticket-alt mr-2 text-base"></i>查看活動與預約</a>`; }
                 btnContainer.innerHTML = btnsHtml;
             }
             
@@ -211,7 +276,7 @@
                         iframeContainer.classList.remove('hidden');
                         setTimeout(() => { if (window.FB) window.FB.XFBML.parse(iframeContainer); }, 150);
                     } else {
-                        iframeContainer.innerHTML = `<iframe src="${poi.iframeUrl}" class="w-full h-[300px] border-none bg-gray-50" allowfullscreen></iframe>`;
+                        iframeContainer.innerHTML = `<iframe src="${poi.iframeUrl}" class="w-full h-[250px] border-none bg-gray-50" allowfullscreen></iframe>`;
                         iframeContainer.classList.remove('hidden');
                     }
                 } else {
@@ -220,14 +285,6 @@
                 }
             }
             
-            // 綁定傳送至主系統的按鈕事件
-            const sendBtn = document.getElementById('send-to-main-button');
-            if (sendBtn) {
-                sendBtn.onclick = () => {
-                    sendToMainApp(poi.name, poi.coords.lat, poi.coords.lng, poi.description, poi.icon);
-                };
-            }
-
             openPoiModal();
         }
 
