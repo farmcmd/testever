@@ -1790,6 +1790,13 @@
             window.loadLocalData();
             if (typeof window.initFirebase === 'function') { window.initFirebase(); }
             
+            // 確保這些初始化函數被穩定呼叫
+            if(typeof window.bindMapAndTransportEvents === 'function') window.bindMapAndTransportEvents();
+            if(typeof window.bindSystemUtilities === 'function') window.bindSystemUtilities();
+            if(typeof window.bindGreenConsumptionEvents === 'function') window.bindGreenConsumptionEvents();
+            if(typeof window.bindMapAndActions === 'function') window.bindMapAndActions();
+            if(typeof window.bindPartnerSelectEvents === 'function') window.bindPartnerSelectEvents();
+            
             window.addEventListener('message', (event) => {
                 if (event.data && event.data.action === 'SWITCH_TAB') { if (event.data.tab === 'gov') document.getElementById('tab-btn-gov')?.click(); else document.getElementById('tab-btn-ent')?.click(); }
                 if (event.data && event.data.action === 'CLOSE_MODAL') { window.closeModal('dashboard-iframe-modal'); }
