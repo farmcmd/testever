@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>探探里山 - 在地景點列表</title>
+    <title>探探里山 - 在地景點列表 (外部圖鑑)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -15,39 +15,35 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
-        /* 隱藏原生捲軸，但保留自訂樣式 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="p-4 md:p-6 custom-scrollbar h-screen overflow-y-auto bg-white rounded-xl shadow-inner border border-gray-100">
 
-    <div class="mb-5 flex items-center justify-between border-b border-mori-light pb-3">
+    <div class="mb-5 flex items-center justify-between border-b border-mori-light pb-3 sticky top-0 bg-white z-10">
         <h2 class="text-xl font-black text-mori-forest flex items-center">
             <i class="fas fa-map-marked-alt text-mori-sage mr-2"></i>在地景點列表
         </h2>
-        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">外部模組</span>
+        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md border border-gray-200 shadow-sm"><i class="fas fa-link mr-1 text-blue-400"></i>外部圖鑑模組</span>
     </div>
 
-    <div id="poi-list-container" class="space-y-4">
+    <div id="poi-list-container" class="space-y-4 pb-10">
         <!-- 景點列表將由 JS 動態生成在此 -->
     </div>
 
-    <!-- 景點詳細資訊 Modal -->
+    <!-- 景點詳細資訊 Modal (外部版本) -->
     <div id="poi-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="poi-modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition" onclick="closePoiModal()"><i class="fas fa-times text-xl"></i></button>
+            <button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition outline-none" onclick="closePoiModal()"><i class="fas fa-times text-xl"></i></button>
             <div class="p-6">
+                <!-- 🌟 傳送至主系統按鈕 -->
                 <div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100">
-                    <p class="text-xs text-center text-gray-500 font-bold mb-1"><i class="fas fa-location-arrow text-mori-sage mr-1"></i>傳送至主系統計算減碳：</p>
-                    <div class="flex gap-2">
-                        <button id="set-as-start-button" class="flex-1 py-2.5 bg-mori-light text-mori-dark rounded-xl hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm border border-mori-sage/20 flex items-center justify-center">
-                            <i class="fas fa-play-circle mr-1.5"></i>設為起點
-                        </button>
-                        <button id="set-as-end-button" class="flex-1 py-2.5 bg-mori-forest text-white rounded-xl hover:bg-mori-dark font-bold text-sm transition shadow-sm flex items-center justify-center">
-                            <i class="fas fa-stop-circle mr-1.5"></i>設為終點
-                        </button>
-                    </div>
+                    <p class="text-xs text-center text-gray-500 font-bold mb-1"><i class="fas fa-satellite-dish text-blue-500 mr-1 animate-pulse"></i>傳送至主地圖進行操作：</p>
+                    <button id="send-to-main-button" class="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:shadow-lg font-black text-sm transition-all transform active:scale-95 shadow-md flex items-center justify-center group outline-none">
+                        <i class="fas fa-paper-plane mr-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>傳送此景點回主系統
+                    </button>
+                    <button class="px-4 py-2 mt-1 bg-gray-100 text-gray-500 rounded-xl hover:bg-gray-200 font-bold text-sm transition shadow-sm outline-none" onclick="closePoiModal()">返回圖鑑</button>
                     <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mt-2 border-t border-dashed border-gray-200 pt-3"></div>
                 </div>
                 
@@ -64,6 +60,23 @@
     </div>
 
     <script>
+        // === 與主系統連動的核心函式 ===
+        function sendToMainApp(spotName, lat, lng, description, icon) {
+            // 傳送資料回父層視窗 (即主系統)
+            window.parent.postMessage({
+                action: 'SELECT_EXTERNAL_POI',
+                poi: {
+                    id: 'spot_' + Date.now(), 
+                    name: spotName,           
+                    coords: { lat: parseFloat(lat), lng: parseFloat(lng) }, 
+                    description: description || '從外部圖鑑匯入的景點',
+                    icon: icon || '📍'                
+                }
+            }, '*');
+            showToast('📤 景點資料已傳送至主系統');
+            setTimeout(closePoiModal, 300); // 傳送後稍微延遲關閉 Modal
+        }
+
         // === 資料定義 (從主頁提取) ===
         const poiCategories = [
             { id: 4, title: '1. 水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。' }, 
@@ -133,34 +146,6 @@
             }, 10);
         }
 
-        // === 核心功能：與主系統連動 ===
-        function sendPointToMainSystem(type, poi) {
-            const payload = {
-                action: 'SET_TRIP_POINT',
-                type: type, // 'start' or 'end'
-                name: poi.name,
-                lat: poi.coords.lat,
-                lng: poi.coords.lng
-            };
-
-            // 如果是被以 iframe 嵌入
-            if (window.parent && window.parent !== window) {
-                window.parent.postMessage(payload, '*');
-                showToast(`已設定${type === 'start' ? '起點' : '終點'}：${poi.name}`);
-            } 
-            // 如果是被以新分頁開啟 (window.open)
-            else if (window.opener) {
-                window.opener.postMessage(payload, '*');
-                showToast(`已傳送${type === 'start' ? '起點' : '終點'}設定回主視窗`);
-            } 
-            // 無法找到主系統
-            else {
-                alert(`無法與主系統連線。\n\n您選擇了：${poi.name}\n經度: ${poi.coords.lng}\n緯度: ${poi.coords.lat}`);
-            }
-            
-            closePoiModal();
-        }
-
         // === 渲染邏輯 ===
         function renderList() {
             const container = document.getElementById('poi-list-container');
@@ -177,7 +162,7 @@
                             </div>
                             <div class="grid grid-cols-1 gap-2 pl-1">
                                 ${catPois.map(poi => `
-                                    <div class="p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-mori-sage hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between group" onclick="showDetails('${poi.id}')">
+                                    <div class="p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between group" onclick="showDetails('${poi.id}')">
                                         <div class="flex items-center">
                                             <span class="text-2xl mr-3 group-hover:scale-110 transition-transform bg-gray-50 w-10 h-10 flex items-center justify-center rounded-full border border-gray-100">${poi.icon}</span>
                                             <div>
@@ -186,7 +171,7 @@
                                             </div>
                                         </div>
                                         <div class="flex flex-col items-end">
-                                            <i class="fas fa-chevron-right text-gray-300 text-xs group-hover:text-mori-sage transition-colors mb-1"></i>
+                                            <i class="fas fa-share-square text-gray-300 text-sm group-hover:text-blue-500 transition-colors mb-1"></i>
                                         </div>
                                     </div>
                                 `).join('')}
@@ -218,9 +203,30 @@
                 btnContainer.innerHTML = btnsHtml;
             }
             
-            // 綁定設定起終點的事件
-            document.getElementById('set-as-start-button').onclick = () => sendPointToMainSystem('start', poi);
-            document.getElementById('set-as-end-button').onclick = () => sendPointToMainSystem('end', poi);
+            const iframeContainer = document.getElementById('poi-iframe-container');
+            if (iframeContainer) {
+                if (poi.iframeUrl) {
+                    if (poi.iframeUrl.includes('facebook.com') || poi.iframeUrl.includes('fb.com')) {
+                        iframeContainer.innerHTML = `<div class="w-full bg-white flex justify-center py-2"><div class="fb-page" data-href="${poi.iframeUrl}" data-tabs="timeline" data-width="380" data-height="350" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="${poi.iframeUrl}" class="fb-xfbml-parse-ignore"><a href="${poi.iframeUrl}" target="_blank" class="text-blue-500 text-sm font-bold"><i class="fab fa-facebook mr-1"></i>載入中...</a></blockquote></div></div>`;
+                        iframeContainer.classList.remove('hidden');
+                        setTimeout(() => { if (window.FB) window.FB.XFBML.parse(iframeContainer); }, 150);
+                    } else {
+                        iframeContainer.innerHTML = `<iframe src="${poi.iframeUrl}" class="w-full h-[300px] border-none bg-gray-50" allowfullscreen></iframe>`;
+                        iframeContainer.classList.remove('hidden');
+                    }
+                } else {
+                    iframeContainer.innerHTML = '';
+                    iframeContainer.classList.add('hidden');
+                }
+            }
+            
+            // 綁定傳送至主系統的按鈕事件
+            const sendBtn = document.getElementById('send-to-main-button');
+            if (sendBtn) {
+                sendBtn.onclick = () => {
+                    sendToMainApp(poi.name, poi.coords.lat, poi.coords.lng, poi.description, poi.icon);
+                };
+            }
 
             openPoiModal();
         }
