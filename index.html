@@ -174,7 +174,12 @@
                 <!-- 側邊欄控制區 -->
                 <div class="lg:col-span-1 flex flex-col gap-3 overflow-y-auto max-h-[80vh] no-scrollbar pb-24">
                     <!-- 在地景點 -->
-                    <div class="accordion-item shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none bg-gray-50 hover:bg-gray-100 transition"><span class="text-[15px]"><i class="fas fa-map-marker-alt mr-2 text-mori-forest"></i>在地景點列表</span><i class="fas fa-chevron-down transition-transform duration-300 transform rotate-180"></i></button><div class="accordion-content p-4 pt-2 block"><div id="poi-list-container" class="space-y-4 max-h-[45vh] overflow-y-auto pr-2 custom-scrollbar"></div><div class="mt-4 pt-3 border-t border-dashed border-gray-200"><p class="text-xs font-bold text-mori-forest mb-1.5"><i class="fas fa-search-location mr-1"></i> 景點不夠嗎？</p><p class="text-[11px] text-gray-500 leading-relaxed">在地圖中找尋 <span class="text-green-600 font-bold"><i class="fas fa-map-marker-alt"></i> 綠色座標</span> 或許會有驚喜！<br>還有 <span class="text-blue-500 font-bold"><i class="fas fa-map-marker-alt"></i> 藍色座標</span> 中有哪些活動與市集？</p></div></div></div>
+                    <div class="accordion-item shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none bg-gray-50 hover:bg-gray-100 transition"><span class="text-[15px]"><i class="fas fa-map-marker-alt mr-2 text-mori-forest"></i>在地景點列表</span><i class="fas fa-chevron-down transition-transform duration-300 transform rotate-180"></i></button><div class="accordion-content p-4 pt-2 block">
+                        <!-- 加入開啟外部景點庫的按鈕 -->
+                        <button onclick="window.openExternalPoiModal()" class="w-full py-3 mb-3 bg-gradient-to-r from-mori-sage to-mori-forest hover:from-mori-forest hover:to-mori-dark text-white rounded-xl shadow-md font-bold text-sm tracking-wide transition-all transform active:scale-95 flex items-center justify-center group outline-none">
+                            <i class="fas fa-book-open mr-2 group-hover:scale-110 transition-transform animate-pulse"></i> 探索完整景點圖鑑
+                        </button>
+                        <div id="poi-list-container" class="space-y-4 max-h-[45vh] overflow-y-auto pr-2 custom-scrollbar"></div><div class="mt-4 pt-3 border-t border-dashed border-gray-200"><p class="text-xs font-bold text-mori-forest mb-1.5"><i class="fas fa-search-location mr-1"></i> 景點不夠嗎？</p><p class="text-[11px] text-gray-500 leading-relaxed">在地圖中找尋 <span class="text-green-600 font-bold"><i class="fas fa-map-marker-alt"></i> 綠色座標</span> 或許會有驚喜！<br>還有 <span class="text-blue-500 font-bold"><i class="fas fa-map-marker-alt"></i> 藍色座標</span> 中有哪些活動與市集？</p></div></div></div>
                     
                     <!-- 跨縣市設定 -->
                     <div class="accordion-item shrink-0 bg-blue-50/50 rounded-xl shadow-sm border border-blue-100 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-blue-800 flex justify-between items-center text-left focus:outline-none hover:bg-blue-100/50 transition"><span class="text-[15px]"><i class="fas fa-map-marked-alt mr-2"></i>跨縣市往返設定</span><i class="fas fa-chevron-down transition-transform duration-300"></i></button><div class="accordion-content p-4 pt-2 hidden"><div class="flex flex-col gap-2"><select id="city-select" class="w-full p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-400"></select><div class="flex gap-2 mt-1"><button id="set-city-start-btn" class="flex-1 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm transition hover:bg-blue-200">設為起點</button><button id="set-city-end-btn" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm transition hover:bg-blue-700">設為終點</button></div></div></div></div>
@@ -465,6 +470,20 @@
     <div id="share-qrcode-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('share-qrcode-modal')"><i class="fas fa-times text-xl"></i></button><h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide"><i class="fas fa-qrcode text-blue-500 mr-2"></i>掃描條碼分享</h3><p class="text-[12px] text-gray-500 mb-4">請現場夥伴直接掃描，或點擊複製連結</p><div id="qrcode-container" class="flex justify-center mb-4 p-4 bg-white border-2 border-gray-100 rounded-xl shadow-inner min-h-[180px] items-center"></div><input type="text" id="share-modal-url" class="w-full p-2.5 border-2 border-gray-200 rounded-lg text-xs bg-gray-50 outline-none text-gray-600 mb-3 font-mono" readonly><button id="share-modal-copy-btn" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-copy mr-2"></i>複製專屬連結</button></div></div>
     <div id="custom-prompt-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-yellow-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('custom-prompt-modal')"><i class="fas fa-times text-xl"></i></button><h3 id="custom-prompt-title" class="text-lg font-bold text-gray-800 mb-4 tracking-wide"></h3><input type="text" id="custom-prompt-input" class="w-full p-3 border-2 border-gray-200 rounded-lg text-center font-bold focus:border-yellow-500 focus:outline-none mb-5 shadow-inner text-gray-700"><div class="flex gap-3"><button id="custom-prompt-cancel" class="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition shadow-sm border border-gray-200">取消</button><button id="custom-prompt-confirm" class="flex-1 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg font-bold hover:shadow-lg transition shadow-md">確認產出</button></div></div></div>
     <div id="chat-iframe-modal" class="modal-overlay hidden" style="z-index: 9950;"><div class="modal-content w-full max-w-md h-[92vh] md:h-[88vh] p-0 overflow-hidden relative bg-[#F9FAFB] rounded-2xl shadow-2xl border-t-4 border-blue-500 flex flex-col"><div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3.5 flex justify-between items-center shrink-0 shadow-md z-10"><h3 class="font-bold tracking-wide flex items-center text-sm md:text-base"><i class="fas fa-robot mr-2 text-yellow-300"></i>探探里山小幫手</h3><button class="text-white/80 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-700" onclick="window.closeModal('chat-iframe-modal')"><i class="fas fa-times text-lg"></i></button></div><iframe id="chat-iframe" src="" class="w-full h-full flex-grow border-none bg-transparent"></iframe></div></div>
+    
+    <!-- 🌟 外部景點圖鑑 Modal -->
+    <div id="external-poi-modal" class="modal-overlay hidden" style="z-index: 9950;">
+        <div class="modal-content w-full max-w-4xl h-[92vh] md:h-[88vh] p-0 overflow-hidden relative bg-[#F9FAFB] rounded-2xl shadow-2xl border-t-4 border-mori-forest flex flex-col">
+            <div class="bg-gradient-to-r from-mori-forest to-mori-sage text-white p-3.5 flex justify-between items-center shrink-0 shadow-md z-10">
+                <h3 class="font-bold tracking-wide flex items-center text-sm md:text-base"><i class="fas fa-map-marked-alt mr-2 text-yellow-300"></i>探索在地景點圖鑑</h3>
+                <button class="text-white/80 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-mori-dark outline-none" onclick="window.closeModal('external-poi-modal')">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <iframe id="external-poi-iframe" src="" class="w-full h-full flex-grow border-none bg-transparent"></iframe>
+        </div>
+    </div>
+
     <div id="poi-modal" class="modal-overlay hidden"><div class="modal-content bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"><button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition" onclick="window.closeModal('poi-modal')"><i class="fas fa-times text-xl"></i></button><div class="p-6"><div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100"><div class="flex gap-2"><button id="set-as-start-button" class="flex-1 py-2 bg-mori-light text-mori-dark rounded-lg hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm">設為起點</button><button id="set-as-end-button" class="flex-1 py-2 bg-mori-forest text-white rounded-lg hover:bg-mori-dark font-bold text-sm transition shadow-sm">設為終點</button><button class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 font-bold text-sm transition shadow-sm" onclick="window.closeModal('poi-modal')">關閉</button></div><div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mt-2"></div></div><h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3><div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div><div id="poi-iframe-container" class="hidden w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner relative mb-2"></div></div></div></div>
     <div id="reward-verification-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-yellow-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('reward-verification-modal')"><i class="fas fa-times text-xl"></i></button><div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-shield-alt text-2xl text-yellow-500"></i></div></div><h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide">旅程獎勵驗證</h3><p class="text-[12px] text-gray-500 mb-5 leading-relaxed">為確保減碳紀錄真實性，請輸入導覽員提供之「通關密碼」以獲取 100% 獎勵。若為自主探索，可直接獲取體驗獎勵。</p><input type="password" id="reward-verify-code" class="w-full p-3 border border-gray-200 rounded-lg text-center font-mono tracking-widest focus:outline-none focus:border-yellow-500 mb-4 bg-gray-50 placeholder-gray-400" placeholder="輸入 6 碼通關密碼"><div class="flex flex-col gap-3 mt-2"><button id="reward-verify-full-btn" onclick="window.verifyReward(1)" class="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:shadow-lg text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-check-circle mr-2"></i>確認驗證 (獲取 100% 獎勵)</button><button id="reward-verify-tenth-btn" onclick="window.verifyReward(0.1)" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-bold shadow-sm transition flex items-center justify-center tracking-wide border border-gray-200">免驗證 (獲取 10% 體驗獎勵)</button></div></div></div>
 
@@ -813,6 +832,16 @@
         };
 
         window.openChatModal=function(){const iframe=document.getElementById('chat-iframe');if(iframe&&!iframe.dataset.loaded){iframe.src=`https://farmcmd.github.io/chat/?t=${Date.now()}`;iframe.dataset.loaded="true";}window.openModal('chat-iframe-modal');};
+        
+        window.openExternalPoiModal=function(){
+            const iframe = document.getElementById('external-poi-iframe');
+            if (iframe && !iframe.dataset.loaded) {
+                iframe.src = `https://farmcmd.github.io/testever/spot.html?t=${Date.now()}`;
+                iframe.dataset.loaded = "true";
+            }
+            window.openModal('external-poi-modal');
+        };
+
         window.openDashboardModal=function(tab){const iframe=document.getElementById('dashboard-iframe');if(iframe){if(!iframe.dataset.loaded){iframe.src=`https://farmcmd.github.io/ESGT/dashboard.html?tab=${tab}&t=${Date.now()}`;iframe.dataset.loaded="true";iframe.onload=()=>{iframe.contentWindow.postMessage({action:'SYNC_FROM_MAIN',state:state,events:window.globalLotteryEvents||[]},'*');};}else{iframe.contentWindow.postMessage({action:'SWITCH_TAB',tab:tab},'*');iframe.contentWindow.postMessage({action:'SYNC_FROM_MAIN',state:state,events:window.globalLotteryEvents||[]},'*');}}window.openModal('dashboard-iframe-modal');};
         
         window.openLatestEventsModal=function(){
@@ -1720,6 +1749,33 @@
                     }
                 }
                 if (event.data && event.data.action === 'SCROLL_TO_IFRAME') { const iframe = document.getElementById('dashboard-iframe'); if (iframe) { iframe.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+                
+                // 處理外部景點圖鑑回傳的地標資訊
+                if (event.data && event.data.action === 'SELECT_EXTERNAL_POI') {
+                    const extPoi = event.data.poi;
+                    if (extPoi && extPoi.coords) {
+                        // 確保有唯一 ID
+                        if (!extPoi.id) extPoi.id = 'ext_' + Date.now();
+                        // 標記為外部匯入的地標，給予特殊圖示
+                        extPoi.icon = extPoi.icon || '📍';
+                        extPoi.categoryId = extPoi.categoryId || 'dynamic_events'; // 放入動態列表
+
+                        // 檢查是否已存在，不存在則加入陣列並重繪地圖與列表
+                        if (!pois.find(p => p.id === extPoi.id)) {
+                            pois.push(extPoi);
+                            if (window.mapsApiReady) window.renderMap();
+                            window.renderPoiList();
+                        }
+                        
+                        window.closeModal('external-poi-modal');
+                        
+                        // 等待動畫關閉後彈出地標詳情，讓用戶設為起終點
+                        setTimeout(() => {
+                            window.showPoiDetails(extPoi.id);
+                            window.showToast(`已載入外部景點：${extPoi.name}`);
+                        }, 300);
+                    }
+                }
             });
 
             window.addEventListener('storage', (e) => {
