@@ -1,192 +1,233 @@
 <!DOCTYPE html>
-<html lang="zh-TW" class="scroll-smooth">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>在地景點總覽 - 探探里山</title>
-    
-    <!-- 引入字體與 Tailwind CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>探探里山 - 在地景點列表</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = {
-            theme: { 
-                extend: { 
-                    colors: { 
-                        mori: { base: '#F7F4EF', light: '#E8EFE6', sage: '#8B9D77', forest: '#4A6741', wood: '#D2B48C', dark: '#2C3E28' } 
-                    }, 
-                    fontFamily: { sans: ['Noto Sans TC', 'sans-serif'] } 
-                } 
-            }
-        }
+        tailwind.config={theme:{extend:{colors:{mori:{base:'#F7F4EF',light:'#E8EFE6',sage:'#8B9D77',forest:'#4A6741',wood:'#D2B48C',dark:'#2C3E28'}},fontFamily:{sans:['Noto Sans TC','sans-serif']}}}}
     </script>
     <style>
-        body { background-color: #F9FAFB; color: #2C3E28; }
+        body { background-color: #F7F4EF; color: #2C3E28; font-family: 'Noto Sans TC', sans-serif; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        /* 隱藏原生捲軸，但保留自訂樣式 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="font-sans antialiased overflow-x-hidden pb-20">
+<body class="p-4 md:p-6 custom-scrollbar h-screen overflow-y-auto bg-white rounded-xl shadow-inner border border-gray-100">
 
-    <!-- 頂部導航列 -->
-    <header class="bg-mori-forest text-white sticky top-0 z-50 shadow-md">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="main_interactive.html" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors">
-                    <i class="fas fa-arrow-left text-white"></i>
-                </a>
-                <h1 class="text-xl font-bold tracking-wide">在地景點與合作夥伴</h1>
-            </div>
-            <div class="text-xs bg-white/20 px-3 py-1.5 rounded-full font-medium tracking-widest shadow-inner">
-                <i class="fas fa-leaf mr-1"></i>探探里山
-            </div>
-        </div>
-    </header>
+    <div class="mb-5 flex items-center justify-between border-b border-mori-light pb-3">
+        <h2 class="text-xl font-black text-mori-forest flex items-center">
+            <i class="fas fa-map-marked-alt text-mori-sage mr-2"></i>在地景點列表
+        </h2>
+        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">外部模組</span>
+    </div>
 
-    <!-- 主視覺 Banner -->
-    <div class="w-full bg-mori-base border-b border-mori-sage/20 py-8 px-4 text-center">
-        <div class="max-w-2xl mx-auto">
-            <div class="w-16 h-16 bg-mori-light rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm border-2 border-mori-sage">
-                <i class="fas fa-map-marked-alt text-2xl text-mori-forest"></i>
+    <div id="poi-list-container" class="space-y-4">
+        <!-- 景點列表將由 JS 動態生成在此 -->
+    </div>
+
+    <!-- 景點詳細資訊 Modal -->
+    <div id="poi-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="poi-modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition" onclick="closePoiModal()"><i class="fas fa-times text-xl"></i></button>
+            <div class="p-6">
+                <div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100">
+                    <p class="text-xs text-center text-gray-500 font-bold mb-1"><i class="fas fa-location-arrow text-mori-sage mr-1"></i>傳送至主系統計算減碳：</p>
+                    <div class="flex gap-2">
+                        <button id="set-as-start-button" class="flex-1 py-2.5 bg-mori-light text-mori-dark rounded-xl hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm border border-mori-sage/20 flex items-center justify-center">
+                            <i class="fas fa-play-circle mr-1.5"></i>設為起點
+                        </button>
+                        <button id="set-as-end-button" class="flex-1 py-2.5 bg-mori-forest text-white rounded-xl hover:bg-mori-dark font-bold text-sm transition shadow-sm flex items-center justify-center">
+                            <i class="fas fa-stop-circle mr-1.5"></i>設為終點
+                        </button>
+                    </div>
+                    <div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mt-2 border-t border-dashed border-gray-200 pt-3"></div>
+                </div>
+                
+                <h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3>
+                <div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
+                <div id="poi-iframe-container" class="hidden w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner relative mb-2"></div>
             </div>
-            <h2 class="text-2xl font-black text-mori-dark mb-2 tracking-wide">探索永續農村之美</h2>
-            <p class="text-sm text-gray-600 leading-relaxed">
-                這裡是探探里山的優質合作夥伴清單。<br>
-                您可以瀏覽各類別景點，並點擊「在地圖中查看」返回主頁規劃您的減碳路線！
-            </p>
         </div>
     </div>
 
-    <!-- 景點列表容器 -->
-    <main class="max-w-5xl mx-auto px-4 py-8">
-        <div id="directory-container" class="space-y-10">
-            <!-- 骨架屏 (資料載入中) -->
-            <div class="animate-pulse space-y-4">
-                <div class="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="h-24 bg-gray-200 rounded-xl"></div>
-                    <div class="h-24 bg-gray-200 rounded-xl"></div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <!-- 提示框 -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-[60]">
+        訊息
+    </div>
 
     <script>
-        // ==========================================
-        // 1. 靜態景點資料庫 (排除第 6 類的動態活動)
-        // ==========================================
+        // === 資料定義 (從主頁提取) ===
         const poiCategories = [
-            { id: 4, title: '水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。', icon: 'fa-campground', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' }, 
-            { id: 1, title: '里山餐桌團隊', desc: '核心規劃團隊，提供生態旅遊與 ESG 專案規劃。', icon: 'fa-users', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' }, 
-            { id: 5, title: '南投青農', desc: '結合優質青農，提供高品質特色食農體驗。', icon: 'fa-tractor', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' }, 
-            { id: 3, title: '水里觀光商圈', desc: '提供在地特色美食與優質採購，支持商圈創生。', icon: 'fa-store', color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200' }, 
-            { id: 2, title: '低碳食宿', desc: '精選本地觀光食宿，倡議節水節電與永續觀光。', icon: 'fa-bed', color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' }
+            { id: 4, title: '1. 水里里山基地', desc: '基地推行里山倡議，串聯商圈與青農之永續據點。' }, 
+            { id: 1, title: '2. 里山餐桌團隊', desc: '核心規劃團隊，提供生態旅遊與 ESG 專案規劃。' }, 
+            { id: 5, title: '3. 南投青農', desc: '結合優質青農，提供高品質特色食農體驗。' }, 
+            { id: 3, title: '4. 水里觀光商圈', desc: '提供在地特色美食與優質採購，支持商圈創生。' }, 
+            { id: 2, title: '5. 低碳食宿', desc: '精選本地觀光食宿，倡議節水節電與永續觀光。' }
         ];
-        
-        // 這些資料未來可以獨立成一個 pois_data.js 讓主頁和此頁共用
+
         const pois = [
-            {categoryId:4, id:'poi1', name:'水里溪畔驛站', icon:'🌲', esgEligible:true, fbUrl:'https://www.facebook.com/profile.php?id=100076220760859'},
-            {categoryId:4, id:'poi25', name:'台大林管處水里營林區', icon:'🏛️', fbUrl:'https://www.facebook.com/xitou.nature.education'},
-            {categoryId:1, id:'poi12', name:'湧健酪梨園/梅園', isSroi:true, icon:'🥑', esgEligible:true, fbUrl:'https://www.facebook.com/profile.php?id=100085673588742'},
-            {categoryId:1, id:'poi11', name:'阿爾喜莊園', isSroi:true, icon:'🍋', esgEligible:true, fbUrl:'https://www.facebook.com/AHEIemon'},
-            {categoryId:1, id:'poi10', name:'雨社山下', isSroi:true, icon:'🥒', esgEligible:true, fbUrl:'https://www.facebook.com/YusheLand'},
-            {categoryId:1, id:'poi8', name:'明揚養蜂', isSroi:true, icon:'🐝', esgEligible:true, fbUrl:'https://www.facebook.com/MingYangBee'},
-            {categoryId:1, id:'poi7', name:'指令教育農場', isSroi:true, icon:'👆', esgEligible:true, fbUrl:'https://www.facebook.com/FarmCMD'},
-            {categoryId:1, id:'poi19', name:'小茶米農場', isSroi:true, icon:'🍵', esgEligible:true},
-            {categoryId:1, id:'poi3', name:'鑫鮮菇園', icon:'🍄', esgEligible:true},
-            {categoryId:1, id:'poi26', name:'饕農園', icon:'🧑‍🌾', esgEligible:true},
-            {categoryId:1, id:'poi27', name:'Hó-lah! 星澍柢家', icon:'🌱', esgEligible:true},
-            {categoryId:5, id:'poi30', name:'墨梵農場香草莊園', icon:'🪴'},
-            {categoryId:5, id:'poi20', name:'集元果觀光工廠', icon:'🍌'},
-            {categoryId:5, id:'poi21', name:'山水裡愛玉園', icon:'🌿'},
-            {categoryId:5, id:'poi28', name:'新豐農場(冷泉米)', icon:'🌾'},
-            {categoryId:5, id:'poi29', name:'逸和園檸檬宿', icon:'🍋'},
-            {categoryId:3, id:'poi_new1', name:'水里槑休閒農業區', icon:'🛖'},
-            {categoryId:2, id:'poi16', name:'水里里山村(低碳旅店)', icon:'🏡', esgEligible:true},
-            {categoryId:2, id:'poi14', name:'機車貓聯盟(食店)', icon:'🍚'},
-            {categoryId:3, id:'poi23', name:'車程林班道', icon:'🚂'},
-            {categoryId:3, id:'poi24', name:'車埕木業展示館', icon:'🪵'},
-            {categoryId:3, id:'poi18', name:'森音 Morinooto', icon:'🎶'},
-            {categoryId:3, id:'poi9', name:'蛇窯文化園區', icon:'🏺'},
-            {categoryId:3, id:'poi17', name:'水里星光市集', icon:'💡'}
+            {categoryId:4,id:'poi1',name:'水里溪畔驛站',coords:{lat:23.809799,lng:120.849286},icon:'🌲',esgEligible:true,fbUrl:'https://www.facebook.com/profile.php?id=100076220760859'},
+            {categoryId:4,id:'poi25',name:'台大林管處水里營林區',coords:{lat:23.814313,lng:120.853435},icon:'🏛️',fbUrl:'https://www.facebook.com/xitou.nature.education'},
+            {categoryId:1,id:'poi12',name:'湧健酪梨園/梅園 SROI (✓)',coords:{lat:23.725349,lng:120.846123},icon:'🥑',esgEligible:true,fbUrl:'https://www.facebook.com/profile.php?id=100085673588742'},
+            {categoryId:1,id:'poi11',name:'阿爾喜莊園 SROI (✓)',coords:{lat:23.803119,lng:120.926340},icon:'🍋',esgEligible:true,fbUrl:'https://www.facebook.com/AHEIemon'},
+            {categoryId:1,id:'poi10',name:'雨社山下 SROI (✓)',coords:{lat:23.790644,lng:120.896569},icon:'🥒',esgEligible:true,fbUrl:'https://www.facebook.com/YusheLand'},
+            {categoryId:1,id:'poi8',name:'明揚養蜂 SROI (✓)',coords:{lat:23.803787,lng:120.862401},icon:'🐝',esgEligible:true,fbUrl:'https://www.facebook.com/MingYangBee'},
+            {categoryId:1,id:'poi7',name:'指令教育農場 SROI (✓)',coords:{lat:23.802776,lng:120.864715},icon:'👆',esgEligible:true,fbUrl:'https://www.facebook.com/FarmCMD'},
+            {categoryId:1,id:'poi19',name:'小茶米農場 SROI (✓)',coords:{lat:23.839892,lng:120.632520},icon:'🍵',esgEligible:true},
+            {categoryId:1,id:'poi3',name:'鑫鮮菇園',coords:{lat:23.794049,lng:120.859407},icon:'🍄',esgEligible:true},
+            {categoryId:1,id:'poi26',name:'饕農園',coords:{lat:23.806217,lng:120.746781},icon:'🧑‍🌾',esgEligible:true},
+            {categoryId:1,id:'poi27',name:'Hó-lah! 星澍柢家',coords:{lat:24.102351,lng:120.666805},icon:'🌱',esgEligible:true},
+            {categoryId:5,id:'poi30',name:'墨梵農場香草莊園',coords:{lat:23.722627,lng:120.850277},icon:'🪴'},
+            {categoryId:5,id:'poi20',name:'集元果觀光工廠',coords:{lat:23.825288,lng:120.814236},icon:'🍌'},
+            {categoryId:5,id:'poi21',name:'山水裡愛玉園',coords:{lat:23.827702,lng:120.814354},icon:'🌿'},
+            {categoryId:5,id:'poi28',name:'新豐農場(冷泉米)',coords:{lat:24.065240,lng:120.937692},icon:'🌾'},
+            {categoryId:5,id:'poi29',name:'逸和園檸檬宿',coords:{lat:24.049875,lng:120.861594},icon:'🍋'},
+            {categoryId:3,id:'poi_new1',name:'水里槑休閒農業區',coords:{lat:23.734616,lng:120.856968},icon:'🛖'},
+            {categoryId:2,id:'poi16',name:'水里里山村(低碳旅店)',coords:{lat:23.813514,lng:120.853722},icon:'🏡',esgEligible:true},
+            {categoryId:2,id:'poi14',name:'機車貓聯盟(食店)',coords:{lat:23.810883,lng:120.855798},icon:'🍚'},
+            {categoryId:3,id:'poi23',name:'車程林班道',coords:{lat:23.833913,lng:120.866191},icon:'🚂'},
+            {categoryId:3,id:'poi24',name:'車埕木業展示館',coords:{lat:23.833549,lng:120.865796},icon:'🪵'},
+            {categoryId:3,id:'poi18',name:'森音 Morinooto',coords:{lat:23.742587,lng:120.866954},icon:'🎶'},
+            {categoryId:3,id:'poi9',name:'蛇窯文化園區',coords:{lat:23.801177,lng:120.864479},icon:'🏺'},
+            {categoryId:3,id:'poi17',name:'水里星光市集',coords:{lat:23.813636,lng:120.850816},icon:'💡'}
         ];
 
-        // ==========================================
-        // 2. 渲染邏輯
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('directory-container');
-            let html = '';
+        let currentModalPoi = null;
 
+        // === UI 輔助功能 ===
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<i class="fas fa-check-circle text-green-400 mr-2"></i>${msg}`;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        function closePoiModal() {
+            const modal = document.getElementById('poi-modal');
+            const content = document.getElementById('poi-modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        function openPoiModal() {
+            const modal = document.getElementById('poi-modal');
+            const content = document.getElementById('poi-modal-content');
+            modal.classList.remove('hidden');
+            // Allow display block to render before animating opacity/transform
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // === 核心功能：與主系統連動 ===
+        function sendPointToMainSystem(type, poi) {
+            const payload = {
+                action: 'SET_TRIP_POINT',
+                type: type, // 'start' or 'end'
+                name: poi.name,
+                lat: poi.coords.lat,
+                lng: poi.coords.lng
+            };
+
+            // 如果是被以 iframe 嵌入
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage(payload, '*');
+                showToast(`已設定${type === 'start' ? '起點' : '終點'}：${poi.name}`);
+            } 
+            // 如果是被以新分頁開啟 (window.open)
+            else if (window.opener) {
+                window.opener.postMessage(payload, '*');
+                showToast(`已傳送${type === 'start' ? '起點' : '終點'}設定回主視窗`);
+            } 
+            // 無法找到主系統
+            else {
+                alert(`無法與主系統連線。\n\n您選擇了：${poi.name}\n經度: ${poi.coords.lng}\n緯度: ${poi.coords.lat}`);
+            }
+            
+            closePoiModal();
+        }
+
+        // === 渲染邏輯 ===
+        function renderList() {
+            const container = document.getElementById('poi-list-container');
+            let html = '';
+            
             poiCategories.forEach(cat => {
                 const catPois = pois.filter(p => p.categoryId === cat.id);
-                
                 if (catPois.length > 0) {
                     html += `
-                    <section class="animate-fade-in-down">
-                        <!-- 類別標題 -->
-                        <div class="${cat.bg} border border-${cat.border} rounded-2xl p-4 mb-4 shadow-sm flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shrink-0 shadow-inner border border-gray-100">
-                                <i class="fas ${cat.icon} text-xl ${cat.color}"></i>
+                        <div class="mb-5 last:mb-0">
+                            <div class="bg-gray-50 border-l-4 border-mori-sage px-3 py-2 rounded-r-lg mb-3 shadow-sm border-t border-r border-b border-gray-100">
+                                <h4 class="font-bold text-mori-dark text-[14px] tracking-wide">${cat.title}</h4>
+                                <p class="text-[11px] text-gray-500 mt-0.5 leading-relaxed">${cat.desc}</p>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-black ${cat.color} tracking-wide">${cat.title}</h3>
-                                <p class="text-xs text-gray-600 mt-1 leading-relaxed">${cat.desc}</p>
-                            </div>
-                        </div>
-
-                        <!-- 景點卡片網格 -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 pl-2 md:pl-4 border-l-2 border-gray-200 ml-4 md:ml-6 py-2">
-                            ${catPois.map(poi => {
-                                
-                                // 判斷是否顯示 SROI 標籤
-                                const sroiBadge = poi.isSroi ? `<span class="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[10px] font-bold shadow-sm ml-2 shrink-0 border border-green-200">SROI ✓</span>` : '';
-                                
-                                // 判斷是否顯示 ESG 憑證標籤
-                                const esgBadge = poi.esgEligible ? `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-bold shadow-sm ml-1 shrink-0 border border-blue-100" title="可進行綠色消費登錄"><i class="fas fa-leaf mr-0.5"></i>ESG</span>` : '';
-
-                                return `
-                                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-mori-sage transition-all duration-300 group flex flex-col justify-between h-full relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 w-8 h-8 bg-gray-50 rounded-bl-3xl flex items-start justify-end p-1.5 group-hover:bg-mori-light transition-colors">
-                                        <i class="fas fa-map-marker-alt text-gray-300 group-hover:text-mori-sage text-[10px]"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center mb-2 pr-4">
-                                            <span class="text-2xl mr-2.5 filter drop-shadow-sm group-hover:scale-110 transition-transform">${poi.icon}</span>
-                                            <div class="flex flex-wrap items-center gap-y-1">
-                                                <h4 class="text-[14px] font-bold text-gray-800 leading-tight">${poi.name}</h4>
-                                                <div class="flex">${sroiBadge}${esgBadge}</div>
+                            <div class="grid grid-cols-1 gap-2 pl-1">
+                                ${catPois.map(poi => `
+                                    <div class="p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-mori-sage hover:shadow-md transition-all duration-200 cursor-pointer flex items-center justify-between group" onclick="showDetails('${poi.id}')">
+                                        <div class="flex items-center">
+                                            <span class="text-2xl mr-3 group-hover:scale-110 transition-transform bg-gray-50 w-10 h-10 flex items-center justify-center rounded-full border border-gray-100">${poi.icon}</span>
+                                            <div>
+                                                <h5 class="text-[14px] font-bold text-gray-800 leading-tight">${poi.name.replace('SROI (✓)','<span class="text-green-600 font-black ml-1 bg-green-50 px-1 py-0.5 rounded text-[10px]">SROI ✓</span>')}</h5>
+                                                ${poi.esgEligible ? '<span class="text-[10px] text-mori-sage font-bold"><i class="fas fa-leaf mr-1"></i>ESG 合作點</span>' : ''}
                                             </div>
                                         </div>
+                                        <div class="flex flex-col items-end">
+                                            <i class="fas fa-chevron-right text-gray-300 text-xs group-hover:text-mori-sage transition-colors mb-1"></i>
+                                        </div>
                                     </div>
-                                    
-                                    <div class="flex gap-2 mt-3 pt-3 border-t border-gray-50">
-                                        <button onclick="window.locateOnMap('${poi.id}')" class="flex-1 py-2 bg-mori-forest/10 hover:bg-mori-forest text-mori-forest hover:text-white rounded-lg text-xs font-bold transition-colors border border-mori-forest/20 flex items-center justify-center group/btn">
-                                            <i class="fas fa-location-arrow mr-1.5 group-hover/btn:animate-bounce"></i>在地圖中查看
-                                        </button>
-                                        ${poi.fbUrl ? `<a href="${poi.fbUrl}" target="_blank" class="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-xs font-bold transition-colors border border-blue-200 flex items-center justify-center"><i class="fab fa-facebook-f"></i></a>` : ''}
-                                    </div>
-                                </div>
-                                `;
-                            }).join('')}
+                                `).join('')}
+                            </div>
                         </div>
-                    </section>
                     `;
                 }
             });
-
             container.innerHTML = html;
-        });
+        }
 
-        // 點擊「在地圖中查看」時，跳轉回主站並帶上景點參數
-        window.locateOnMap = function(poiId) {
-            // 跳轉邏輯：回到主頁並把 poi 參數放在網址上
-            // 您未來在 main_interactive.html 中只需讀取網址的 ?locatePoi=xxx 即可自動展開側邊欄
-            window.location.href = `main_interactive.html?locatePoi=${poiId}`;
-        };
+        function showDetails(poiId) {
+            const poi = pois.find(p => p.id === poiId);
+            if (!poi) return;
+            currentModalPoi = poi;
+            
+            const titleEl = document.getElementById('poi-modal-title');
+            if (titleEl) titleEl.innerHTML = `<span class="text-2xl mr-2">${poi.icon}</span>${poi.name}`;
+            
+            const descEl = document.getElementById('poi-modal-description');
+            if (descEl) descEl.innerHTML = poi.description || '位於南投縣水里鄉，是您探索低碳永續與體驗在地生活的好去處。';
+            
+            const btnContainer = document.getElementById('poi-modal-dynamic-buttons');
+            if (btnContainer) {
+                let btnsHtml = '';
+                if (poi.fbUrl) btnsHtml += `<a href="${poi.fbUrl}" target="_blank" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm text-center border border-blue-200 w-full flex items-center justify-center mb-1 shadow-sm hover:bg-blue-100 transition"><i class="fab fa-facebook mr-1.5 text-lg"></i>查看 Facebook 粉絲頁</a>`;
+                if (poi.websiteUrl) btnsHtml += `<a href="${poi.websiteUrl}" target="_blank" class="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg font-bold text-sm text-center border border-gray-200 w-full flex items-center justify-center mb-1 shadow-sm hover:bg-gray-100 transition"><i class="fas fa-external-link-alt mr-1.5"></i>前往官方網站</a>`;
+                if (poi.esgEligible && !poi.websiteUrl) { btnsHtml += `<a href="https://farmcmd.github.io/JOY/" target="_blank" class="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg font-bold text-sm text-center border border-yellow-200 w-full flex items-center justify-center mb-1 shadow-sm hover:bg-yellow-100 transition"><i class="fas fa-ticket-alt mr-1.5"></i>查看活動與預約</a>`; }
+                btnContainer.innerHTML = btnsHtml;
+            }
+            
+            // 綁定設定起終點的事件
+            document.getElementById('set-as-start-button').onclick = () => sendPointToMainSystem('start', poi);
+            document.getElementById('set-as-end-button').onclick = () => sendPointToMainSystem('end', poi);
+
+            openPoiModal();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', renderList);
+
     </script>
 </body>
 </html>
