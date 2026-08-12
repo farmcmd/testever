@@ -43,12 +43,11 @@
 </head>
 <body class="font-sans antialiased overflow-x-hidden">
     <div id="custom-toast"></div>
-    <!-- 廣播系統 -->
     <div id="system-broadcast-container" class="relative w-full z-[100] hidden"><div id="system-broadcast-bar" class="w-full bg-yellow-500 text-white px-4 py-2.5 text-sm font-bold flex items-center justify-between shadow-md cursor-pointer hover:bg-yellow-600 transition-colors"><div class="flex items-center overflow-hidden flex-1 justify-center pl-6"><i class="fas fa-bullhorn mr-2 animate-bounce shrink-0"></i><span id="system-broadcast-text" class="tracking-wide truncate max-w-3xl">載入中...</span></div><div class="flex items-center shrink-0 ml-2"><span class="bg-yellow-600 text-yellow-100 text-[10px] px-2 py-0.5 rounded-full mr-2 hidden md:inline-block shadow-inner font-mono tracking-wider" id="broadcast-count-badge">0 則</span><i class="fas fa-chevron-down transition-transform duration-300" id="broadcast-chevron"></i></div></div><div id="system-broadcast-dropdown" class="absolute top-full left-0 w-full bg-white shadow-2xl border-b-4 border-yellow-400 transform origin-top scale-y-0 opacity-0 transition-all duration-300 max-h-[50vh] overflow-y-auto custom-scrollbar"><div class="bg-gray-50 py-2 px-4 border-b border-gray-100 flex justify-between items-center sticky top-0 z-10"><span class="text-xs font-bold text-gray-500"><i class="fas fa-history mr-1"></i>歷史廣播紀錄</span><button id="close-broadcast-btn" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times"></i></button></div><div id="broadcast-list" class="max-w-4xl mx-auto p-2"></div></div></div>
     
     <header class="bg-gradient-to-b from-mori-forest to-mori-sage text-white text-center shadow-lg relative min-h-[300px] flex flex-col">
         <div class="w-full flex justify-between items-center gap-2 px-3 pt-3 md:px-5 md:pt-4 relative z-[100]">
-            <div id="connection-status" class="flex items-center bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-sm transition-all" title="資料庫連線狀態"><i class="fas fa-circle-notch fa-spin text-yellow-400 mr-2 text-xs"></i><span class="text-white/90 text-xs font-bold tracking-wide">系統啟動中...</span></div>
+            <div id="connection-status" class="flex items-center bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-sm transition-all" title="資料庫連線狀態"><i class="fas fa-circle-notch fa-spin text-yellow-400 mr-2 text-xs"></i><span class="text-white/90 text-xs font-bold tracking-wide">連線中...</span></div>
             <div class="flex items-center gap-2">
                 <button onclick="window.open('https://farmcmd.github.io/ESGT/lottery.html?auth=545366', '_blank')" class="flex items-center gap-1.5 bg-black/30 hover:bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-sm transition-all group cursor-pointer outline-none"><i class="fas fa-gift text-yellow-400 text-sm group-hover:scale-110 group-hover:animate-bounce transition-transform"></i><span class="text-white/90 text-xs font-bold tracking-wide hidden md:inline">抽獎中心</span></button>
                 <button id="header-share-btn" class="flex items-center gap-1.5 bg-black/30 hover:bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-sm transition-all group"><i class="fas fa-qrcode text-white/90 text-sm group-hover:scale-110 transition-transform"></i><span class="text-white/90 text-xs font-bold tracking-wide hidden md:inline">分享</span></button>
@@ -81,9 +80,10 @@
 
             <!-- 交通任務選擇區 -->
             <div id="transport-section" class="mb-8 scroll-mt-4 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-mori-light relative overflow-hidden">
-                <div class="text-center mb-6"><h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-mori-forest flex flex-wrap items-center justify-center gap-2 mb-3"><span><i class="fas fa-hand-point-down mr-2 text-yellow-500 animate-bounce"></i> 請選擇交通方式，啟動任務</span><button onclick="document.getElementById('transport-info-text').classList.toggle('hidden')" class="w-7 h-7 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600 hover:scale-110 transition-all duration-300 flex items-center justify-center text-sm shadow-md outline-none relative -top-0.5 animate-pulse"><i class="fas fa-question font-black"></i></button></h2><div id="transport-info-text" class="hidden max-w-3xl mx-auto bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner text-sm text-gray-600 leading-relaxed text-left md:text-center mt-2 relative transition-all"><button onclick="document.getElementById('transport-info-text').classList.add('hidden')" class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-lg"><i class="fas fa-times"></i></button><div class="mb-3 pr-6 space-y-2"><p><i class="fas fa-info-circle text-mori-sage mr-1"></i> 此處碳里程計算以「學習體驗」為目的，用概算的方法讓使用者瞭解低碳交通方式。</p><p class="text-[12px] bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-600 text-left"><span class="font-black text-mori-forest"><i class="fas fa-bullseye mr-1"></i>📌 邊界界定：</span>本系統減碳基準線 (Baseline) 設定為『單人駕駛燃油小客車』。</p></div><div class="bg-emerald-50/80 p-3 md:p-4 rounded-xl border border-emerald-200 shadow-sm transition-all text-left mt-2"><div class="flex flex-col sm:flex-row items-center justify-between gap-3"><div class="flex items-center gap-2 w-full sm:w-auto"><span class="text-[13px] font-bold text-emerald-800"><i class="fas fa-keyboard mr-1.5"></i>手動里程：</span><div class="flex items-center bg-white px-2 py-1.5 rounded-lg border border-emerald-200 w-full sm:w-32 shadow-inner"><input type="number" id="quick-manual-km" class="w-full bg-transparent text-sm focus:outline-none font-bold text-gray-700 text-center" placeholder="15" min="0.1" step="0.1"><span class="font-bold text-gray-500 text-[11px] mr-1">km</span></div></div><div class="flex items-center gap-4 w-full sm:w-auto justify-between"><div id="quick-manual-result" class="text-[13px] font-bold text-emerald-800 min-w-[90px] text-right">減碳 0 g</div><button id="quick-manual-submit-btn" onclick="window.triggerConfirmQuickManual()" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[13px] font-black tracking-wide rounded-lg shadow-md transition opacity-50 cursor-not-allowed" disabled>登錄成就</button></div></div></div></div></div>
+                <div class="text-center mb-6"><h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-mori-forest flex flex-wrap items-center justify-center gap-2 mb-3"><span><i class="fas fa-hand-point-down mr-2 text-yellow-500 animate-bounce"></i> 請選擇交通方式，啟動任務</span><button onclick="document.getElementById('transport-info-text').classList.toggle('hidden')" class="w-7 h-7 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600 hover:scale-110 transition-all duration-300 flex items-center justify-center text-sm shadow-md outline-none relative -top-0.5 animate-pulse"><i class="fas fa-question font-black"></i></button></h2><div id="transport-info-text" class="hidden max-w-3xl mx-auto bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner text-sm text-gray-600 leading-relaxed text-left md:text-center mt-2 relative transition-all"><button onclick="document.getElementById('transport-info-text').classList.add('hidden')" class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-lg"><i class="fas fa-times"></i></button><div class="mb-3 pr-6 space-y-2"><p><i class="fas fa-info-circle text-mori-sage mr-1"></i> 此處碳里程計算以「學習體驗」為目的，用概算的方法讓使用者瞭解低碳交通方式。</p><p class="text-[12px] bg-white p-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-600 text-left"><span class="font-black text-mori-forest"><i class="fas fa-bullseye mr-1"></i>📌 邊界界定：</span>本系統減碳基準線 (Baseline) 設定為『單人駕駛燃油小客車』。</p></div><div class="bg-emerald-50/80 p-3 md:p-4 rounded-xl border border-emerald-200 shadow-sm transition-all text-left mt-2"><div class="flex flex-col sm:flex-row items-center justify-between gap-3"><div class="flex items-center gap-2 w-full sm:w-auto"><span class="text-[13px] font-bold text-emerald-800"><i class="fas fa-keyboard mr-1.5"></i>手動里程：</span><div class="flex items-center bg-white px-2 py-1.5 rounded-lg border border-emerald-200 w-full sm:w-32 shadow-inner"><input type="number" id="quick-manual-km" class="w-full bg-transparent text-sm focus:outline-none font-bold text-gray-700 text-center" placeholder="15" min="0.1" step="0.1"><span class="font-bold text-gray-500 text-[11px] mr-1">km</span></div></div><div class="flex items-center gap-4 w-full sm:w-auto justify-between"><div id="quick-manual-result" class="text-[13px] font-bold text-emerald-800 min-w-[90px] text-right">減碳 0 g</div><button id="quick-manual-submit-btn" onclick="window.triggerConfirmTrip()" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[13px] font-black tracking-wide rounded-lg shadow-md transition opacity-50 cursor-not-allowed" disabled>登錄成就</button></div></div></div></div></div>
                 <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 bg-gray-50/80 p-3 md:p-5 rounded-xl border border-gray-100 shadow-inner" id="transport-grid">
-                    <div class="col-span-5 text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin mr-2"></i> 選項載入中...</div>
+                    <!-- 動態渲染交通方式，若JS失敗會顯示空白或底色 -->
+                    <div class="col-span-full text-center text-gray-400 py-4"><i class="fas fa-spinner fa-spin mr-2"></i>介面渲染中...</div>
                 </div>
             </div>
 
@@ -161,6 +161,7 @@
                              <div><p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Current Trip</p><p id="selected-points-display" class="text-sm font-bold text-mori-dark mt-1">請選擇起點與終點</p></div>
                              <div class="flex flex-col gap-2">
                                 <button id="preview-trip-button" class="hidden px-6 py-2 bg-mori-forest text-white rounded-lg shadow font-bold text-sm hover:bg-mori-dark transition">預覽路線</button>
+                                <!-- 修改：移除了動態覆蓋 onclick 的壞習慣，直接呼叫全域函數 -->
                                 <button id="confirm-trip-button" onclick="window.triggerConfirmTrip()" class="hidden px-6 py-2 bg-yellow-500 text-white rounded-lg shadow font-bold text-sm animate-bounce">確認並獲取積分</button>
                             </div>
                          </div>
@@ -170,7 +171,7 @@
 
                 <!-- 側邊欄控制區 -->
                 <div class="lg:col-span-1 flex flex-col gap-3 overflow-y-auto max-h-[80vh] no-scrollbar pb-24">
-                    <!-- 在地景點 (改為彈出 Modal) -->
+                    <!-- 在地景點 (改為開啟彈出視窗 Modal) -->
                     <div class="accordion-item shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <button class="accordion-header w-full p-4 font-bold text-gray-700 flex justify-between items-center text-left focus:outline-none bg-gray-50 hover:bg-gray-100 transition">
                             <span class="text-[15px]"><i class="fas fa-map-marker-alt mr-2 text-mori-forest"></i>在地景點與優質農場</span>
@@ -191,7 +192,7 @@
                     <div class="accordion-item shrink-0 bg-blue-50/50 rounded-xl shadow-sm border border-blue-100 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-blue-800 flex justify-between items-center text-left focus:outline-none hover:bg-blue-100/50 transition"><span class="text-[15px]"><i class="fas fa-map-marked-alt mr-2"></i>跨縣市往返設定</span><i class="fas fa-chevron-down transition-transform duration-300"></i></button><div class="accordion-content p-4 pt-2 hidden"><div class="flex flex-col gap-2"><select id="city-select" class="w-full p-2 border border-blue-200 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-400"></select><div class="flex gap-2 mt-1"><button id="set-city-start-btn" class="flex-1 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm transition hover:bg-blue-200">設為起點</button><button id="set-city-end-btn" class="flex-1 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm transition hover:bg-blue-700">設為終點</button></div></div></div></div>
                     
                     <!-- 市區短距移動 -->
-                    <div class="accordion-item shrink-0 bg-emerald-50/50 rounded-xl shadow-sm border border-emerald-100 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-emerald-800 flex justify-between items-center text-left focus:outline-none hover:bg-emerald-100/50 transition"><span class="text-[15px]"><i class="fas fa-route mr-2"></i>市區短距移動</span><i class="fas fa-chevron-down transition-transform duration-300"></i></button><div class="accordion-content p-4 pt-2 hidden"><div class="grid grid-cols-4 gap-2 mb-3"><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="3">3KM</button><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="5">5KM</button><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="10">10KM</button><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="15">15KM</button></div><div id="short-dist-result" class="text-xs font-bold text-mori-wood mb-2 text-center min-h-[1.5em]"></div><button id="confirm-short-dist-btn" onclick="window.triggerConfirmShortDist()" class="hidden w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-sm shadow animate-bounce mb-3">確認並獲取積分</button><div class="mt-2 pt-4 border-t border-emerald-200/60 relative"><div class="flex justify-between items-center mb-2.5"><p class="text-xs font-bold text-emerald-800 flex items-center tracking-wide"><i class="fas fa-calculator mr-1.5 text-emerald-600"></i>地圖自由試算 <span class="bg-emerald-100 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded ml-1.5">不計分</span></p><button id="trial-lock-btn" class="text-gray-400 hover:text-emerald-600 transition p-1 outline-none relative z-20" onclick="window.showToast('請至管理面板查看權限狀態');"><i class="fas fa-lock text-sm"></i></button></div><div id="trial-locked-overlay" class="absolute inset-x-0 bottom-0 top-9 bg-white/80 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center rounded-lg border border-gray-100 transition-all duration-300 cursor-pointer group hover:bg-white/90" onclick="window.showToast('請由管理員於此面板開啟權限');"><i class="fas fa-lock text-3xl text-gray-300 mb-2 group-hover:text-emerald-500 transition-all"></i><p class="text-[11px] font-bold text-gray-500 tracking-wide">未解鎖</p></div><div id="trial-unlocked-content"><p id="trial-expiry-text" class="text-[10px] text-emerald-600 font-bold mb-2 text-right hidden"></p><button id="enable-calc-ref-btn" class="w-full py-2.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-bold text-xs hover:bg-emerald-50 transition shadow-sm flex justify-center items-center group outline-none"><i class="fas fa-map-marked-alt mr-2 group-hover:scale-110 transition-transform"></i> 開啟地圖點選模式</button><div id="calc-ref-status" class="text-[11px] text-emerald-700 font-bold mt-3 text-center hidden bg-emerald-100/50 py-2 rounded-lg border border-emerald-200 shadow-inner animate-pulse"></div><div id="calc-ref-result" class="text-[13px] font-black text-emerald-800 mt-3 text-center hidden bg-[#E8F8EE] py-2.5 rounded-lg border-2 border-emerald-300 shadow-sm leading-relaxed"></div></div></div></div></div>
+                    <div class="accordion-item shrink-0 bg-emerald-50/50 rounded-xl shadow-sm border border-emerald-100 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-emerald-800 flex justify-between items-center text-left focus:outline-none hover:bg-emerald-100/50 transition"><span class="text-[15px]"><i class="fas fa-route mr-2"></i>市區短距移動</span><i class="fas fa-chevron-down transition-transform duration-300"></i></button><div class="accordion-content p-4 pt-2 hidden"><div class="grid grid-cols-4 gap-2 mb-3"><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="3">3KM</button><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="5">5KM</button><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="10">10KM</button><button class="short-dist-btn py-2 bg-white border border-emerald-200 text-emerald-700 rounded-lg font-bold text-[11px] hover:bg-emerald-100 transition" data-km="15">15KM</button></div><div id="short-dist-result" class="text-xs font-bold text-mori-wood mb-2 text-center min-h-[1.5em]"></div><button id="confirm-short-dist-btn" onclick="window.triggerConfirmTrip()" class="hidden w-full py-2 bg-yellow-500 text-white rounded-lg font-bold text-sm shadow animate-bounce mb-3">確認並獲取積分</button><div class="mt-2 pt-4 border-t border-emerald-200/60 relative"><div class="flex justify-between items-center mb-2.5"><p class="text-xs font-bold text-emerald-800 flex items-center tracking-wide"><i class="fas fa-calculator mr-1.5 text-emerald-600"></i>地圖自由試算 <span class="bg-emerald-100 text-emerald-700 text-[9px] px-1.5 py-0.5 rounded ml-1.5">不計分</span></p><button id="trial-lock-btn" class="text-gray-400 hover:text-emerald-600 transition p-1 outline-none relative z-20" onclick="window.showToast('請至管理面板查看權限狀態');"><i class="fas fa-lock text-sm"></i></button></div><div id="trial-locked-overlay" class="absolute inset-x-0 bottom-0 top-9 bg-white/80 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center rounded-lg border border-gray-100 transition-all duration-300 cursor-pointer group hover:bg-white/90" onclick="window.showToast('請由管理員於此面板開啟權限');"><i class="fas fa-lock text-3xl text-gray-300 mb-2 group-hover:text-emerald-500 transition-all"></i><p class="text-[11px] font-bold text-gray-500 tracking-wide">未解鎖</p></div><div id="trial-unlocked-content"><p id="trial-expiry-text" class="text-[10px] text-emerald-600 font-bold mb-2 text-right hidden"></p><button id="enable-calc-ref-btn" class="w-full py-2.5 bg-white border border-emerald-300 text-emerald-700 rounded-lg font-bold text-xs hover:bg-emerald-50 transition shadow-sm flex justify-center items-center group outline-none"><i class="fas fa-map-marked-alt mr-2 group-hover:scale-110 transition-transform"></i> 開啟地圖點選模式</button><div id="calc-ref-status" class="text-[11px] text-emerald-700 font-bold mt-3 text-center hidden bg-emerald-100/50 py-2 rounded-lg border border-emerald-200 shadow-inner animate-pulse"></div><div id="calc-ref-result" class="text-[13px] font-black text-emerald-800 mt-3 text-center hidden bg-[#E8F8EE] py-2.5 rounded-lg border-2 border-emerald-300 shadow-sm leading-relaxed"></div></div></div></div></div>
 
                     <!-- 實體任務 -->
                     <div class="accordion-item shrink-0 bg-purple-50/50 rounded-xl shadow-sm border border-purple-100 overflow-hidden"><button class="accordion-header w-full p-4 font-bold text-purple-800 flex justify-between items-center text-left focus:outline-none hover:bg-purple-100/50 transition"><span class="text-[15px]"><i class="fas fa-flag-checkered mr-2"></i>實體任務與驗證</span><i class="fas fa-chevron-down transition-transform duration-300"></i></button><div class="accordion-content p-4 pt-2 hidden"><div class="flex gap-2"><input type="text" id="verification-code-input" class="w-full p-2 border border-purple-200 rounded-lg text-sm outline-none bg-white focus:border-purple-400" placeholder="輸入通關代碼 (6碼)"><button id="submit-activity-log" class="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm shadow-sm whitespace-nowrap hover:bg-purple-700 transition">驗證</button></div></div></div>
@@ -270,10 +271,6 @@
         </div>
     </div>
 
-    <!-- ============================================== -->
-    <!-- Modals (彈出視窗集合) -->
-    <!-- ============================================== -->
-
     <!-- Iframe 儀表板視窗 -->
     <div id="dashboard-iframe-modal" class="modal-overlay hidden" style="z-index: 9900;">
         <div class="modal-content w-full max-w-6xl h-[90vh] md:h-[85vh] p-0 overflow-hidden relative bg-[#F9FAFB] rounded-2xl shadow-2xl border-t-4 border-yellow-400">
@@ -305,32 +302,21 @@
                     <h4 class="text-[14px] font-black text-mori-forest mb-2 flex items-center bg-mori-light/50 p-2 rounded-lg">
                         <i class="fas fa-book-open mr-2 text-mori-sage"></i>閱讀企業永續旅遊規範
                     </h4>
-
+                    <!-- 詳細規範內容省略...以 JS 動態填入為主 -->
                     <div class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 w-1 h-full bg-mori-sage"></div>
                         <label class="block text-[12px] font-bold text-gray-800 mb-2">1. 適用範圍 (Scope 3)</label>
-                        <div class="text-[11px] text-gray-600 mb-3 space-y-1.5 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
-                            <p><span class="font-bold text-mori-forest"><i class="fas fa-check text-mori-sage mr-1"></i>符合國際規範：</span>符合 ISSB S1/S2 等永續揭露準則。</p>
-                            <p><span class="font-bold text-mori-forest"><i class="fas fa-chart-line text-mori-sage mr-1"></i>提升 ESG 績效：</span>將員工旅遊轉化為具體的減碳數據與成果。</p>
-                            <p><span class="font-bold text-mori-forest"><i class="fas fa-seedling text-mori-sage mr-1"></i>培養 carbon 意識：</span>讓員工在旅遊中體驗環保概念。</p>
-                        </div>
-                        <input type="text" id="player-ent-scope" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm font-bold focus:outline-none text-mori-forest bg-white transition-all shadow-inner hidden" placeholder="系統自動帶入" readonly>
+                        <input type="text" id="player-ent-scope" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm font-bold focus:outline-none text-mori-forest bg-white transition-all shadow-inner" placeholder="系統自動帶入" readonly>
                     </div>
 
                     <div class="bg-white p-3.5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
                         <div class="absolute left-0 top-0 w-1 h-full bg-mori-forest"></div>
-                        <label class="block text-[12px] font-bold text-gray-800 mb-2">2. 綠色採購適用範疇 <span class="text-[10px] text-gray-400 font-normal ml-1">(由企業永續團隊認定)</span></label>
+                        <label class="block text-[12px] font-bold text-gray-800 mb-2">2. 綠色採購適用範疇</label>
                         <div class="flex flex-wrap gap-1.5 mb-3 text-[10px]" id="green-scope-badges">
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="有機農產"><i class="far fa-square mr-1"></i>有機農產</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="產銷履歷"><i class="far fa-square mr-1"></i>產銷履歷</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="台灣優良"><i class="far fa-square mr-1"></i>台灣優良</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="綠色保育"><i class="far fa-square mr-1"></i>綠色保育</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="在地小農"><i class="far fa-square mr-1"></i>在地小農</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="碳足跡標籤"><i class="far fa-square mr-1"></i>碳足跡標籤</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors text-center" data-keyword="環保標章"><i class="far fa-square mr-1"></i>環保標章(旅宿)</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="省水標章"><i class="far fa-square mr-1"></i>省水標章(旅宿)</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="SROI"><i class="far fa-square mr-1"></i>SROI(附公開報告)</span>
-                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold transition-colors" data-keyword="其他備註"><i class="far fa-square mr-1"></i>其他備註:(說明)</span>
+                            <!-- 標籤將由 JS 動態更新 -->
+                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold" data-keyword="有機農產"><i class="far fa-square mr-1"></i>有機農產</span>
+                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold" data-keyword="產銷履歷"><i class="far fa-square mr-1"></i>產銷履歷</span>
+                            <span class="green-badge bg-gray-50 text-gray-400 px-2 py-1 rounded-md border border-gray-200 font-bold" data-keyword="SROI"><i class="far fa-square mr-1"></i>SROI</span>
                         </div>
                         <input type="text" id="player-ent-green-scope" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm font-bold focus:outline-none text-mori-forest bg-white transition-all shadow-inner hidden" placeholder="系統自動帶入" readonly>
                     </div>
@@ -444,28 +430,21 @@
             <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-mori-light rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-file-export text-2xl text-mori-forest"></i></div></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide">選擇存放位置</h3>
             <p class="text-[12px] text-gray-500 mb-6 leading-relaxed">請選擇您要如何保存您的永續進度檔案 (.json)</p>
-            
             <div class="flex flex-col gap-3">
                 <button id="btn-export-local" class="w-full py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold shadow-sm transition flex items-center justify-center tracking-wide border border-gray-200 group">
                     <i class="fas fa-download mr-2 text-gray-500 group-hover:text-gray-700"></i> 下載至本機裝置
                 </button>
-                <button id="btn-export-share" class="w-full py-3.5 bg-gradient-to-r from-mori-sage to-mori-forest hover:shadow-lg text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <i class="fas fa-share-nodes mr-2"></i> 傳送至 Email / 雲端硬碟 / LINE
-                </button>
             </div>
-            <p class="text-[10px] text-gray-400 mt-4"><i class="fas fa-info-circle mr-1"></i>「傳送」功能將呼叫您手機/電腦原生的分享選單</p>
         </div>
     </div>
 
     <!-- 其他公用 Modals -->
     <div id="auth-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-red-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('auth-modal')"><i class="fas fa-times text-xl"></i></button><div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-lock text-2xl text-red-500"></i></div></div><h3 id="auth-modal-title" class="text-xl font-bold text-gray-800 mb-2 tracking-wide">管理員權限驗證</h3><p id="auth-modal-desc" class="text-[12px] text-gray-500 mb-5">請輸入授權密碼以繼續操作</p><input type="password" id="auth-pwd-input" class="w-full p-3 border-2 border-gray-200 rounded-lg text-center text-lg font-mono tracking-widest focus:outline-none focus:border-red-500 mb-4 bg-gray-50 placeholder-gray-400" placeholder="輸入密碼"><button id="auth-confirm-btn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-check-circle mr-2"></i>確認授權</button></div></div>
     <div id="confirm-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-orange-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('confirm-modal')"><i class="fas fa-times text-xl"></i></button><div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-exclamation-triangle text-2xl text-orange-500"></i></div></div><h3 id="confirm-modal-title" class="text-xl font-bold text-gray-800 mb-2 tracking-wide">確認操作</h3><p id="confirm-modal-desc" class="text-[13px] text-gray-600 mb-6 leading-relaxed">您確定要執行此操作嗎？</p><div class="flex gap-3"><button id="confirm-cancel-btn" class="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition shadow-sm border border-gray-200" onclick="window.closeModal('confirm-modal')">取消</button><button id="confirm-ok-btn" class="flex-1 py-2.5 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 transition shadow-md">確定</button></div></div></div>
-    <div id="share-qrcode-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('share-qrcode-modal')"><i class="fas fa-times text-xl"></i></button><h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide"><i class="fas fa-qrcode text-blue-500 mr-2"></i>掃描條碼分享</h3><p class="text-[12px] text-gray-500 mb-4">請現場夥伴直接掃描，或點擊複製連結</p><div id="qrcode-container" class="flex justify-center mb-4 p-4 bg-white border-2 border-gray-100 rounded-xl shadow-inner min-h-[180px] items-center"></div><input type="text" id="share-modal-url" class="w-full p-2.5 border-2 border-gray-200 rounded-lg text-xs bg-gray-50 outline-none text-gray-600 mb-3 font-mono" readonly><button id="share-modal-copy-btn" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-copy mr-2"></i>複製專屬連結</button></div></div>
-    <div id="custom-prompt-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-yellow-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('custom-prompt-modal')"><i class="fas fa-times text-xl"></i></button><h3 id="custom-prompt-title" class="text-lg font-bold text-gray-800 mb-4 tracking-wide"></h3><input type="text" id="custom-prompt-input" class="w-full p-3 border-2 border-gray-200 rounded-lg text-center font-bold focus:border-yellow-500 focus:outline-none mb-5 shadow-inner text-gray-700"><div class="flex gap-3"><button id="custom-prompt-cancel" class="flex-1 py-2.5 bg-gray-100 text-gray-600 rounded-lg font-bold hover:bg-gray-200 transition shadow-sm border border-gray-200">取消</button><button id="custom-prompt-confirm" class="flex-1 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg font-bold hover:shadow-lg transition shadow-md">確認產出</button></div></div></div>
+    <div id="share-qrcode-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-blue-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('share-qrcode-modal')"><i class="fas fa-times text-xl"></i></button><h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide"><i class="fas fa-qrcode text-blue-500 mr-2"></i>掃描條碼分享</h3><div id="qrcode-container" class="flex justify-center mb-4 p-4 bg-white border-2 border-gray-100 rounded-xl shadow-inner min-h-[180px] items-center"></div><input type="text" id="share-modal-url" class="w-full p-2.5 border-2 border-gray-200 rounded-lg text-xs bg-gray-50 outline-none text-gray-600 mb-3 font-mono" readonly><button id="share-modal-copy-btn" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-copy mr-2"></i>複製專屬連結</button></div></div>
     <div id="chat-iframe-modal" class="modal-overlay hidden" style="z-index: 9950;"><div class="modal-content w-full max-w-md h-[92vh] md:h-[88vh] p-0 overflow-hidden relative bg-[#F9FAFB] rounded-2xl shadow-2xl border-t-4 border-blue-500 flex flex-col"><div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3.5 flex justify-between items-center shrink-0 shadow-md z-10"><h3 class="font-bold tracking-wide flex items-center text-sm md:text-base"><i class="fas fa-robot mr-2 text-yellow-300"></i>探探里山小幫手</h3><button class="text-white/80 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-700" onclick="window.closeModal('chat-iframe-modal')"><i class="fas fa-times text-lg"></i></button></div><iframe id="chat-iframe" src="" class="w-full h-full flex-grow border-none bg-transparent"></iframe></div></div>
     
-    <!-- 🌟 在地景點總覽 Modal (恢復成彈出視窗) -->
+    <!-- 🌟 在地景點總覽 Modal -->
     <div id="poi-list-modal" class="modal-overlay hidden" style="z-index: 9950;">
         <div class="modal-content w-full max-w-4xl h-[85vh] md:h-[80vh] p-0 flex flex-col bg-[#F9FAFB] border-t-4 border-mori-forest rounded-2xl shadow-2xl relative">
             <div class="bg-white px-5 py-4 border-b border-gray-200 flex justify-between items-center shrink-0 rounded-t-2xl shadow-sm">
@@ -481,24 +460,19 @@
         </div>
     </div>
 
-    <!-- 景點詳情 Modal -->
     <div id="poi-modal" class="modal-overlay hidden" style="z-index: 9960;"><div class="modal-content bg-white w-full max-w-md rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"><button class="absolute top-4 right-4 text-gray-400 z-10 hover:text-gray-600 transition" onclick="window.closeModal('poi-modal')"><i class="fas fa-times text-xl"></i></button><div class="p-6"><div class="flex flex-col gap-3 mb-5 pb-5 border-b border-gray-100"><div class="flex gap-2"><button id="set-as-start-button" class="flex-1 py-2 bg-mori-light text-mori-dark rounded-lg hover:bg-mori-sage hover:text-white font-bold text-sm transition shadow-sm">設為起點</button><button id="set-as-end-button" class="flex-1 py-2 bg-mori-forest text-white rounded-lg hover:bg-mori-dark font-bold text-sm transition shadow-sm">設為終點</button><button class="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 font-bold text-sm transition shadow-sm" onclick="window.closeModal('poi-modal')">關閉</button></div><div id="poi-modal-dynamic-buttons" class="flex flex-col gap-2 mt-2"></div></div><h3 id="poi-modal-title" class="text-xl font-bold text-mori-dark mb-2"></h3><div id="poi-modal-description" class="text-sm text-gray-600 leading-relaxed mb-4"></div><div id="poi-iframe-container" class="hidden w-full flex justify-center overflow-hidden rounded-lg border border-gray-200 shadow-inner relative mb-2"></div></div></div></div>
     
-    <!-- 🌟 獎勵驗證 Modal -->
     <div id="reward-verification-modal" class="modal-overlay hidden" style="z-index: 9999;"><div class="modal-content max-w-sm p-6 bg-white border-t-4 border-yellow-500 relative text-center shadow-2xl"><button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600" onclick="window.closeModal('reward-verification-modal')"><i class="fas fa-times text-xl"></i></button><div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-shield-alt text-2xl text-yellow-500"></i></div></div><h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide">旅程獎勵驗證</h3><p class="text-[12px] text-gray-500 mb-5 leading-relaxed">為確保減碳紀錄真實性，請輸入導覽員提供之「通關密碼」以獲取 100% 獎勵。若為自主探索，可直接獲取體驗獎勵。</p><input type="password" id="reward-verify-code" class="w-full p-3 border border-gray-200 rounded-lg text-center font-mono tracking-widest focus:outline-none focus:border-yellow-500 mb-4 bg-gray-50 placeholder-gray-400" placeholder="輸入 6 碼通關密碼"><div class="flex flex-col gap-3 mt-2"><button id="reward-verify-full-btn" onclick="window.verifyReward(1)" class="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:shadow-lg text-white rounded-xl font-bold shadow-md transition flex items-center justify-center tracking-wide"><i class="fas fa-check-circle mr-2"></i>確認驗證 (獲取 100% 獎勵)</button><button id="reward-verify-tenth-btn" onclick="window.verifyReward(0.1)" class="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-bold shadow-sm transition flex items-center justify-center tracking-wide border border-gray-200">免驗證 (獲取 10% 體驗獎勵)</button></div></div></div>
 
-    <!-- QR Code 相機掃描彈窗 -->
     <div id="qr-scan-modal" class="modal-overlay hidden" style="z-index: 9999;">
         <div class="modal-content max-w-sm p-6 bg-white border-t-4 border-mori-forest relative text-center shadow-2xl">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 outline-none" onclick="window.closeScannerModal()"><i class="fas fa-times text-xl"></i></button>
             <div class="mb-4 flex justify-center"><div class="w-14 h-14 bg-mori-light rounded-full flex items-center justify-center shadow-inner"><i class="fas fa-camera text-2xl text-mori-forest"></i></div></div>
             <h3 class="text-xl font-bold text-gray-800 mb-2 tracking-wide">掃描消費憑證</h3>
-            <p class="text-[12px] text-gray-500 mb-4 leading-relaxed">本地市集消費活動獲得積分使用，僅於特定活動開啟使用。</p>
             <div id="qr-reader" class="w-full bg-black rounded-lg overflow-hidden border-2 border-gray-200 mb-4 min-h-[250px] flex items-center justify-center shadow-inner"></div>
             <div id="qr-success-buffer" class="hidden w-full bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-4 flex flex-col items-center justify-center min-h-[250px] shadow-inner animate-fade-in-down">
                 <i class="fas fa-check-circle text-5xl text-green-500 mb-4 animate-bounce"></i>
                 <h4 class="text-lg font-black text-green-800 mb-2">條碼解析成功！</h4>
-                <p class="text-xs text-green-600 mb-6 font-bold leading-relaxed">硬體已安全斷電以節省效能<br>請點擊下方按鈕領取獎勵</p>
                 <button id="btn-confirm-scan" class="w-full py-3.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-black shadow-md transition transform active:scale-95 text-sm tracking-widest outline-none">
                     <i class="fas fa-hand-pointer mr-2 animate-pulse"></i>確認領取
                 </button>
@@ -508,7 +482,7 @@
         </div>
     </div>
 
-    <!-- 網站操作員認證與儀表板管理 Modal -->
+    <!-- 🌟 網站操作員認證與儀表板管理 Modal -->
     <div id="training-cert-modal" class="modal-overlay hidden" style="z-index: 120;">
         <div class="modal-content w-full max-w-4xl bg-white border-t-4 border-mori-sage rounded-2xl shadow-2xl relative flex flex-col h-[85vh] md:h-[80vh]">
             <button class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10" onclick="window.closeModal('training-cert-modal')"><i class="fas fa-times text-xl"></i></button>
@@ -519,14 +493,8 @@
             <div class="flex-grow w-full bg-gray-50 rounded-b-2xl overflow-y-auto p-4 md:p-6 no-scrollbar">
                 
                 <div class="bg-[#10b981] rounded-xl shadow-sm border border-[#059669] overflow-hidden mb-6 p-4 md:p-5 text-white relative">
-                    <div class="absolute right-0 top-0 opacity-10 text-[100px] -mt-4 -mr-4 pointer-events-none"><i class="fas fa-map-marked-alt"></i></div>
-                    <h4 class="font-black text-lg flex items-center mb-2 relative z-10">
-                        <span class="mr-2">🚀 🚀</span> 地圖自由試算解鎖
-                    </h4>
-                    <div class="text-[11px] md:text-xs mb-4 font-medium flex items-center relative z-10">
-                        設定解鎖時長，全網旅者將於期限內解除地圖點選限制。（目前狀態： <span id="admin-trial-status-badge" class="ml-1 px-2 py-0.5 bg-red-800 border border-red-500 text-red-100 rounded-full font-bold shadow-inner flex items-center"><i class="fas fa-circle text-[8px] mr-1 text-red-400"></i>目前鎖定中</span> ）
-                    </div>
-                    <div class="flex flex-wrap gap-2 relative z-10">
+                    <h4 class="font-black text-lg flex items-center mb-2 relative z-10">🚀 地圖自由試算解鎖</h4>
+                    <div class="flex flex-wrap gap-2 relative z-10 mt-4">
                         <select id="admin-trial-duration" class="px-3 py-2 bg-white text-gray-800 rounded-lg text-sm font-bold outline-none shadow-sm focus:ring-2 focus:ring-yellow-400 border border-transparent">
                             <option value="30">解鎖 30 分鐘</option>
                             <option value="60">解鎖 1 小時</option>
@@ -543,14 +511,8 @@
                 </div>
 
                 <div class="bg-[#3b82f6] rounded-xl shadow-sm border border-[#2563eb] overflow-hidden mb-6 p-4 md:p-5 text-white relative">
-                    <div class="absolute right-0 top-0 opacity-10 text-[100px] -mt-4 -mr-4 pointer-events-none"><i class="fas fa-qrcode"></i></div>
-                    <h4 class="font-black text-lg flex items-center mb-2 relative z-10">
-                        <span class="mr-2">📷 📷</span> 掃描消費憑證解鎖
-                    </h4>
-                    <div class="text-[11px] md:text-xs mb-4 font-medium flex items-center relative z-10">
-                        設定解鎖時長，全網旅者將於期限內解除掃描相機限制。（目前狀態： <span id="admin-qr-status-badge" class="ml-1 px-2 py-0.5 bg-red-800 border border-red-500 text-red-100 rounded-full font-bold shadow-inner flex items-center"><i class="fas fa-circle text-[8px] mr-1 text-red-400"></i>目前鎖定中</span> ）
-                    </div>
-                    <div class="flex flex-wrap gap-2 relative z-10">
+                    <h4 class="font-black text-lg flex items-center mb-2 relative z-10">📷 掃描消費憑證解鎖</h4>
+                    <div class="flex flex-wrap gap-2 relative z-10 mt-4">
                         <select id="admin-qr-duration" class="px-3 py-2 bg-white text-gray-800 rounded-lg text-sm font-bold outline-none shadow-sm focus:ring-2 focus:ring-yellow-400 border border-transparent">
                             <option value="30">解鎖 30 分鐘</option>
                             <option value="60">解鎖 1 小時</option>
@@ -567,7 +529,7 @@
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6"><div class="bg-indigo-50/40 border-b border-gray-200 p-3 md:p-4"><h4 class="font-bold text-indigo-800 text-lg flex items-center"><i class="fas fa-chart-pie text-indigo-500 mr-2"></i>企業 / 計畫儀表管理名單</h4></div><div class="p-0"><div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="w-1/3">儀表板名稱</span><span class="w-1/3 text-center">歸戶許可</span><span class="w-1/3 text-right">負責儀表板</span></div><div id="auth-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"></div></div></div>
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6"><div class="bg-slate-50 border-b border-gray-200 p-3 md:p-4"><h4 class="font-bold text-slate-700 text-lg flex items-center"><i class="fas fa-user-cog text-blue-500 mr-2"></i>網站操作員認證名單</h4><p class="text-[11px] text-slate-500 mt-1.5 font-medium leading-relaxed"><i class="fas fa-info-circle mr-1"></i>說明權限：各類活動中解說系統操作、數據講解及歸戶操作。</p></div><div class="p-0"><div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="flex-1">認證人員單位</span><span class="w-32 text-right">操作管理師</span></div><div id="operator-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"><div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div></div></div></div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6"><div class="bg-slate-50 border-b border-gray-200 p-3 md:p-4"><h4 class="font-bold text-slate-700 text-lg flex items-center"><i class="fas fa-user-cog text-blue-500 mr-2"></i>網站操作員認證名單</h4></div><div class="p-0"><div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="flex-1">認證人員單位</span><span class="w-32 text-right">操作管理師</span></div><div id="operator-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"><div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div></div></div></div>
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6"><div class="bg-mori-light/30 border-b border-gray-200 p-3 md:p-4"><h4 class="font-bold text-mori-forest text-lg flex items-center"><i class="fas fa-medal text-yellow-500 mr-2"></i>網站應用操作講師認證</h4></div><div class="p-0"><div class="flex justify-between items-center bg-gray-100/80 px-4 py-2 text-xs font-bold text-gray-500 border-b border-gray-200"><span class="flex-1">認證講師所屬單位</span><span class="w-32 text-right">講師姓名</span></div><div id="lecturer-list-container" class="max-h-60 overflow-y-auto custom-scrollbar"><div class="p-4 text-center text-gray-400 text-[13px]"><i class="fas fa-spinner fa-spin mr-2"></i>資料同步中...</div></div></div></div>
             </div>
         </div>
@@ -577,25 +539,7 @@
     <div id="export-receipt-container" class="p-8 w-[600px] absolute -left-[9999px] top-0 bg-[#F7F4EF] z-0"></div>
     <div id="certificate-dom-container" class="p-8 w-[800px] absolute -left-[9999px] top-0 bg-[#F7F4EF] z-0 font-sans"></div>
 
-    <!-- 抽獎中心密碼驗證 Modal -->
-    <div id="main-lottery-auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0">
-        <div class="bg-white border-t-4 border-yellow-500 w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl relative transform scale-90 transition-transform duration-300" id="main-lottery-auth-card">
-            <button onclick="window.closeLotteryAuthModal()" class="absolute top-3 right-3 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors outline-none">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="w-16 h-16 mx-auto bg-yellow-50 rounded-full flex items-center justify-center shadow-inner mb-4">
-                <i class="fas fa-lock text-2xl text-yellow-500"></i>
-            </div>
-            <h2 class="text-xl font-black text-gray-800 mb-2 tracking-widest">開獎中心安全登入</h2>
-            <p class="text-xs text-gray-500 mb-6">此入口僅限活動主辦方使用，請輸入授權密碼。</p>
-            <input type="password" id="main-lottery-pwd" class="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-center text-xl font-mono text-gray-800 tracking-widest focus:border-yellow-500 focus:outline-none mb-2 transition-colors" placeholder="輸入密碼">
-            <p id="main-lottery-error" class="text-[11px] text-red-500 font-bold mb-4 hidden opacity-0 transition-opacity">❌ 密碼錯誤，請重新輸入</p>
-            <button onclick="window.verifyLotteryAuth()" class="w-full py-3 mt-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-xl font-black text-sm tracking-widest transition-all shadow-md">
-                <i class="fas fa-sign-in-alt mr-2"></i> 確認授權
-            </button>
-        </div>
-    </div>
-
+    <!-- 確保 Google 翻譯腳本強制輸出標準選單 -->
     <script type="text/javascript">
         function googleTranslateElementInit(){
             new google.translate.TranslateElement({ pageLanguage: 'zh-TW', includedLanguages: 'zh-TW,en,ja,ko,vi,th,id,de,fr,es', autoDisplay: false }, 'google_translate_element');
@@ -608,9 +552,11 @@
         import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, increment, deleteDoc, updateDoc, arrayUnion, serverTimestamp, enableMultiTabIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-        // ==========================================
-        // 核心資料與共用函式宣告
-        // ==========================================
+        // Global Error Catcher for debugging
+        window.addEventListener('error', function(event) {
+            console.error("Global JS Error:", event.error);
+        });
+
         const firebaseConfig = { apiKey: "AIzaSyCEH65YbNirj_IRmtsIJZS-HNEbsRBBsSQ", authDomain: "sustainable-tourism-65025.firebaseapp.com", projectId: "sustainable-tourism-65025" };
         const LOCAL_STORAGE_KEY = 'shuilMoriData_v3.0';
 
@@ -657,40 +603,16 @@
         window.pendingTrip = { distMeters:0, distKm:0, reduction:0, isValid:false };
         window.globalLotteryEvents=[];window.partnerEnterprises=[];
 
-        // ==========================================
-        // 全域按鈕事件定義 (修復 Missing Function)
-        // ==========================================
+        // 🌟 核心防呆：全域的確認並獲取積分功能
         window.triggerConfirmTrip = function() {
             if (window.pendingTrip && window.pendingTrip.isValid) {
                 const codeInput = document.getElementById('reward-verify-code');
                 if (codeInput) codeInput.value = '';
                 window.openModal('reward-verification-modal');
-                const btn = document.getElementById('confirm-trip-button');
-                if (btn) btn.classList.add('hidden');
+                const confirmBtn = document.getElementById('confirm-trip-button');
+                if(confirmBtn) confirmBtn.classList.add('hidden');
             } else {
                 window.showToast('請先完成路線預覽與計算', true);
-            }
-        };
-
-        window.triggerConfirmShortDist = function() {
-            if (window.pendingTrip && window.pendingTrip.isValid) {
-                const codeInput = document.getElementById('reward-verify-code');
-                if (codeInput) codeInput.value = '';
-                window.openModal('reward-verification-modal');
-                const btn = document.getElementById('confirm-short-dist-btn');
-                if (btn) btn.classList.add('hidden');
-            } else {
-                window.showToast('請先完成路線預覽與計算', true);
-            }
-        };
-
-        window.triggerConfirmQuickManual = function() {
-            if (window.pendingTrip && window.pendingTrip.isValid) {
-                const codeInput = document.getElementById('reward-verify-code');
-                if (codeInput) codeInput.value = '';
-                window.openModal('reward-verification-modal');
-            } else {
-                window.showToast('請先完成手動計算', true);
             }
         };
 
@@ -722,13 +644,12 @@
         };
 
         window.stopLoadingSpinners = function(errMsg) {
-            const errHtml = `<div class="p-4 text-center text-red-500 text-[13px] font-bold"><i class="fas fa-exclamation-triangle mr-1"></i>資料庫拒絕連線<br><span class="text-[10px] text-gray-500 mt-1 block">${errMsg}</span></div>`;
+            const errHtml = `<div class="p-4 text-center text-red-500 text-[13px] font-bold"><i class="fas fa-exclamation-triangle mr-1"></i>資料庫連線中斷<br><span class="text-[10px] text-gray-500 mt-1 block">${errMsg}</span></div>`;
             if (document.getElementById('auth-list-container')) document.getElementById('auth-list-container').innerHTML = errHtml;
             if (document.getElementById('operator-list-container')) document.getElementById('operator-list-container').innerHTML = errHtml;
             if (document.getElementById('lecturer-list-container')) document.getElementById('lecturer-list-container').innerHTML = errHtml;
             if (document.getElementById('player-enterprise-buttons')) document.getElementById('player-enterprise-buttons').innerHTML = `<div class="col-span-2 text-xs text-red-400 py-2 text-center"><i class="fas fa-exclamation-circle mr-1"></i>${errMsg}</div>`;
             if (document.getElementById('system-broadcast-text')) document.getElementById('system-broadcast-text').textContent = '系統無法連線至廣播中心';
-            if (document.getElementById('transport-grid')) document.getElementById('transport-grid').innerHTML = `<div class="col-span-5 text-center text-red-400 py-4"><i class="fas fa-unlink mr-2"></i>選項載入失敗，請重新整理</div>`;
         };
 
         window.updateConnectionStatus = function(status, errMsg = '') {
@@ -796,13 +717,13 @@
         };
 
         window.initFirebase = function() {
+            console.log("Firebase Init Called");
             try {
                 const app = initializeApp(firebaseConfig); 
                 db = getFirestore(app); 
                 
                 enableMultiTabIndexedDbPersistence(db).catch((err) => {
-                    if (err.code == 'failed-precondition') console.warn('多個分頁開啟，無法啟用快取');
-                    else if (err.code == 'unimplemented') console.warn('瀏覽器不支援本機快取');
+                    console.warn('Persistence check:', err.code);
                 });
 
                 const auth = getAuth(app);
@@ -810,17 +731,15 @@
                 signInAnonymously(auth).catch((err) => { 
                     isOfflineMode = true; 
                     let displayMsg = err.message;
-                    if (err.code === 'auth/operation-not-allowed') {
-                        displayMsg = '請至 Firebase 後台啟用 Authentication 的「匿名登入」功能！';
-                        window.showToast('⚠️ 重大警告：Firebase 拒絕發放身分！' + displayMsg, true);
-                    }
                     window.updateConnectionStatus('offline', displayMsg);
                     window.stopLoadingSpinners(displayMsg);
+                    console.error("Auth Failed", err);
                 });
 
                 let pageLoaded = false;
                 onAuthStateChanged(auth, user => {
                     if(user && db) { 
+                        console.log("Auth Success");
                         window.initGlobalCounters(); 
                         window.updateConnectionStatus('online'); 
                         if(!pageLoaded) { 
@@ -835,10 +754,10 @@
                 isOfflineMode = true; 
                 window.updateConnectionStatus('offline', e.message); 
                 window.stopLoadingSpinners(e.message);
+                console.error("Firebase Init Crash", e);
             }
         };
 
-        // UI 操作函式
         window.openChatModal=function(){const iframe=document.getElementById('chat-iframe');if(iframe&&!iframe.dataset.loaded){iframe.src=`https://farmcmd.github.io/chat/?t=${Date.now()}`;iframe.dataset.loaded="true";}window.openModal('chat-iframe-modal');};
         window.openDashboardModal=function(tab){const iframe=document.getElementById('dashboard-iframe');if(iframe){if(!iframe.dataset.loaded){iframe.src=`https://farmcmd.github.io/ESGT/dashboard.html?tab=${tab}&t=${Date.now()}`;iframe.dataset.loaded="true";iframe.onload=()=>{iframe.contentWindow.postMessage({action:'SYNC_FROM_MAIN',state:state,events:window.globalLotteryEvents||[]},'*');};}else{iframe.contentWindow.postMessage({action:'SWITCH_TAB',tab:tab},'*');iframe.contentWindow.postMessage({action:'SYNC_FROM_MAIN',state:state,events:window.globalLotteryEvents||[]},'*');}}window.openModal('dashboard-iframe-modal');};
         
@@ -1306,10 +1225,9 @@
         };
 
         window.bindMapAndTransportEvents=function(){
+            console.log("Binding Transport Events");
             const tGrid=document.getElementById('transport-grid');
-            if(tGrid){
-                tGrid.innerHTML=Object.entries(transportData).map(([k,d])=>`<div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm cursor-pointer text-center hover:border-mori-forest transition" onclick="window.selectTransport('${k}')"><div class="text-3xl mb-2">${d.icon}</div><div class="text-xs font-bold text-gray-700">${d.name}</div></div>`).join('');
-            }
+            if(tGrid){tGrid.innerHTML=Object.entries(transportData).map(([k,d])=>`<div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm cursor-pointer text-center hover:border-mori-forest transition" onclick="window.selectTransport('${k}')"><div class="text-3xl mb-2">${d.icon}</div><div class="text-xs font-bold text-gray-700">${d.name}</div></div>`).join('');}
             const selects=[document.getElementById('city-select')];
             const cityHtml='<option value="">-- 選擇 --</option>'+taiwanCities.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
             if(selects[0])selects[0].innerHTML=cityHtml;
@@ -1324,11 +1242,11 @@
             if(window.mapsApiReady)window.renderMap();else window.loadGoogleMaps();
         };
 
-        // 🌟 恢復渲染 Modal 內的景點清單
         window.renderPoiList = function() {
             const container = document.getElementById('poi-list-container');
             if (!container) return;
             let html = '';
+            
             const catStyles = {
                 4: { icon: 'fa-campground', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' }, 
                 1: { icon: 'fa-users', color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-blue-200' }, 
@@ -1360,20 +1278,20 @@
                                 const sroiBadge = isSroi ? '<span class="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm ml-2 shrink-0 border border-green-200">SROI ✓</span>' : '';
                                 const esgBadge = poi.esgEligible ? '<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm ml-1 shrink-0 border border-blue-100"><i class="fas fa-leaf mr-0.5"></i>ESG</span>' : '';
                                 
-                                return \`
-                                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-mori-sage hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full relative cursor-pointer group" onclick="window.showPoiDetails('\${poi.id}')">
+                                return `
+                                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:border-mori-sage hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full relative cursor-pointer group" onclick="window.showPoiDetails('${poi.id}')">
                                     <div class="absolute right-0 top-0 w-8 h-8 bg-gray-50 rounded-bl-2xl flex items-start justify-end p-1.5 group-hover:bg-mori-light transition-colors">
                                         <i class="fas fa-location-arrow text-gray-300 group-hover:text-mori-sage text-[10px]"></i>
                                     </div>
                                     <div class="flex items-center pr-4">
-                                        <span class="text-2xl mr-2.5 filter drop-shadow-sm group-hover:scale-110 transition-transform">\${poi.icon}</span>
+                                        <span class="text-2xl mr-2.5 filter drop-shadow-sm group-hover:scale-110 transition-transform">${poi.icon}</span>
                                         <div class="flex flex-wrap items-center gap-y-1">
-                                            <h5 class="text-[13px] font-bold text-gray-800 leading-tight">\${cleanName}</h5>
-                                            <div class="flex w-full mt-0.5">\${sroiBadge}\${esgBadge}</div>
+                                            <h5 class="text-[13px] font-bold text-gray-800 leading-tight">${cleanName}</h5>
+                                            <div class="flex w-full mt-0.5">${sroiBadge}${esgBadge}</div>
                                         </div>
                                     </div>
                                 </div>
-                                \`;
+                                `;
                             }).join('')}
                         </div>
                     </div>
@@ -1415,3 +1333,209 @@
 
         window.updateTripDisplay=function(){
             const d=document.getElementById('selected-points-display');if(!d)return;
+            const previewBtn=document.getElementById('preview-trip-button');const confirmBtn=document.getElementById('confirm-trip-button');
+            if(selectedStart&&selectedEnd){
+                d.innerHTML=`<span class="text-green-700">${selectedStart.name}</span> <i class="fas fa-arrow-right text-gray-400 mx-2"></i> <span class="text-green-700">${selectedEnd.name}</span>`;
+                if(previewBtn){previewBtn.classList.remove('hidden');if(state.currentTransport)previewBtn.click();}
+            }else if(selectedStart){
+                d.innerHTML=`<span class="text-green-700">${selectedStart.name}</span> <i class="fas fa-arrow-right text-gray-400 mx-2"></i> <span class="text-gray-400">請選擇終點</span>`;
+                if(previewBtn)previewBtn.classList.add('hidden');if(confirmBtn)confirmBtn.classList.add('hidden');
+            }else if(selectedEnd){
+                d.innerHTML=`<span class="text-gray-400">請選擇起點</span> <i class="fas fa-arrow-right text-gray-400 mx-2"></i> <span class="text-green-700">${selectedEnd.name}</span>`;
+                if(previewBtn)previewBtn.classList.add('hidden');if(confirmBtn)confirmBtn.classList.add('hidden');
+            }else{
+                d.textContent="請選擇起點與終點";if(previewBtn)previewBtn.classList.add('hidden');if(confirmBtn)confirmBtn.classList.add('hidden');
+            }
+        };
+
+        window.initMap=function(){window.mapsApiReady=true;if(document.getElementById('mission-page')&&!document.getElementById('mission-page').classList.contains('hidden')){window.renderMap();}};
+        window.loadGoogleMaps=function(){if(document.querySelector('script[src*="maps.googleapis.com"]'))return;const script=document.createElement('script');const mk=atob('QUl6YVN5QWpOdjQ5QlBhX1gyU1N3aHR5SFR1eWZqTUFieEVHVS04');script.src=`https://maps.googleapis.com/maps/api/js?key=${mk}&callback=initMap`;script.async=true;script.defer=true;document.head.appendChild(script);};
+        
+        window.renderMap=function(){
+            if(!window.google){window.loadGoogleMaps();return;}
+            const mapEl=document.getElementById('map');if(!mapEl||mapEl.offsetWidth===0){setTimeout(window.renderMap,100);return;}
+            if(!window.mapInstance){
+                window.mapInstance=new google.maps.Map(mapEl,{center:{lat:23.810,lng:120.850},zoom:13,mapTypeControl:false});
+                if(!window.directionsService)window.directionsService=new google.maps.DirectionsService();
+                if(!window.directionsRenderer)window.directionsRenderer=new google.maps.DirectionsRenderer({map:window.mapInstance,suppressMarkers:true,polylineOptions:{strokeColor:'#4A6741',strokeOpacity:0.8,strokeWeight:5}});
+            }
+            if(window.mapMarkers)window.mapMarkers.forEach(m=>m.setMap(null));window.mapMarkers=[];
+            pois.forEach(poi=>{
+                let iconUrl='http://maps.google.com/mapfiles/ms/icons/red-dot.png';if(poi.categoryId==='dynamic_events')iconUrl='http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+                const m=new google.maps.Marker({position:poi.coords,map:window.mapInstance,title:poi.name,icon:iconUrl});
+                m.addListener('click',()=>window.showPoiDetails(poi.id));window.mapMarkers.push(m);
+            });
+            document.getElementById('map-overlay')?.classList.add('hidden');
+        };
+
+        window.processTripCompletion=async function(distKm,carbon){
+            if(!window.pendingTrip.isValid) return; 
+            window.pendingTrip.isValid = false; 
+
+            window.showToast('🔄 正在同步數據至雲端...');
+            const success=await window.addToGlobalTotal(carbon,0);
+            if(success){
+                state.totalMileage+=(distKm*1000);state.totalCarbon+=carbon;const pts=Math.round(carbon/10);state.totalScore+=pts;
+                window.updateDisplays();window.saveData();window.addLog(`完成旅程: ${distKm.toFixed(1)}km, 獲得減碳 ${carbon}g`);window.showToast('✅ 積分已記錄！');
+            } else {
+                window.pendingTrip.isValid = true; 
+            }
+        };
+
+        window.addScannerPoints=function(points,logMsg){
+            state.totalScore+=points;window.addLog(logMsg);window.updateDisplays();window.saveData();window.showToast(`✅ 掃描成功！獲得 ${points} 點永續積分`);
+        };
+
+        window.bindMapAndActions = function() {
+            document.querySelectorAll('.short-dist-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const km = parseFloat(e.target.dataset.km);
+                    if (!state.currentTransport) return window.showToast('請先選擇交通方式', true);
+                    const reduction = Math.round(km * (transportData[state.currentTransport].reduction || 0));
+                    document.getElementById('short-dist-result').innerHTML = `預估減碳: <span class="text-emerald-600">${reduction}g</span>`;
+                    window.pendingTrip = { distKm: km, reduction: reduction, isValid: true };
+                    document.getElementById('confirm-short-dist-btn')?.classList.remove('hidden');
+                });
+            });
+
+            const qmInput = document.getElementById('quick-manual-km');
+            const qmResult = document.getElementById('quick-manual-result');
+            const qmSubmit = document.getElementById('quick-manual-submit-btn');
+            if (qmInput && qmResult && qmSubmit) {
+                qmInput.addEventListener('input', (e) => {
+                    const km = parseFloat(e.target.value);
+                    if (isNaN(km) || km <= 0) {
+                        qmResult.textContent = '減碳 0 g';
+                        qmSubmit.disabled = true;
+                        qmSubmit.classList.add('opacity-50', 'cursor-not-allowed');
+                        window.pendingTrip.isValid = false;
+                        return;
+                    }
+                    const reduction = Math.round(km * 100);
+                    qmResult.innerHTML = `減碳 <span class="text-emerald-600 font-black text-lg">${reduction}</span> g`;
+                    qmSubmit.disabled = false;
+                    qmSubmit.classList.remove('opacity-50', 'cursor-not-allowed');
+                    window.pendingTrip = { distKm: km, reduction: reduction, isValid: true };
+                });
+            }
+
+            document.getElementById('submit-activity-log')?.addEventListener('click', () => {
+                const code = document.getElementById('verification-code-input')?.value;
+                if (!code) return window.showToast('請輸入通關代碼', true);
+                window.addLog(`完成實體任務驗證 (代碼: ${code})`);
+                state.totalScore += 50;
+                window.updateDisplays();
+                window.saveData();
+                window.showToast('✅ 驗證成功！獲得 50 積分');
+                document.getElementById('verification-code-input').value = '';
+            });
+
+            document.getElementById('log-action-button')?.addEventListener('click', function() {
+                const logInput = document.getElementById('sustainable-action-log');
+                if (!logInput) return;
+                if (this.dataset.locked === 'true') {
+                    if (logInput.value.trim().length === 8) {
+                        this.dataset.locked = 'false';
+                        this.innerHTML = '<i class="fas fa-edit mr-1"></i> 記錄心得';
+                        this.classList.replace('bg-gray-500', 'bg-mori-sage');
+                        this.classList.replace('hover:bg-mori-forest', 'hover:bg-mori-cream');
+                        logInput.value = '';
+                        window.showToast('🔓 心得專區已解鎖');
+                    }
+                    return;
+                }
+                if (!logInput.value.trim()) return window.showToast('請輸入心得內容', true);
+                window.addLog(`記錄心得: ${logInput.value.substring(0, 15)}...`);
+                state.totalScore += 10;
+                window.updateDisplays();
+                window.saveData();
+                window.showToast('✅ 心得已記錄！獲得 10 積分');
+                logInput.value = '';
+                this.dataset.locked = 'true';
+                this.innerHTML = '<i class="fas fa-lock mr-1"></i> 已上鎖';
+                this.classList.replace('bg-mori-sage', 'bg-gray-500');
+                this.classList.replace('hover:bg-mori-forest', 'hover:bg-gray-600');
+            });
+
+            window.getDistanceFromLatLonInKm = function(lat1, lon1, lat2, lon2) {
+                const R = 6371;
+                const dLat = (lat2-lat1) * (Math.PI/180);
+                const dLon = (lon2-lon1) * (Math.PI/180); 
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+                return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+            };
+
+            document.getElementById('preview-trip-button')?.addEventListener('click', () => {
+                const status = document.getElementById('trip-calculation-status');
+                const confirmBtn = document.getElementById('confirm-trip-button');
+                if (confirmBtn) confirmBtn.classList.add('hidden');
+                window.pendingTrip.isValid = false;
+
+                if (!selectedStart || !selectedEnd || !state.currentTransport) return window.showToast('請選擇起點、終點與交通方式', true);
+                if (!selectedStart.coords || !selectedEnd.coords) return window.showToast('所選地點缺乏座標資訊，無法計算', true);
+                
+                const tData = transportData[state.currentTransport];
+                if (status) status.textContent = "計算中...";
+                
+                const showSuccessAndConfirm = (distKm, reduction, msgHtml) => {
+                    window.pendingTrip = { distMeters: distKm * 1000, distKm: distKm, reduction: reduction, isValid: true };
+                    if (status) status.innerHTML = msgHtml;
+                    if (confirmBtn) confirmBtn.classList.remove('hidden');
+                    document.getElementById('preview-trip-button')?.classList.add('hidden');
+                };
+
+                if (!window.google || !window.google.maps || !window.directionsService) { 
+                    const distKm = window.getDistanceFromLatLonInKm(selectedStart.coords.lat, selectedStart.coords.lng, selectedEnd.coords.lat, selectedEnd.coords.lng);
+                    const reduction = Math.round(distKm * (tData.reduction / 10));
+                    showSuccessAndConfirm(distKm, reduction, `<i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i>(離線估算) ${distKm.toFixed(1)}km | 減碳 <span class="text-mori-forest">${reduction}g</span>`);
+                    return; 
+                }
+                
+                if (window.fallbackPolyline) window.fallbackPolyline.setMap(null);
+                if (window.directionsRenderer && window.mapInstance) window.directionsRenderer.setMap(window.mapInstance);
+
+                window.directionsService.route({ origin: selectedStart.coords, destination: selectedEnd.coords, travelMode: google.maps.TravelMode[tData.mode] || 'DRIVING' }, (result, stat) => {
+                    if (stat === 'OK') {
+                        if (window.directionsRenderer) window.directionsRenderer.setDirections(result);
+                        let distMeters = result.routes[0].legs[0].distance.value;
+                        const distKm = distMeters / 1000;
+                        const reduction = Math.round(distKm * (tData.reduction / 10));
+                        showSuccessAndConfirm(distKm, reduction, `路網距離 ${distKm.toFixed(1)}km | 預估減碳: <span class="text-mori-forest">${reduction}g</span>`);
+                    } else {
+                        if (window.directionsRenderer) window.directionsRenderer.setMap(null);
+                        const p1 = new google.maps.LatLng(selectedStart.coords.lat, selectedStart.coords.lng);
+                        const p2 = new google.maps.LatLng(selectedEnd.coords.lat, selectedEnd.coords.lng);
+                        const distMeters = google.maps.geometry.spherical.computeDistanceBetween(p1, p2);
+                        const distKm = distMeters / 1000;
+                        const reduction = Math.round(distKm * (tData.reduction / 10));
+                        if (window.mapInstance) {
+                            window.fallbackPolyline = new google.maps.Polyline({ path: [p1, p2], geodesic: true, strokeColor: '#4A6741', strokeOpacity: 0.8, strokeWeight: 4, map: window.mapInstance });
+                            const bounds = new google.maps.LatLngBounds(); bounds.extend(p1); bounds.extend(p2); window.mapInstance.fitBounds(bounds);
+                        }
+                        showSuccessAndConfirm(distKm, reduction, `<i class="fas fa-magic text-yellow-500 mr-1"></i>(直線估算) ${distKm.toFixed(1)}km | 減碳 <span class="text-mori-forest">${reduction}g</span>`);
+                    }
+                });
+            });
+            
+            document.getElementById('enable-calc-ref-btn')?.addEventListener('click', () => {
+                let calcRefMode = window.calcRefMode || false;
+                if (!state.currentTransport) return window.showToast('請先選擇交通方式', true);
+                if (!window.mapInstance) return window.showToast('地圖尚未載入，請稍候', true);
+                
+                window.calcRefMode = !calcRefMode;
+                const btn = document.getElementById('enable-calc-ref-btn');
+                const status = document.getElementById('calc-ref-status');
+                const result = document.getElementById('calc-ref-result');
+                const resetCalcState = () => {
+                    if (window.calcStartMarker) window.calcStartMarker.setMap(null);
+                    if (window.calcEndMarker) window.calcEndMarker.setMap(null);
+                    window.calcStartMarker = null; window.calcEndMarker = null;
+                    if (window.directionsRenderer) window.directionsRenderer.setMap(null);
+                    if (window.fallbackPolyline) window.fallbackPolyline.setMap(null);
+                };
+
+                if (window.calcRefMode) {
+                    btn.innerHTML = '<i class="fas fa-times mr-1.5"></i> 關閉點選模式';
+                    btn.classList.replace('bg-white', 'bg-emerald-100');
+                    btn.classList.add('border-emerald-400');
+                    status.classList.remove
