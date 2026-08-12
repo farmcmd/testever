@@ -836,6 +836,7 @@
         window.openExternalPoiModal=function(){
             const iframe = document.getElementById('external-poi-iframe');
             if (iframe && !iframe.dataset.loaded) {
+                // 🛑 確保使用您指定的連結
                 iframe.src = `https://farmcmd.github.io/testever/spot.html?t=${Date.now()}`;
                 iframe.dataset.loaded = "true";
             }
